@@ -1,6 +1,8 @@
 if game:GetService("RunService"):IsRunMode() then return end
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local Selection = game:GetService("Selection")
+local CoreGui = game:GetService("CoreGui")
+local Maid = require(script.Parent.Maid).new()
 
 -- Create a new toolbar section titled "Custom Script Tools"
 local toolbar = plugin:CreateToolbar("AT-Factories")
@@ -121,22 +123,78 @@ button.ClickableWhenViewportHidden = true
 -- 		mousePart = nil
 -- 		guiFolder:Destroy()
 -- 	end
-	
+
+local function instantiateFactoriesSceneHierarchy()
+    print("Instantiating new Factory scene")
+
+    local function createScene()
+        local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
+        scene.Parent = game.Workspace
+        
+        game.Workspace:SetAttribute("Factories", true)
+        
+        ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
+    end
+
+    if game.Workspace:GetAttribute("Factories") ~= true then
+        if not game.Workspace:FindFirstChild("Scene") then
+            createScene()
+        else
+            warn("Folder named Scene already exists!")
+        end
+    elseif game.Workspace:GetAttribute("Factories") == true then
+        if not game.Workspace:FindFirstChild("Scene") then
+            createScene()
+        end
+    end
+end
+
+
+local function showPluginGui()
+    local screenGui
+    local folder = CoreGui:FindFirstChild("FactoriesPluginScreenGui")
+    if not folder then
+        folder = Instance.new("Folder")
+        folder.Name = "FactoriesPluginScreenGui"
+        
+        screenGui = script.Parent.Assets.ScreenGui:Clone()
+        screenGui.Parent = folder
+        
+        folder.Parent = CoreGui
+    else
+        screenGui = folder.ScreenGui
+    end
+    screenGui.Enabled = true
+    Maid:GiveTask(folder)
+    
+    local screenGuiButton:TextButton = screenGui.TextButton
+    local connection = screenGuiButton.MouseButton1Click:Connect(instantiateFactoriesSceneHierarchy)
+    Maid:GiveTask(connection)
+end
+
+local function cleanup()
+    Maid:DoCleaning()
+end
 
 -- 	ChangeHistoryService:SetWaypoint("Did a thing")
 -- end
 local function initPlugin()
     if plugin:IsActivated() then
         plugin:Deactivate()
+        cleanup()
+        print("Plugin deactivated")
     else
         plugin:Activate(true)
+        showPluginGui()
+        print("Plugin activated")
     end
-    print("Is plugin activated?", plugin:IsActivated())
 end
 button.Click:Connect(initPlugin)
 
-plugin.Unloading:Connect(function() print("Plugin unloading") end)
-plugin.Deactivation:Connect(function() print("Plugin deactivated") end)
-print("Plugin loaded")
--- plugin.Ready:Connect(function() print("Plugin is ready") end) --only accessible from coreScripts
+plugin.Unloading:Connect(function() 
+    cleanup()
+    print("Unloading Plugin")
+end)
+-- plugin.Deactivation:Connect(function() print("Plugin deactivated") end)
+-- print("Plugin loaded")
 
