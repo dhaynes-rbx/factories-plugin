@@ -146,6 +146,7 @@ local function instantiateFactoriesSceneHierarchy()
         if not game.Workspace:FindFirstChild("Scene") then
             createScene()
         end
+        game.Workspace:SetAttribute("Factories", true)
     end
 end
 
