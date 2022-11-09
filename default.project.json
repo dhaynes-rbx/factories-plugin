@@ -10,20 +10,18 @@
       },
       "PluginDebugService": {
           "$className": "PluginDebugService",
-          "Visibility Tools Plugin": {
+          "user_Factories Plugin.rbxmx": {
               "$className": "Plugin",
-              "VisibilityTools": {
+              "Factories Plugin": {
                   "$path": "src"
               }
           }
       },
       "ServerStorage": {
           "$className": "ServerStorage",
-          "Visibility Tools Plugin": {
-              "$className": "Plugin",
-              "VisibilityTools": {
-                  "$path": "src"
-              }
+          "Factories Plugin": {
+              "$className": "Folder",
+              "$path": "src"
           }
       }
   }
