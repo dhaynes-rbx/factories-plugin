@@ -1,0 +1,30 @@
+{
+  "name": "factories-plugin",
+  "tree": {
+      "$className": "DataModel",
+      "HttpService": {
+          "$className": "HttpService",
+          "$properties": {
+              "HttpEnabled": true
+          }
+      },
+      "PluginDebugService": {
+          "$className": "PluginDebugService",
+          "Visibility Tools Plugin": {
+              "$className": "Plugin",
+              "VisibilityTools": {
+                  "$path": "src"
+              }
+          }
+      },
+      "ServerStorage": {
+          "$className": "ServerStorage",
+          "Visibility Tools Plugin": {
+              "$className": "Plugin",
+              "VisibilityTools": {
+                  "$path": "src"
+              }
+          }
+      }
+  }
+}
