@@ -43,6 +43,11 @@ function Scene.createMachine()
 end
 
 function Scene.loadScene()
+    if Scene.isLoaded() then
+        print("Scene is already loaded!")
+        return 
+    end
+
     if not game.Workspace:FindFirstChild("Scene") then
         createScene()
     end
@@ -73,6 +78,11 @@ function Scene.loadScene()
     
 
     ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
+end
+
+function Scene.updateSceneConfig(key, value)
+    --TODO: Setup the config stuff or check to make sure it exists
+    --TODO: Validate the incoming string and transform it if necessary. Example: No spaces or special characters in dataset names
 end
 
 return Scene

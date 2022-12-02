@@ -7,7 +7,7 @@ local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 
 --Components
-local PluginGui = require(script.Parent.Components.PluginGui)
+local PluginGuiRoot = require(script.Parent.Components.PluginGuiRoot)
 
 local root = nil
 local guiFolder = nil
@@ -37,7 +37,7 @@ local function initPlugin()
         }
 
         root = ReactRoblox.createRoot(guiFolder)
-        root:render(React.createElement(PluginGui, props, {}))
+        root:render(React.createElement(PluginGuiRoot, props, {}))
         
         print("Factories Plugin activated")
     else

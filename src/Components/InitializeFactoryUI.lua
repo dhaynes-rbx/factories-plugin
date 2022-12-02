@@ -10,7 +10,6 @@ local Scene = require(script.Parent.Parent.Scene)
 
 return function(props)
 
-
     return Panel({
         Size = UDim2.new(0, 300, 0, 0),
         AutomaticSize = Enum.AutomaticSize.Y

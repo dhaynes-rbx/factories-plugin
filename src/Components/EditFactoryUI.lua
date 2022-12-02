@@ -26,6 +26,8 @@ return function(props)
             DatasetNameInput = TextInput({
                 Label = "Dataset Name",
                 LayoutOrder = 0,
+                Placeholder = "Enter dataset name here"
+                --OnActivated = TODO: When the this name changes, update the scene config accordingly
             }),
             
 

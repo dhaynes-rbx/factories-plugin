@@ -7,48 +7,56 @@ local ThemeProvider = FishBloxComponents.ThemeProvider
 local themes = FishBloxComponents.Themes
 local Panel = FishBloxComponents.Panel
 
+local DebugUI = require(script.Parent.DebugUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 
 local Scene = require(script.Parent.Parent.Scene)
 
-local PluginGui = React.Component:extend("PluginGui")
+local PluginGuiRoot = React.Component:extend("PluginGui")
 
-function PluginGui:init()
+function PluginGuiRoot:init()
+    self.machines = Scene.getMachines()
     self:setState({
-        sceneIsLoaded = Scene.isLoaded(),
-        buttonSize = UDim2.fromOffset(200, 50),
-        machines = Scene.getMachines(),
-        currentPanel = 0
+        currentPanel = not Scene.isLoaded() and 1 or 2
     })
 end
 
-function PluginGui:render()
-
-    local props = {
-        sceneIsLoaded = not Scene.isLoaded(),
-    }
-
+function PluginGuiRoot:componentDidMount()
     if self.state.sceneIsLoaded then 
         self:setState({currentPanel = 1})
     end
+end
+
+function PluginGuiRoot:render()
+
+    local pluginGuiProps = {
+        sceneIsLoaded = not Scene.isLoaded(),
+        setCurrentPanel = function(panelId)
+            self:setState({currentPanel = panelId})
+        end,
+    }
 
     return React.createElement("ScreenGui", {}, {
-        InitializeFactoryUI = self.state.currentPanel == 0 and React.createElement(InitializeFactoryUI, {
+        DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
+            Callback = pluginGuiProps.setCurrentPanel
+        }, {}),
+
+        InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
             callback = function() 
-                self:setState({currentPanel = 1})
+                self:setState({currentPanel = 2})
                 getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
             end
         }, {}),
-        EditFactoryUI = self.state.currentPanel == 1 and React.createElement(EditFactoryUI, props, {}),
-        EditMachineUI = self.state.currentPanel == 2 and React.createElement(EditMachineUI, props, {}),
+        EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, pluginGuiProps, {}),
+        EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, pluginGuiProps, {}),
         EditProductListUI = nil,
         EditPowerupListUI = nil
     })
 end
 
-return PluginGui
+return PluginGuiRoot
 
 -- buttons.InitializeSceneButton = not self.state.sceneIsLoaded and Button({
 --     Label = "Initialize Scene",

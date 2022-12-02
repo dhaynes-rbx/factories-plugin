@@ -1,3 +1,5 @@
+local Selection = game:GetService("Selection")
+
 local Packages = script.Parent.Parent.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
@@ -7,8 +9,16 @@ local TextInput = FishBloxComponents.TextInput
 local Button = FishBloxComponents.Button
 local Panel = FishBloxComponents.Panel
 
-return function(props)
+local function selectedObjectIsMachine()
+    if #Selection:Get() >= 1 and Selection:Get()[1].Parent.Name == "Machines" then
+       print("Machine is selected")
+    end
+end
 
+return function(props)
+    local contents = {
+        Button1 = selectedObjectIsMachine() and Button()
+    }
     return Panel({
         Title = "Edit Machine",
         Size = UDim2.new(0, 300, 1, 0),
@@ -18,9 +28,6 @@ return function(props)
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             AutomaticSize = Enum.AutomaticSize.Y,
             Width = 300,
-        }, {
-            Button1 = Button(),
-            Button2 = Button()
-        })
+        }, contents)
     })
 end
