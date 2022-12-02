@@ -1,0 +1,5 @@
+--!strict
+-- TODO: Replace Dash.join with a better join
+-- Don't mess up when tables use mix of index and keys
+-- Don't drop elements when tables have overlapping indicies
+-- Options for secial handling on LayoutOrder (prepend, append) and warnings on collisions.

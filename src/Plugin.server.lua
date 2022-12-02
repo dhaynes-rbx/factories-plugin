@@ -1,17 +1,164 @@
 if game:GetService("RunService"):IsRunMode() then return end
-local ChangeHistoryService = game:GetService("ChangeHistoryService")
-local Selection = game:GetService("Selection")
+
 local CoreGui = game:GetService("CoreGui")
 local Maid = require(script.Parent.Maid).new()
+local Packages = script.Parent.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
 
--- Create a new toolbar section titled "Custom Script Tools"
+--Components
+local PluginGui = require(script.Parent.Components.PluginGui)
+
+local root = nil
+local guiFolder = nil
+
+local function cleanup()
+    if root then
+        root:unmount()
+    end
+
+    Maid:DoCleaning()
+end
+
+local function initPlugin()
+    if not plugin:IsActivated() then
+        plugin:Activate(false)
+        
+        guiFolder = CoreGui:FindFirstChild("FactoriesPluginScreenGui")
+        if not guiFolder then
+            guiFolder = Instance.new("Folder")
+            guiFolder.Name = "FactoriesPluginScreenGui"
+            guiFolder.Parent = CoreGui
+        end
+        Maid:GiveTask(guiFolder)
+
+        local props = {
+            test = "Hello"
+        }
+
+        root = ReactRoblox.createRoot(guiFolder)
+        root:render(React.createElement(PluginGui, props, {}))
+        
+        print("Factories Plugin activated")
+    else
+        cleanup()
+        plugin:Deactivate()
+        
+        print("Factories Plugin deactivated.")
+    end
+end
+
+--Create plugin toolbar and button
 local toolbar = plugin:CreateToolbar("AT-Factories")
-
--- Add a toolbar button named "Create Empty Script"
 local button = toolbar:CreateButton("Factories", "Start", "rbxassetid://4458901886")
-
--- Make button clickable even if 3D viewport is hidden
 button.ClickableWhenViewportHidden = true
+button.Click:Connect(initPlugin)
+
+plugin.Unloading:Connect(function() 
+    cleanup()
+    print("Unloading Plugin")
+end)
+
+
+
+-- local machines = {}
+-- local function createMachine()
+--     --Create a machine
+--     local machineInfo:Types.Machine = {
+--         model = nil,
+--         type = "maker",
+--     }
+
+--     machineInfo.model = script.Parent.Assets.Machines.Maker:Clone()
+--     machineInfo.model.Name = "New Machine"
+--     machineInfo.model.CFrame = CFrame.new()
+--     machineInfo.model.Parent = game.Workspace.Scene.FactoryLayout.
+    
+
+--     table.insert(machines, machineInfo)
+-- end
+
+
+-- local function cleanupConnections(connections)
+--     for _, connection in connections do
+--         if connection then
+--             connection:Disconnect()
+--             connection = nil
+--         end
+--     end
+-- end
+
+-- local function isMachine(obj)
+--     return obj.Parent == game.Workspace.Scene.FactoryLayout.Machines
+-- end
+
+-- local prevTarget:BasePart = nil
+-- local currentlySelectedPart:BasePart = nil
+-- local function initPluginGui()
+--     local screenGui
+--     local folder = CoreGui:FindFirstChild("FactoriesPluginScreenGui")
+--     if not folder then
+--         folder = Instance.new("Folder")
+--         folder.Name = "FactoriesPluginScreenGui"
+        
+--         screenGui = script.Parent.Assets.ScreenGui:Clone()
+--         screenGui.Parent = folder
+        
+--         folder.Parent = CoreGui
+--     else
+--         screenGui = folder.ScreenGui
+--     end
+--     screenGui.Enabled = true
+--     Maid:GiveTask(folder)
+    
+--     local initializeSceneButton:TextButton = screenGui.TextButton
+--     Maid:GiveTask(initializeSceneButton.MouseButton1Click:Connect(instantiateFactoriesSceneHierarchy))
+
+--     local addMachineButton:TextButton = screenGui.TextButton2
+--     addMachineButton.Text = "Add Machine"
+--     addMachineButton.MouseButton1Click:Connect(createMachine)
+    
+--     local selectMachineButton:TextButton = screenGui.TextButton3
+--     selectMachineButton.Text = "Select Machine"
+--     local mouseConnections = {}
+--     Maid:GiveTask(selectMachineButton.MouseButton1Click:Connect(
+--         function()
+--             cleanupConnections(mouseConnections)
+
+--             prevTarget = nil
+--             local mouse = plugin:GetMouse()
+--             plugin:Activate(true)
+--             table.insert(mouseConnections, mouse.Button1Down:Connect(
+--                 function() 
+--                     if isMachine(mouse.Target) then
+--                         print(mouse.Target.Name)
+--                     end
+--                 end
+--             ))
+
+
+--             table.insert(mouseConnections, mouse.Move:Connect(
+--                 function()
+--                     if isMachine(mouse.Target) then
+--                         if mouse.Target ~= prevTarget then
+--                             print("Machine hover: "..mouse.Target.Name)
+--                             prevTarget = mouse.Target
+
+--                             Selection:Set({mouse.Target})
+--                         end
+--                     end
+--                 end
+--             ))
+--         end)
+--     )
+-- end
+
+
+
+
+
+-- plugin.Deactivation:Connect(function() print("Plugin deactivated") end)
+-- print("Plugin loaded")
 
 -- local active = false
 -- local mouse = nil
@@ -123,79 +270,3 @@ button.ClickableWhenViewportHidden = true
 -- 		mousePart = nil
 -- 		guiFolder:Destroy()
 -- 	end
-
-local function instantiateFactoriesSceneHierarchy()
-    print("Instantiating new Factory scene")
-
-    local function createScene()
-        local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
-        scene.Parent = game.Workspace
-        
-        game.Workspace:SetAttribute("Factories", true)
-        
-        ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
-    end
-
-    if game.Workspace:GetAttribute("Factories") ~= true then
-        if not game.Workspace:FindFirstChild("Scene") then
-            createScene()
-        else
-            warn("Folder named Scene already exists!")
-        end
-    elseif game.Workspace:GetAttribute("Factories") == true then
-        if not game.Workspace:FindFirstChild("Scene") then
-            createScene()
-        end
-        game.Workspace:SetAttribute("Factories", true)
-    end
-end
-
-
-local function showPluginGui()
-    local screenGui
-    local folder = CoreGui:FindFirstChild("FactoriesPluginScreenGui")
-    if not folder then
-        folder = Instance.new("Folder")
-        folder.Name = "FactoriesPluginScreenGui"
-        
-        screenGui = script.Parent.Assets.ScreenGui:Clone()
-        screenGui.Parent = folder
-        
-        folder.Parent = CoreGui
-    else
-        screenGui = folder.ScreenGui
-    end
-    screenGui.Enabled = true
-    Maid:GiveTask(folder)
-    
-    local screenGuiButton:TextButton = screenGui.TextButton
-    local connection = screenGuiButton.MouseButton1Click:Connect(instantiateFactoriesSceneHierarchy)
-    Maid:GiveTask(connection)
-end
-
-local function cleanup()
-    Maid:DoCleaning()
-end
-
--- 	ChangeHistoryService:SetWaypoint("Did a thing")
--- end
-local function initPlugin()
-    if plugin:IsActivated() then
-        plugin:Deactivate()
-        cleanup()
-        print("Plugin deactivated")
-    else
-        plugin:Activate(true)
-        showPluginGui()
-        print("Plugin activated")
-    end
-end
-button.Click:Connect(initPlugin)
-
-plugin.Unloading:Connect(function() 
-    cleanup()
-    print("Unloading Plugin")
-end)
--- plugin.Deactivation:Connect(function() print("Plugin deactivated") end)
--- print("Plugin loaded")
-

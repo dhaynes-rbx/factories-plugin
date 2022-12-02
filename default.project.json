@@ -13,15 +13,25 @@
           "user_Factories Plugin.rbxmx": {
               "$className": "Plugin",
               "Factories Plugin": {
-                  "$path": "src"
-              }
+                "$className": "Folder",
+                "$path": "src",
+                "Packages": {
+                  "$className": "Folder",
+                  "$path": "Packages"
+                }
+            }
           }
       },
       "ServerStorage": {
           "$className": "ServerStorage",
           "Factories Plugin": {
               "$className": "Folder",
-              "$path": "src"
+              "$path": "src",
+              "Packages": {
+                "$className": "Folder",
+                "$path": "Packages"
+              }
+              
           }
       }
   }
