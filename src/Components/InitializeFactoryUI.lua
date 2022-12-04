@@ -15,18 +15,18 @@ return function(props)
         AutomaticSize = Enum.AutomaticSize.Y
     }, {
         Content = Column({ --This overrides the built-in panel Column
+            AutomaticSize = Enum.AutomaticSize.Y,
             Gaps = 8,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Width = 300,
+            PaddingHorizontal = 20,
             PaddingVertical = 20,
-            PaddingHorizontal = 20
+            Width = 300,
         }, {
             Button1 = Button({
                 Label = "Initialize Scene",
                 OnActivated = function()
                     Scene.loadScene()
-                    props.callback()
+                    props.ShowEditFactoryPanel()
                 end,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 Width = UDim.new(1, 0)

@@ -16,7 +16,7 @@ return function(props)
     for i=1, 4 do
         buttons["Button"..i] = Button({
             Label = tostring(i),
-            OnActivated = function() props.Callback(i) end,
+            OnActivated = function() props.SetCurrentPanel(i) end,
             LayoutOrder = i
         })
     end

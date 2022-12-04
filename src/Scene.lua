@@ -35,12 +35,12 @@ function Scene.getMachines()
     return (Scene.isLoaded() and Scene.machinesFolder) and Scene.machinesFolder:GetChildren() or {}
 end
 
-function Scene.createMachine()
-    if Scene.isLoaded() then
-        local machine = script.Parent.Assets.Machines.Maker:Clone()
-        machine.Parent = Scene.machinesFolder
-    end
-end
+-- function Scene.createMachine()
+--     if Scene.isLoaded() then
+--         local machine = script.Parent.Assets.Machines.Maker:Clone()
+--         machine.Parent = Scene.machinesFolder
+--     end
+-- end
 
 function Scene.loadScene()
     if Scene.isLoaded() then
@@ -83,6 +83,13 @@ end
 function Scene.updateSceneConfig(key, value)
     --TODO: Setup the config stuff or check to make sure it exists
     --TODO: Validate the incoming string and transform it if necessary. Example: No spaces or special characters in dataset names
+end
+
+function Scene.isMachine(obj)
+    if obj.Parent.Name == "Machines" then
+        return true
+    end
+    return false
 end
 
 return Scene

@@ -1,4 +1,7 @@
-local Packages = script.Parent.Parent.Packages
+local Selection = game:GetService("Selection")
+
+local Root = script.Parent.Parent
+local Packages = Root.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
@@ -16,44 +19,71 @@ local Scene = require(script.Parent.Parent.Scene)
 
 local PluginGuiRoot = React.Component:extend("PluginGui")
 
+function PluginGuiRoot:setCurrentPanel(panelId)
+    self:setState({currentPanel = panelId})
+    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+end
+
 function PluginGuiRoot:init()
+    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+
     self.machines = Scene.getMachines()
+    
     self:setState({
         currentPanel = not Scene.isLoaded() and 1 or 2
     })
+    
+    self.onSelectionChanged = function()
+        if #Selection:Get() >= 1 then
+            local obj = Selection:Get()[1]
+            if Scene.isMachine(obj) then
+                self:setState({selectedMachine = obj})
+                self:setCurrentPanel(3)
+            end
+        else
+            self:setCurrentPanel(2)
+        end
+    end
+    
+    self.connections = {}
+    table.insert(self.connections, Selection.SelectionChanged:Connect(self.onSelectionChanged))
 end
 
-function PluginGuiRoot:componentDidMount()
-    if self.state.sceneIsLoaded then 
-        self:setState({currentPanel = 1})
-    end
-end
+function PluginGuiRoot:componentDidMount() end
 
 function PluginGuiRoot:render()
-
-    local pluginGuiProps = {
-        sceneIsLoaded = not Scene.isLoaded(),
-        setCurrentPanel = function(panelId)
-            self:setState({currentPanel = panelId})
-        end,
-    }
+    --TODO: Figure out why the ribbon tool keeps getting set to None
+    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
     return React.createElement("ScreenGui", {}, {
-        DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
-            Callback = pluginGuiProps.setCurrentPanel
-        }, {}),
+        -- DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
+        --     SetCurrentPanel = pluginGuiProps.setCurrentPanel
+        -- }, {}),
 
         InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
-            callback = function() 
-                self:setState({currentPanel = 2})
-                getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+            ShowEditFactoryPanel = function()
+                self:setCurrentPanel(2)
             end
         }, {}),
-        EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, pluginGuiProps, {}),
-        EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, pluginGuiProps, {}),
+        EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {}, {}),
+        EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
+            SelectedMachine = self.state.selectedMachine,
+            OnClosePanel = function()
+                Selection:Set({})
+                self:setCurrentPanel(2)
+            end
+        }, {}),
         EditProductListUI = nil,
         EditPowerupListUI = nil
     })
+end
+
+function PluginGuiRoot:componentWillUnmount()
+    for _,v in self.connections do
+        v:Disconnect()
+        v = nil
+    end
+    table.clear(self.connections)
 end
 
 return PluginGuiRoot

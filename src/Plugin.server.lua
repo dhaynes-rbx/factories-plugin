@@ -1,6 +1,8 @@
 if game:GetService("RunService"):IsRunMode() then return end
 
 local CoreGui = game:GetService("CoreGui")
+local Selection = game:GetService("Selection")
+
 local Maid = require(script.Parent.Maid).new()
 local Packages = script.Parent.Packages
 local React = require(Packages.React)
@@ -11,6 +13,7 @@ local PluginGuiRoot = require(script.Parent.Components.PluginGuiRoot)
 
 local root = nil
 local guiFolder = nil
+local pluginIsInitialized = false
 
 local function cleanup()
     if root then
@@ -21,7 +24,7 @@ local function cleanup()
 end
 
 local function initPlugin()
-    if not plugin:IsActivated() then
+    if not pluginIsInitialized then
         plugin:Activate(false)
         
         guiFolder = CoreGui:FindFirstChild("FactoriesPluginScreenGui")
@@ -31,19 +34,19 @@ local function initPlugin()
             guiFolder.Parent = CoreGui
         end
         Maid:GiveTask(guiFolder)
-
-        local props = {
-            test = "Hello"
-        }
-
-        root = ReactRoblox.createRoot(guiFolder)
-        root:render(React.createElement(PluginGuiRoot, props, {}))
         
+        root = ReactRoblox.createRoot(guiFolder)
+        root:render(React.createElement(PluginGuiRoot, {}))
+        
+        plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+
+        pluginIsInitialized = true
         print("Factories Plugin activated")
     else
         cleanup()
         plugin:Deactivate()
         
+        pluginIsInitialized = false
         print("Factories Plugin deactivated.")
     end
 end
