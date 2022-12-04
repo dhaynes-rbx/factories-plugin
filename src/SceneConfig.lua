@@ -11,7 +11,7 @@ local function getOrCreateConfigFolders()
     return configFolder
 end
 
-function SceneConfig.updateConfig(obj)
+function SceneConfig.updateDataset(obj)
     local folder = getOrCreateConfigFolders()
     obj.Parent = folder
 end

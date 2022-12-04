@@ -45,7 +45,7 @@ return function(props)
                     fileScript.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
                     fileScript.Name = file.Name:split(".")[1]
                     fileScript.Parent = game.Workspace
-                    SceneConfig.updateConfig(fileScript)
+                    SceneConfig.updateDataset(fileScript)
                 end
             }),
             ExportJSONButton = Button({
