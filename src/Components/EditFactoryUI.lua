@@ -9,6 +9,7 @@ local Button = FishBloxComponents.Button
 local Panel = FishBloxComponents.Panel
 
 local Scene = require(script.Parent.Parent.Scene)
+local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
 -- local Dash = require(Packages.Dash)
 
@@ -42,7 +43,9 @@ return function(props)
                     local file = StudioService:PromptImportFile()
                     local fileScript = Instance.new("ModuleScript")
                     fileScript.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
+                    fileScript.Name = file.Name:split(".")[1]
                     fileScript.Parent = game.Workspace
+                    SceneConfig.updateConfig(fileScript)
                 end
             }),
             ExportJSONButton = Button({
