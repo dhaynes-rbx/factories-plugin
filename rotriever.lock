@@ -261,6 +261,7 @@ dependencies = [
     "Roact RoactCompat 17.0.1-rc.16 url+https://github.com/roblox/roact-alignment",
     "RoactRodux RoactRodux 0.5.1 url+https://github.com/roblox/roact-rodux",
     "Rodux roblox/rodux 3.0.0 url+https://github.com/roblox/rodux",
+    "Utilities AssessmentUtils 1.1.4 url+https://github.com/imbellus2/assessment-utils",
 ]
 
 [[package]]
