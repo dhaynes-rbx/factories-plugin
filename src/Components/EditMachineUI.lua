@@ -1,18 +1,17 @@
 local Selection = game:GetService("Selection")
 
-
 local Packages = script.Parent.Parent.Packages
 local Types = require(script.Parent.Parent.Types)
-
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
-local Text = FishBloxComponents.Text
-local Column = FishBloxComponents.Column
-local TextInput = FishBloxComponents.TextInput
-local Button = FishBloxComponents.Button
-local Panel = FishBloxComponents.Panel
+
 local Block = FishBloxComponents.Block
+local Button = FishBloxComponents.Button
+local Column = FishBloxComponents.Column
+local Panel = FishBloxComponents.Panel
+local Text = FishBloxComponents.Text
+local TextInput = FishBloxComponents.TextInput
 
 local function selectedObjectIsMachine()
     if #Selection:Get() >= 1 and Selection:Get()[1].Parent.Name == "Machines" then
@@ -62,23 +61,6 @@ return function(props)
             RichText = true,
             FontSize = 24,
         }),
-        Spacer = Block({
-            Height = 10,
-        }),
-        EditProductButton = Button(
-        {
-            Label = "Edit Product",
-            LayoutOrder = 100,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            Size = UDim2.new(1, 0, 0, 0)
-        }),
-        ConnectMachineButton = Button(
-        {
-            Label = "Connect Machines",
-            LayoutOrder = 110,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            Size = UDim2.new(1, 0, 0, 0)
-        })
     }
 
     return Panel({

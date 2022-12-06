@@ -23,7 +23,7 @@ function SceneConfig.replaceDataset(obj)
     obj.Parent = datasetFolder
 end
 
-function SceneConfig.getDataset()
+function SceneConfig.getDatasetInstance()
     local datasetFolder = Utilities.getValueAtPath(game.Workspace, "SceneConfig.Dataset")
     if datasetFolder then
         return datasetFolder:GetChildren()[1]
@@ -32,7 +32,7 @@ function SceneConfig.getDataset()
 end
 
 function SceneConfig.getDatasetName()
-    local dataset = SceneConfig.getDataset()
+    local dataset = SceneConfig.getDatasetInstance()
     if dataset then
         local str = dataset.Name:split("_")
         return str[#str]

@@ -17,23 +17,26 @@ local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 
 local Scene = require(script.Parent.Parent.Scene)
 
-local PluginGuiRoot = React.Component:extend("PluginGui")
+local PluginRoot = React.Component:extend("PluginGui")
 
-function PluginGuiRoot:setCurrentPanel(panelId)
+function PluginRoot:setCurrentPanel(panelId)
     self:setState({currentPanel = panelId})
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 end
 
-function PluginGuiRoot:init()
+function PluginRoot:init()
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
     self.machines = Scene.getMachines()
     
     self:setState({
-        currentPanel = not Scene.isLoaded() and 1 or 2
+        currentPanel = not Scene.isLoaded() and 1 or 2 :: number,
+        selectedMachine = nil :: BasePart
     })
     
-    self.onSelectionChanged = function()
+    --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
+    --Otherwise, revert to EditFactoryUI.
+    local onSelectionChanged = function()
         if #Selection:Get() >= 1 then
             local obj = Selection:Get()[1]
             if Scene.isMachine(obj) then
@@ -46,12 +49,12 @@ function PluginGuiRoot:init()
     end
     
     self.connections = {}
-    table.insert(self.connections, Selection.SelectionChanged:Connect(self.onSelectionChanged))
+    table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
 end
 
-function PluginGuiRoot:componentDidMount() end
+function PluginRoot:componentDidMount() end
 
-function PluginGuiRoot:render()
+function PluginRoot:render()
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
@@ -87,7 +90,7 @@ function PluginGuiRoot:render()
     })
 end
 
-function PluginGuiRoot:componentWillUnmount()
+function PluginRoot:componentWillUnmount()
     for _,v in self.connections do
         v:Disconnect()
         v = nil
@@ -95,7 +98,7 @@ function PluginGuiRoot:componentWillUnmount()
     table.clear(self.connections)
 end
 
-return PluginGuiRoot
+return PluginRoot
 
 -- buttons.InitializeSceneButton = not self.state.sceneIsLoaded and Button({
 --     Label = "Initialize Scene",

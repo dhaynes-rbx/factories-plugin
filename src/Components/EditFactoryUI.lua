@@ -47,7 +47,7 @@ end
 return function(props)
 
     local datasetName, setDatasetName = React.useState(SceneConfig.getDatasetName())
-    local datasetInstance, setDatasetInstance = React.useState(SceneConfig.getDataset())
+    local datasetInstance, setDatasetInstance = React.useState(SceneConfig.getDatasetInstance())
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
@@ -61,14 +61,14 @@ return function(props)
             PaddingVertical = 20,
             Width = 300,
         }, {
-            DatasetNameInput = TextInput({
+            DatasetNameInput = datasetInstance and TextInput({
                 Label = "Dataset Name:",
                 LayoutOrder = 1,
                 Placeholder = "Enter dataset name here",
                 Value = SceneConfig.getDatasetName() or "",
                 OnChanged = function(val)
                     local str = "dataset_"..val
-                    SceneConfig.getDataset().Name = str
+                    SceneConfig.getDatasetInstance().Name = str
                     setDatasetName(str)
                 end
             }),
@@ -81,15 +81,23 @@ return function(props)
                 LayoutOrder = 100,
                 OnActivated = function()
                     local file = StudioService:PromptImportFile()
-                    local fileScript = Instance.new("ModuleScript")
-                    fileScript.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
-                    fileScript.Name = file.Name:split(".")[1]
-                    fileScript.Parent = game.Workspace
-                    SceneConfig.replaceDataset(fileScript)
+                    if not file then 
+                        return 
+                    end
+
+                    local newDatasetInstance = Instance.new("ModuleScript")
+                    newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
+                    newDatasetInstance.Name = file.Name:split(".")[1]
+                    newDatasetInstance.Parent = game.Workspace
+                    SceneConfig.replaceDataset(newDatasetInstance)
+                    setDatasetInstance(newDatasetInstance)
+                    newDatasetInstance.AncestryChanged:Connect(function(child, parent)
+                        setDatasetInstance(nil)
+                    end)
                 end,
                 Size = UDim2.new(1, 0, 0, 0)
             }),
-            ExportJSONButton = Button({
+            ExportJSONButton = datasetInstance and Button({
                 Label = "Export Dataset",
                 LayoutOrder = 110,
                 TextXAlignment = Enum.TextXAlignment.Center,
@@ -101,61 +109,58 @@ return function(props)
         })
     })
 
-
-    
-    
     local textElements = {}
-    
-    local datasetString = require(SceneConfig.getDataset())
-    local dataset = HttpService:JSONDecode(datasetString)
-    for _, map in dataset["maps"] do
-        if map.id ~= "mapA" then
-            continue
-        end
+    local FactoryInfoPanel = nil
+    if datasetInstance then
+        local datasetString = require(datasetInstance)
+        local dataset = HttpService:JSONDecode(datasetString)
+        for _, map in dataset["maps"] do
+            if map.id ~= "mapA" then
+                continue
+            end
 
-        table.insert(textElements, smallButton(map.id))
-        table.insert(textElements, Gap({Size = 10}))
-        table.insert(textElements, smallLabel("Items:"))
-        for _, item in map["items"] do
-            table.insert(textElements, smallButton(item.id))
+            table.insert(textElements, smallButton(map.id))
+            table.insert(textElements, Gap({Size = 10}))
+            table.insert(textElements, smallLabel("Items:"))
+            for _, item in map["items"] do
+                table.insert(textElements, smallButton(item.id))
+            end
+            table.insert(textElements, Gap({Size = 10}))
+            table.insert(textElements, smallLabel("Machines:"))
+            for _,machine in map["machines"] do
+                table.insert(textElements, smallButton(machine.id))
+            end
         end
-        table.insert(textElements, Gap({Size = 10}))
-        table.insert(textElements, smallLabel("Machines:"))
-        for _,machine in map["machines"] do
-            table.insert(textElements, smallButton(machine.id))
-        end
-    end
-    
-    
-    local debugPanel = Panel({
-        AnchorPoint = Vector2.new(1,0),
-        Corners = 0,
-        Size = UDim2.new(0, 300, 1, 0),
-        Position = UDim2.fromScale(1, 0)
-    }, {
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-            Size = UDim2.fromScale(1, 1),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            CanvasSize = UDim2.fromScale(1, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            ScrollingDirection = Enum.ScrollingDirection.Y,
+        
+        FactoryInfoPanel = Panel({
+            AnchorPoint = Vector2.new(1,0),
+            Corners = 0,
+            Size = UDim2.new(0, 300, 1, 0),
+            Position = UDim2.fromScale(1, 0)
         }, {
-            Content = Column({ --This overrides the built-in panel Column
-                AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = 4,
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                PaddingHorizontal = 20,
-                PaddingVertical = 20,
-                Width = 300,
-            }, textElements)
+            ScrollingFrame = React.createElement("ScrollingFrame", {
+                Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                CanvasSize = UDim2.fromScale(1, 0),
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                ScrollingDirection = Enum.ScrollingDirection.Y,
+            }, {
+                Content = Column({ --This overrides the built-in panel Column
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    Gaps = 4,
+                    HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                    PaddingHorizontal = 20,
+                    PaddingVertical = 20,
+                    Width = 300,
+                }, textElements)
+            })
         })
-    })
-
+    end
     
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        DebugPanel = debugPanel
+        FactoryInfoPanel = FactoryInfoPanel
     })
 end

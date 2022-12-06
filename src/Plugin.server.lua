@@ -9,7 +9,7 @@ local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 
 --Components
-local PluginGuiRoot = require(script.Parent.Components.PluginGuiRoot)
+local PluginRoot = require(script.Parent.Components.PluginRoot)
 
 local root = nil
 local guiFolder = nil
@@ -36,7 +36,7 @@ local function initPlugin()
         Maid:GiveTask(guiFolder)
         
         root = ReactRoblox.createRoot(guiFolder)
-        root:render(React.createElement(PluginGuiRoot, {}))
+        root:render(React.createElement(PluginRoot, {}))
         
         plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
