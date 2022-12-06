@@ -4,23 +4,52 @@ local Packages = script.Parent.Parent.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
-local Column = FishBloxComponents.Column
-local TextInput = FishBloxComponents.TextInput
-local Button = FishBloxComponents.Button
-local Panel = FishBloxComponents.Panel
 local Block = FishBloxComponents.Block
+local Button = FishBloxComponents.Button
+local Column = FishBloxComponents.Column
+local Gap = FishBloxComponents.Gap
+local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
+local TextInput = FishBloxComponents.TextInput
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
 -- local Dash = require(Packages.Dash)
+local function smallLabel(text)
+    return Text({
+        Bold = true,
+        Color = Color3.new(1,1,1),
+        FontSize = 24,
+        HorizontalAlignment = Enum.HorizontalAlignment.Left,
+        RichText = true,
+        Text = text or "EMPTY",
+    })
+end
+
+local function smallButton(text)
+    return React.createElement("TextButton", {
+        AutomaticSize = Enum.AutomaticSize.X,
+        BackgroundColor3 = Color3.fromRGB(32, 117, 233),
+        BackgroundTransparency = 0.85,
+        FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
+        RichText = true,
+        Size = UDim2.fromOffset(20, 20),
+        Text = text,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+      }, {
+        uICorner = React.createElement("UICorner"),
+      })
+end
 
 return function(props)
 
     local datasetName, setDatasetName = React.useState(SceneConfig.getDatasetName())
+    local datasetInstance, setDatasetInstance = React.useState(SceneConfig.getDataset())
 
-    local panel = Panel({
+    local EditFactoryPanel = Panel({
         Title = "Edit Factory",
         Size = UDim2.new(0, 300, 1, 0),
     }, {
@@ -64,52 +93,69 @@ return function(props)
                 Label = "Export Dataset",
                 LayoutOrder = 110,
                 TextXAlignment = Enum.TextXAlignment.Center,
-                Size = UDim2.new(1, 0, 0, 0)
+                Size = UDim2.new(1, 0, 0, 0),
+                OnActivated = function()
+                    -- local dataset = HttpService:JSON/
+                end
             }),
         })
     })
 
 
-
-    local function smallText(text)
-        return Text({
-            Text = text or "EMPTY",
-            Color = Color3.new(1,1,1),
-            RichText = true,
-            FontSize = 20,
-        })
-    end
+    
     
     local textElements = {}
     
     local datasetString = require(SceneConfig.getDataset())
     local dataset = HttpService:JSONDecode(datasetString)
     for _, map in dataset["maps"] do
-        table.insert(textElements, smallText(map.id))
+        if map.id ~= "mapA" then
+            continue
+        end
+
+        table.insert(textElements, smallButton(map.id))
+        table.insert(textElements, Gap({Size = 10}))
+        table.insert(textElements, smallLabel("Items:"))
         for _, item in map["items"] do
-            table.insert(textElements, smallText(item.id))
+            table.insert(textElements, smallButton(item.id))
+        end
+        table.insert(textElements, Gap({Size = 10}))
+        table.insert(textElements, smallLabel("Machines:"))
+        for _,machine in map["machines"] do
+            table.insert(textElements, smallButton(machine.id))
         end
     end
     
     
     local debugPanel = Panel({
+        AnchorPoint = Vector2.new(1,0),
+        Corners = 0,
         Size = UDim2.new(0, 300, 1, 0),
-        Position = UDim2.fromOffset(500, 0)
+        Position = UDim2.fromScale(1, 0)
     }, {
-        Content = Column({ --This overrides the built-in panel Column
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Gaps = 8,
-            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            PaddingHorizontal = 20,
-            PaddingVertical = 20,
-            Width = 300,
-        }, textElements)
+        ScrollingFrame = React.createElement("ScrollingFrame", {
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            CanvasSize = UDim2.fromScale(1, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+        }, {
+            Content = Column({ --This overrides the built-in panel Column
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Gaps = 4,
+                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                PaddingHorizontal = 20,
+                PaddingVertical = 20,
+                Width = 300,
+            }, textElements)
+        })
     })
 
     
 
     return React.createElement(React.Fragment, nil, {
-        Panel = panel,
+        EditFactoryPanel = EditFactoryPanel,
         DebugPanel = debugPanel
     })
 end

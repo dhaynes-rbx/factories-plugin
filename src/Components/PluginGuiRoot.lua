@@ -58,6 +58,7 @@ function PluginGuiRoot:render()
     return React.createElement("ScreenGui", {}, {
         Block({
             PaddingLeft = 20,
+            PaddingRight = 20,
             PaddingTop = 20,
             PaddingBottom = 20,
             Size = UDim2.new(0, 300, 1, 0),
