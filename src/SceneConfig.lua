@@ -40,4 +40,8 @@ function SceneConfig.getDatasetName()
     return nil
 end
 
+function SceneConfig.setDatasetName(name)
+    SceneConfig.getDatasetInstance().Name = name
+end
+
 return SceneConfig

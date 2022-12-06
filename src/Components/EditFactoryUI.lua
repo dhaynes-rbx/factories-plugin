@@ -66,7 +66,7 @@ return function(props)
                 Value = SceneConfig.getDatasetName() or "",
                 OnChanged = function(val)
                     local str = "dataset_"..val
-                    props.DatasetInstance.Name = str
+                    SceneConfig.setDatasetName(str)
                 end
             }),
             Spacer = Block({
