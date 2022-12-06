@@ -56,25 +56,33 @@ function PluginGuiRoot:render()
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
     return React.createElement("ScreenGui", {}, {
-        -- DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
-        --     SetCurrentPanel = pluginGuiProps.setCurrentPanel
-        -- }, {}),
-
-        InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
-            ShowEditFactoryPanel = function()
-                self:setCurrentPanel(2)
-            end
-        }, {}),
-        EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {}, {}),
-        EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
-            SelectedMachine = self.state.selectedMachine,
-            OnClosePanel = function()
-                Selection:Set({})
-                self:setCurrentPanel(2)
-            end
-        }, {}),
-        EditProductListUI = nil,
-        EditPowerupListUI = nil
+        Block({
+            PaddingLeft = 20,
+            PaddingTop = 20,
+            PaddingBottom = 20,
+            Size = UDim2.new(0, 300, 1, 0),
+            AutomaticSize = Enum.AutomaticSize.X
+        }, {
+            -- DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
+            --     SetCurrentPanel = pluginGuiProps.setCurrentPanel
+            -- }, {}),
+    
+            InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
+                ShowEditFactoryPanel = function()
+                    self:setCurrentPanel(2)
+                end
+            }, {}),
+            EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {}, {}),
+            EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
+                SelectedMachine = self.state.selectedMachine,
+                OnClosePanel = function()
+                    Selection:Set({})
+                    self:setCurrentPanel(2)
+                end
+            }, {}),
+            EditProductListUI = nil,
+            EditPowerupListUI = nil
+        })
     })
 end
 

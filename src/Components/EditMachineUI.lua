@@ -12,6 +12,7 @@ local Column = FishBloxComponents.Column
 local TextInput = FishBloxComponents.TextInput
 local Button = FishBloxComponents.Button
 local Panel = FishBloxComponents.Panel
+local Block = FishBloxComponents.Block
 
 local function selectedObjectIsMachine()
     if #Selection:Get() >= 1 and Selection:Get()[1].Parent.Name == "Machines" then
@@ -61,17 +62,23 @@ return function(props)
             RichText = true,
             FontSize = 24,
         }),
+        Spacer = Block({
+            Height = 10,
+        }),
         EditProductButton = Button(
-            {
-                Label = "Edit Product",
-                LayoutOrder = 2
-            }
-        ),
+        {
+            Label = "Edit Product",
+            LayoutOrder = 100,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            Size = UDim2.new(1, 0, 0, 0)
+        }),
         ConnectMachineButton = Button(
-            {
-                Label = "Connect Machines"
-            }
-        )
+        {
+            Label = "Connect Machines",
+            LayoutOrder = 110,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            Size = UDim2.new(1, 0, 0, 0)
+        })
     }
 
     return Panel({
