@@ -1,4 +1,5 @@
 local Selection = game:GetService("Selection")
+local StudioService = game:GetService("StudioService")
 
 local Root = script.Parent.Parent
 local Packages = Root.Packages
@@ -16,6 +17,7 @@ local EditMachineUI = require(script.Parent.EditMachineUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 
 local Scene = require(script.Parent.Parent.Scene)
+local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
 local PluginRoot = React.Component:extend("PluginGui")
 
@@ -30,8 +32,9 @@ function PluginRoot:init()
     self.machines = Scene.getMachines()
     
     self:setState({
-        currentPanel = not Scene.isLoaded() and 1 or 2 :: number,
-        selectedMachine = nil :: BasePart
+        currentPanel = not Scene.isLoaded() and 1 or 2,
+        selectedMachine = nil,
+        datasetInstance = SceneConfig.getDatasetInstance() or "NONE"
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
@@ -52,8 +55,6 @@ function PluginRoot:init()
     table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
 end
 
-function PluginRoot:componentDidMount() end
-
 function PluginRoot:render()
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
@@ -66,17 +67,32 @@ function PluginRoot:render()
             PaddingBottom = 20,
             Size = UDim2.new(0, 300, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
-        }, {
-            -- DebugPanel = Scene.isLoaded() and React.createElement(DebugUI, {
-            --     SetCurrentPanel = pluginGuiProps.setCurrentPanel
-            -- }, {}),
-    
+        }, {    
             InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
                 ShowEditFactoryPanel = function()
                     self:setCurrentPanel(2)
                 end
             }, {}),
-            EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {}, {}),
+            EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
+                DatasetInstance = self.state.datasetInstance,
+                ImportDataset = function()
+                    print("Importing dataset...")
+                    local file = StudioService:PromptImportFile()
+                    if not file then 
+                        return 
+                    end
+
+                    local newDatasetInstance = Instance.new("ModuleScript")
+                    newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
+                    newDatasetInstance.Name = file.Name:split(".")[1]
+                    newDatasetInstance.Parent = game.Workspace
+                    SceneConfig.replaceDataset(newDatasetInstance)
+                    self:setState({datasetInstance = newDatasetInstance})
+                    newDatasetInstance.AncestryChanged:Connect(function(_,_)
+                        self:setState({datasetInstance = "NONE"})
+                    end)
+                end,
+            }, {}),
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
                 SelectedMachine = self.state.selectedMachine,
                 OnClosePanel = function()

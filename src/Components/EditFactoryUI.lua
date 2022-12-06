@@ -45,9 +45,7 @@ local function smallButton(text)
 end
 
 return function(props)
-
-    local datasetName, setDatasetName = React.useState(SceneConfig.getDatasetName())
-    local datasetInstance, setDatasetInstance = React.useState(SceneConfig.getDatasetInstance())
+    local datasetIsLoaded = props.DatasetInstance ~= "NONE"
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
@@ -61,15 +59,14 @@ return function(props)
             PaddingVertical = 20,
             Width = 300,
         }, {
-            DatasetNameInput = datasetInstance and TextInput({
+            DatasetNameInput = datasetIsLoaded and TextInput({
                 Label = "Dataset Name:",
                 LayoutOrder = 1,
                 Placeholder = "Enter dataset name here",
                 Value = SceneConfig.getDatasetName() or "",
                 OnChanged = function(val)
                     local str = "dataset_"..val
-                    SceneConfig.getDatasetInstance().Name = str
-                    setDatasetName(str)
+                    props.DatasetInstance.Name = str
                 end
             }),
             Spacer = Block({
@@ -79,25 +76,10 @@ return function(props)
                 Label = "Import Dataset",
                 TextXAlignment = Enum.TextXAlignment.Center,
                 LayoutOrder = 100,
-                OnActivated = function()
-                    local file = StudioService:PromptImportFile()
-                    if not file then 
-                        return 
-                    end
-
-                    local newDatasetInstance = Instance.new("ModuleScript")
-                    newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
-                    newDatasetInstance.Name = file.Name:split(".")[1]
-                    newDatasetInstance.Parent = game.Workspace
-                    SceneConfig.replaceDataset(newDatasetInstance)
-                    setDatasetInstance(newDatasetInstance)
-                    newDatasetInstance.AncestryChanged:Connect(function(child, parent)
-                        setDatasetInstance(nil)
-                    end)
-                end,
+                OnActivated = props.ImportDataset,
                 Size = UDim2.new(1, 0, 0, 0)
             }),
-            ExportJSONButton = datasetInstance and Button({
+            ExportJSONButton = datasetIsLoaded and Button({
                 Label = "Export Dataset",
                 LayoutOrder = 110,
                 TextXAlignment = Enum.TextXAlignment.Center,
@@ -111,8 +93,8 @@ return function(props)
 
     local textElements = {}
     local FactoryInfoPanel = nil
-    if datasetInstance then
-        local datasetString = require(datasetInstance)
+    if datasetIsLoaded then
+        local datasetString = require(props.DatasetInstance)
         local dataset = HttpService:JSONDecode(datasetString)
         for _, map in dataset["maps"] do
             if map.id ~= "mapA" then
