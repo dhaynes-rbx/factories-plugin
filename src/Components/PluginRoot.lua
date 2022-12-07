@@ -33,7 +33,7 @@ function PluginRoot:init()
     
     self:setState({
         currentPanel = not Scene.isLoaded() and 1 or 2,
-        selectedMachine = nil,
+        selectedMachineAnchor = nil,
         datasetInstance = SceneConfig.getDatasetInstance() or "NONE"
     })
     
@@ -43,7 +43,7 @@ function PluginRoot:init()
         if #Selection:Get() >= 1 then
             local obj = Selection:Get()[1]
             if Scene.isMachine(obj) then
-                self:setState({selectedMachine = obj})
+                self:setState({selectedMachineAnchor = obj})
                 self:setCurrentPanel(3)
             end
         else
@@ -94,7 +94,8 @@ function PluginRoot:render()
                 end,
             }, {}),
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
-                SelectedMachine = self.state.selectedMachine,
+                DatasetInstance = self.state.datasetInstance,
+                MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
                     self:setCurrentPanel(2)
