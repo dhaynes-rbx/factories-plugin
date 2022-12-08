@@ -50,6 +50,17 @@ export type ButtonProps = {
     TextXAlignment: Enum?,
     OnActivated: ((nil) -> nil)?,
     ZIndex: number?,
+
+    -- TODO: Missing Types:
+    -- OnMouseOver: ((nil) -> nil)?,
+    -- OnMouseLeave: ((nil) -> nil)?,
+    
+    -- TODO: Deprecate OnMouseOver /OnMouseLeave in favor of OnHighlighted / OnUnhighlighted
+    -- because OnHighlighted should also trigger with keyboard focus
+
+    OnHighlighted: (() -> nil)?,
+    OnUnhighlighted: (() -> nil)?,
+    -- TODO: Trigger support keyboard focus enter/leave as a trigger for these events
 }
 
 local ButtonPropDefaults = {
@@ -70,8 +81,7 @@ function Button:init()
         "Filled",
     }
     self:setState({
-        mouseIsOver = false,
-        toggled = false,
+        mouseIsOver = false
     })
 end
 
@@ -197,7 +207,6 @@ function Button:render()
             },
             childrenOrDefault,
             {
-                ImageLabel = self.props.IsToggle and self.state.toggled and self:getToggleImageLabel() or imageLabel,
             }
         )
         return React.createElement("TextButton", {
@@ -228,12 +237,6 @@ function Button:render()
                         end
                         self.props.OnActivated()
                     end
-                    if self.props.IsToggle then
-                        local toggledState = self.state.toggled
-                        self:setState({
-                            toggled = not toggledState,
-                        })
-                    end
                 end
             end,
             [ReactRoblox.Event.MouseEnter] = function()
@@ -244,6 +247,9 @@ function Button:render()
                     if self.props.OnMouseEnter then
                         self.props.OnMouseEnter()
                     end
+                    if self.props.OnHighlighted then
+                        self.props.OnHighlighted()
+                    end
                 end
             end,
             [ReactRoblox.Event.MouseLeave] = function()
@@ -253,6 +259,9 @@ function Button:render()
                     })
                     if self.props.OnMouseLeave then
                         self.props.OnMouseLeave()
+                    end
+                    if self.props.OnUnhighlighted then
+                        self.props.OnUnhighlighted()
                     end
                 end
             end,
@@ -326,8 +335,8 @@ function Button:getBackgroundColor(theme): string
             return Color3.fromRGB(255, 255, 255)
         end
 
-        if self.props.Appearance == "Roblox" then
-            if self.props.IsToggle and self.state.toggled then
+        if self.props.Appearance == "Roblox" then 
+            if self.props.ButtonIsToggled then
                 return Color3.fromRGB(255, 255, 255)
             end
             return Color3.new(0, 0, 0)
@@ -340,7 +349,7 @@ end
 
 function Button:getBackgroundTransparency()
     if self.props.Appearance == "Roblox" then
-        return self.state.toggled and 1 or 0.53
+        return if self.props.ButtonIsToggled then 0 else 0.53
     end
 
     if Dash.includes(self.filledButtonStates, self.props.Appearance) then
@@ -437,15 +446,6 @@ function Button:getCornerRadius(theme): number
         else
             return UDim.new(0, theme.Tokens.Sizes.Registered.SmallPlus.Value)
         end
-    end
-end
-
-function Button:didUpdate()
-    if self.props.ButtonIsToggled ~= nil and self.props.ButtonIsToggled ~= self.state.toggled then
-        local toggleViaProp = self.props.ButtonIsToggled
-        self:setState({
-            toggled = toggleViaProp,
-        })
     end
 end
 

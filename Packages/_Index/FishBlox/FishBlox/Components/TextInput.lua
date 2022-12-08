@@ -36,6 +36,7 @@ type TextInputProps = {
     LabelInline: boolean?,
     HideLabel: boolean?,
     OnChanged: ((nil) -> nil)?,
+    LayoutOrder: number?,
 }
 
 local function getLineHeight(theme, wrap)
@@ -217,11 +218,11 @@ local function TextInput(props: TextInputProps, children)
         })
 
         local textColumn = Column(
-            { Gaps = theme.Tokens.Sizes.Registered.Small.Value },
+            { LayoutOrder = props.LayoutOrder or 1, Gaps = theme.Tokens.Sizes.Registered.Small.Value },
             { LabelSlot = not props.HideLabel and (children["Label"] or label) or nil, Wrapper = textInputWrapper }
         )
         local textRow = Row(
-            { Gaps = theme.Tokens.Sizes.Registered.Medium.Value },
+            { LayoutOrder = props.LayoutOrder or 1, Gaps = theme.Tokens.Sizes.Registered.Medium.Value },
             { LabelSlot = not props.HideLabel and (children["Label"] or label) or nil, Wrapper = textInputWrapper }
         )
 

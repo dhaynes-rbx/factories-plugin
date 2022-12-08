@@ -83,7 +83,7 @@ source = "url+https://github.com/roblox/luau-polyfill"
 [[package]]
 name = "FishBlox"
 version = "0.0.1"
-commit = "254008dff487ac03c225023644c0c088f57f2e63"
+commit = "aab3413043bfc593fcf5615a3508a7fb59e63b69"
 source = "url+https://github.com/imbellus2/fishblox"
 dependencies = [
     "BentoBlox BentoBlox 0.0.1 url+https://github.com/imbellus2/bentoblox",
