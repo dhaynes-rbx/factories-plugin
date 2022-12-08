@@ -2,6 +2,7 @@ local HttpService = game:GetService("HttpService")
 local Selection = game:GetService("Selection")
 
 local Packages = script.Parent.Parent.Packages
+local React = Packages.React
 local Dash = require(Packages.Dash)
 local Types = require(script.Parent.Parent.Types)
 local React = require(Packages.React)
@@ -19,9 +20,11 @@ local TextInput = FishBloxComponents.TextInput
 local Vector2Row = require(script.Parent.Vector2Row)
 
 return function(props)
-    local machineAnchor = props.MachineAnchor
     
-    local dataset = HttpService:JSONDecode(require(props.DatasetInstance))
+    -- local showModal, setShowModal = React.useState({enabled = true, machineProperty = "locName"))
+
+    local dataset = props.Dataset
+    local machineAnchor = props.MachineAnchor
     -- print(dataset["maps"][2]["machines"][1].coordinates)
     --Find the machine anchor's corresponding machine entry in the dataset
     local machine : Types.Machine = nil

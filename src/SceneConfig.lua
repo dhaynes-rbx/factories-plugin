@@ -31,6 +31,15 @@ function SceneConfig.getDatasetInstance()
     return nil
 end
 
+function SceneConfig.checkIfDatasetInstanceExists()
+    local instance = SceneConfig.getDatasetInstance()
+    if instance then
+        return true
+    else
+        return false
+    end
+end
+
 function SceneConfig.getDatasetName()
     local dataset = SceneConfig.getDatasetInstance()
     if dataset then

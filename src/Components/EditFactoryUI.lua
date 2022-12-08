@@ -45,7 +45,7 @@ local function smallButton(text)
 end
 
 return function(props)
-    local datasetIsLoaded = props.DatasetInstance ~= "NONE"
+    local datasetIsLoaded = props.DatasetIsLoaded
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
@@ -94,8 +94,7 @@ return function(props)
     local textElements = {}
     local FactoryInfoPanel = nil
     if datasetIsLoaded then
-        local datasetString = require(props.DatasetInstance)
-        local dataset = HttpService:JSONDecode(datasetString)
+        local dataset = props.Dataset
         for _, map in dataset["maps"] do
             if map.id ~= "mapA" then
                 continue

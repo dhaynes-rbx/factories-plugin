@@ -32,10 +32,16 @@ function PluginRoot:init()
 
     self.machines = Scene.getMachines()
     
+    local dataset
+    local datasetInstance = SceneConfig.getDatasetInstance()
+    if datasetInstance then
+        dataset = HttpService:JSONDecode(require(datasetInstance))
+    end
     self:setState({
         currentPanel = not Scene.isLoaded() and 1 or 2,
         selectedMachineAnchor = nil,
-        datasetInstance = SceneConfig.getDatasetInstance() or "NONE"
+        datasetIsLoaded = SceneConfig.checkIfDatasetInstanceExists(),
+        dataset = dataset
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
@@ -66,36 +72,39 @@ function PluginRoot:render()
             PaddingBottom = 20,
             Size = UDim2.new(0, 300, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
-        }, {    
+        }, {
             InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
+                Dataset = self.state.dataset,
                 ShowEditFactoryPanel = function()
                     self:setCurrentPanel(2)
                 end
             }, {}),
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
-                DatasetInstance = self.state.datasetInstance,
+                DatasetIsLoaded = self.state.datasetIsLoaded,
+                Dataset = self.state.dataset,
                 ImportDataset = function()
-                    print("Importing dataset...")
                     local file = StudioService:PromptImportFile()
-                    if not file then 
-                        return 
+                    if not file then
+                        return
                     end
                     
                     local dataset = HttpService:JSONDecode(file:GetBinaryContents())
+                    self:setState({dataset = dataset})
 
                     local newDatasetInstance = Instance.new("ModuleScript")
                     newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
                     newDatasetInstance.Name = file.Name:split(".")[1]
                     newDatasetInstance.Parent = game.Workspace
                     SceneConfig.replaceDataset(newDatasetInstance)
-                    self:setState({datasetInstance = newDatasetInstance})
+
+                    --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                     newDatasetInstance.AncestryChanged:Connect(function(_,_)
-                        self:setState({datasetInstance = "NONE"})
+                        self:setState({dataset = "NONE", datasetIsLoaded = false})
                     end)
                 end,
             }, {}),
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
-                DatasetInstance = self.state.datasetInstance,
+                Dataset = self.state.dataset,
                 MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
