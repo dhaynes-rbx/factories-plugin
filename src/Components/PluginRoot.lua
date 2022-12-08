@@ -1,3 +1,4 @@
+local HttpService = game:GetService("HttpService")
 local Selection = game:GetService("Selection")
 local StudioService = game:GetService("StudioService")
 
@@ -46,8 +47,6 @@ function PluginRoot:init()
                 self:setState({selectedMachineAnchor = obj})
                 self:setCurrentPanel(3)
             end
-        else
-            self:setCurrentPanel(2)
         end
     end
     
@@ -81,6 +80,8 @@ function PluginRoot:render()
                     if not file then 
                         return 
                     end
+                    
+                    local dataset = HttpService:JSONDecode(file:GetBinaryContents())
 
                     local newDatasetInstance = Instance.new("ModuleScript")
                     newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"

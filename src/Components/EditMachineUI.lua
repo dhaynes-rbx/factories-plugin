@@ -16,99 +16,67 @@ local Row = FishBloxComponents.Row
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
+local Vector2Row = require(script.Parent.Vector2Row)
+
 return function(props)
     local machineAnchor = props.MachineAnchor
     
     local dataset = HttpService:JSONDecode(require(props.DatasetInstance))
     -- print(dataset["maps"][2]["machines"][1].coordinates)
     --Find the machine anchor's corresponding machine entry in the dataset
-    local machineData = nil
+    local machine : Types.Machine = nil
     local coordString = string.sub(machineAnchor.Name, 2, #machineAnchor.Name - 1):split(",")
-    local map = dataset["maps"][2]
+    local map = dataset["maps"][2] --Only worried about non-tutorial maps for now
     local machines = map["machines"]
-    for _, machine in machines do
-        if coordString[1] == tostring(machine.coordinates.X) then
-            if coordString[2] == tostring(machine.coordinates.Y) then
-                machineData = machine
+    for _, val in machines do
+        if coordString[1] == tostring(val.coordinates.X) then
+            if coordString[2] == tostring(val.coordinates.Y) then
+                machine = val
                 break
             end
         end
     end
-    local temp = Dash.pretty(machineData)
-    print(temp)
 
-    -- {
-        -- id = machineData.id,
-        -- type = machineData["type"],
-        -- outputs = machineData.outputs,
-        -- defaultMaxStorage = 10,
-        -- defaultProductionDelay = 10,
-        -- defaultOutputCount = 10,
-        -- sources = {
-
-        -- },
-        -- destinations = {
-
-        -- },
-        -- coordinates = {
-        --     X = coordString[1],
-        --     Y = coordString[2],
-        -- },
-        -- outputRange = {
-        --     min = 10,
-        --     max = 100
-        -- },
-        -- powerup = "None",
-        -- supportsPowerup = true,
-    -- }
-    --plugin-only properties
-    -- machineInfo.anchor = machineAnchor:GetFullName()
-
+    -- "id": "rubberPurchaser",
+    -- "type": "purchaser",
+    -- "locName": "Rubber Purchaser",
+    -- "thumb": "",
+    -- "asset": "Assets.Machines.Purchaser",
+    -- "defaultProductionDelay": 0,
+    -- "defaultMaxStorage": 2000,
+    -- "state": "ready",
+    -- "currentOutputIndex": 1,
+    -- "currentOutputCount": 125,
+    -- "outputRange": {
+    --     "min": 0,
+    --     "max": 1000
+    -- },
+    -- "outputs": [
+    --     "rubber"
+    -- ],
+    -- "storage": {},
+    -- "coordinates": {
+    --     "X": -2,
+    --     "Y": 1
+    -- },
+    -- "supportsPowerup": false
 
     local contents = {
-        -- MachineNameText = Text({
-        --     Color = Color3.new(1,1,1),
-        --     FontSize = 24,
-        --     RichText = true,
-        --     Text = "Id: ",
-        -- }),
-        -- TypeText = Text({
-        --     Color = Color3.new(1,1,1),
-        --     FontSize = 24,
-        --     RichText = true,
-        --     Text = "Type: ",
-        -- }),
-        Coordinates = Column({}, {
-            Label = Text({
-                Bold = true,
-                Color = Color3.new(1,1,1),
-                FontSize = 24,
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                RichText = true,
-                Text = "Coordinates:",
-                LayoutOrder = 1,
-            }),
-            CoordinateRow = Row({
-                AutomaticSize = Enum.AutomaticSize.Y,
-                Size = UDim2.fromScale(1, 0),
-                LayoutOrder = 2
-            }, {
-                Y = TextInput({
-                    Label = "Y",
-                    Placeholder = "Y",
-                    Value = machineData.coordinates.Y,
-                    Size = UDim2.fromScale(0.5, 0),
-                    LayoutOrder = 2
-                }),
-                X = TextInput({
-                    Label = "X",
-                    Placeholder = "X",
-                    Value = machineData.coordinates.X,
-                    Size = UDim2.fromScale(0.5, 0),
-                    LayoutOrder = 1
-                }),
-            })
-        })
+        MachineNameText = Text({
+            Bold = true,
+            Color = Color3.new(1,1,1),
+            FontSize = 24,
+            LayoutOrder = 1,
+            RichText = true,
+            Text = machine.locName,
+        }),
+        Coordinates = Vector2Row({
+            Label = "Coordinates",
+            LayoutOrder = 2,
+            X = machine.coordinates.X, 
+            Y = machine.coordinates.Y
+        }),
+
     }
 
     return Panel({
