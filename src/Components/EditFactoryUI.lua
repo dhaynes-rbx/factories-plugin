@@ -45,7 +45,9 @@ local function smallButton(text)
 end
 
 return function(props)
-    local datasetIsLoaded = props.DatasetIsLoaded
+    local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
+    local dataset = props.Dataset
+    local map = datasetIsLoaded and dataset.maps[2] or nil
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
@@ -69,6 +71,15 @@ return function(props)
                     SceneConfig.setDatasetName(str)
                 end
             }),
+            DefaultInventoryCurrencyInput = datasetIsLoaded and TextInput({
+                Label = "Default Inventory Currency",
+                LayoutOrder = 2,
+                Placeholder = "25000",
+                Value = map.defaultInventory.currency,
+                OnChanged = function(val)
+                    props.UpdateDatasetValue("defaultInventory.currency", val)
+                end
+            }),
             Spacer = Block({
                 Height = 10
             }),
@@ -84,9 +95,7 @@ return function(props)
                 LayoutOrder = 110,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 Size = UDim2.new(1, 0, 0, 0),
-                OnActivated = function()
-                    -- local dataset = HttpService:JSON/
-                end
+                OnActivated = props.ExportDataset,
             }),
         })
     })
@@ -94,13 +103,13 @@ return function(props)
     local textElements = {}
     local FactoryInfoPanel = nil
     if datasetIsLoaded then
-        local dataset = props.Dataset
-        for _, map in dataset["maps"] do
-            if map.id ~= "mapA" then
+        for _, mapData in dataset["maps"] do
+            if mapData.id ~= "mapA" then
                 continue
             end
 
             table.insert(textElements, smallButton(map.id))
+            table.insert(textElements, smallButton("Default Inventory Currency: "..mapData.defaultInventory.currency))
             table.insert(textElements, Gap({Size = 10}))
             table.insert(textElements, smallLabel("Items:"))
             for _, item in map["items"] do

@@ -1,16 +1,17 @@
 local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Selection = game:GetService("Selection")
 local StudioService = game:GetService("StudioService")
 
 local Root = script.Parent.Parent
 local Packages = Root.Packages
+
+local Utilities = require(Packages.Utilities)
+
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
-local ThemeProvider = FishBloxComponents.ThemeProvider
-local themes = FishBloxComponents.Themes
-local Panel = FishBloxComponents.Panel
 
 local DebugUI = require(script.Parent.DebugUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
@@ -32,7 +33,7 @@ function PluginRoot:init()
 
     self.machines = Scene.getMachines()
     
-    local dataset
+    local dataset = "NONE"
     local datasetInstance = SceneConfig.getDatasetInstance()
     if datasetInstance then
         dataset = HttpService:JSONDecode(require(datasetInstance))
@@ -40,7 +41,6 @@ function PluginRoot:init()
     self:setState({
         currentPanel = not Scene.isLoaded() and 1 or 2,
         selectedMachineAnchor = nil,
-        datasetIsLoaded = SceneConfig.checkIfDatasetInstanceExists(),
         dataset = dataset
     })
     
@@ -80,8 +80,10 @@ function PluginRoot:render()
                 end
             }, {}),
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
-                DatasetIsLoaded = self.state.datasetIsLoaded,
                 Dataset = self.state.dataset,
+                UpdateDatasetValue = function(key,value) 
+                    print("Updating dataset: ", key, value)
+                end,
                 ImportDataset = function()
                     local file = StudioService:PromptImportFile()
                     if not file then
@@ -89,7 +91,7 @@ function PluginRoot:render()
                     end
                     
                     local dataset = HttpService:JSONDecode(file:GetBinaryContents())
-                    self:setState({dataset = dataset})
+                    self:setState({dataset = dataset, datasetIsLoaded = true})
 
                     local newDatasetInstance = Instance.new("ModuleScript")
                     newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
@@ -102,6 +104,17 @@ function PluginRoot:render()
                         self:setState({dataset = "NONE", datasetIsLoaded = false})
                     end)
                 end,
+                ExportDataset = function()
+                    local saveFile = Instance.new("ModuleScript")
+                    saveFile.Source = HttpService:JSONEncode(self.state.dataset)
+                    saveFile.Parent = game.Workspace.SceneConfig.Dataset
+                    Selection:Set({saveFile})
+                    -- StudioService:PromptSaveSelection()
+                    local fileSaved = getfenv(0).plugin:PromptSaveSelection()
+                    if fileSaved then
+                        print("File saved")
+                    end
+                end
             }, {}),
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
                 Dataset = self.state.dataset,
