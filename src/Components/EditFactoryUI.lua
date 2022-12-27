@@ -12,6 +12,8 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
+local Modal = require(script.Parent.Modal)
+
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
@@ -56,39 +58,45 @@ return function(props)
         Content = Column({ --This overrides the built-in panel Column
             AutomaticSize = Enum.AutomaticSize.Y,
             Gaps = 8,
-            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            -- HorizontalAlignment = Enum.HorizontalAlignment.Center,
             PaddingHorizontal = 20,
             PaddingVertical = 20,
             Width = 300,
         }, {
-            DatasetNameInput = datasetIsLoaded and TextInput({
-                Label = "Dataset Name:",
-                LayoutOrder = 1,
-                Placeholder = "Enter dataset name here",
-                Value = SceneConfig.getDatasetName() or "",
-                OnChanged = function(val)
-                    local str = "dataset_"..val
-                    SceneConfig.setDatasetName(str)
-                end
-            }),
-            DefaultInventoryCurrencyInput = datasetIsLoaded and TextInput({
-                Label = "Default Inventory Currency",
-                LayoutOrder = 2,
-                Placeholder = "25000",
-                Value = map.defaultInventory.currency,
-                OnChanged = function(val)
-                    map.defaultInventory.currency = val
-                    props.UpdateDatasetValue(props.Dataset)
-                end
+            -- DatasetNameInput = datasetIsLoaded and TextInput({
+            --     Label = "Dataset Name:",
+            --     LayoutOrder = 1,
+            --     Placeholder = "Enter dataset name here",
+            --     Value = SceneConfig.getDatasetName() or "",
+            --     OnChanged = function(val)
+            --         local str = "dataset_"..val
+            --         SceneConfig.setDatasetName(str)
+            --     end
+            -- }),
+            DefaultInventoryCurrencyLabel = Text({
+                Text = "Default Inventory: Currency",
+                Bold = true,
+                Color = Color3.new(1,1,1),
+                FontSize = 20,
+                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                RichText = true,
+                LayoutOrder = 20,
             }),
             DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
-                Label = "Default Inventory Currency: "..map.defaultInventory.currency,
-                LayoutOrder = 3,
-                OnActivated = function() print("Launch modal") end,
-                Appearance = "Outline"
+                Label = map.defaultInventory.currency,
+                LayoutOrder = 21,
+                Appearance = "Outline",
+                TextXAlignment = Enum.TextXAlignment.Left,
+                OnActivated = function(val)
+                    
+                    -- map.defaultInventory.currency = val
+                    -- props.UpdateDatasetValue(props.Dataset)
+                end,
+
             }),
             Spacer = Block({
-                Height = 10
+                Height = 10,
+                LayoutOrder = 22,
             }),
             ImportJSONButton = Button({
                 Label = "Import Dataset",
@@ -158,6 +166,7 @@ return function(props)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
+        -- Modal = EditModal,
         -- FactoryInfoPanel = FactoryInfoPanel
     })
 end

@@ -18,6 +18,7 @@ local DebugUI = require(script.Parent.DebugUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
+local Modal = require(script.Parent.Modal)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -61,6 +62,10 @@ function PluginRoot:init()
     table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
 end
 
+function PluginRoot:showModal(modalProps)
+
+end
+
 function PluginRoot:render()
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
@@ -71,7 +76,7 @@ function PluginRoot:render()
             PaddingRight = 20,
             PaddingTop = 20,
             PaddingBottom = 20,
-            Size = UDim2.new(0, 300, 1, 0),
+            Size = UDim2.new(1, 0, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
             InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
@@ -126,7 +131,8 @@ function PluginRoot:render()
                 end
             }, {}),
             EditProductListUI = nil,
-            EditPowerupListUI = nil
+            EditPowerupListUI = nil,
+            Modal = Modal({Title = "Modal"})
         })
     })
 end
