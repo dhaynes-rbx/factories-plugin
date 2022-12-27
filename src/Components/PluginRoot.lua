@@ -7,6 +7,7 @@ local Root = script.Parent.Parent
 local Packages = Root.Packages
 
 local Utilities = require(Packages.Utilities)
+local Dash = require(Packages.Dash)
 
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
@@ -81,8 +82,8 @@ function PluginRoot:render()
             }, {}),
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
-                UpdateDatasetValue = function(key,value) 
-                    print("Updating dataset: ", key, value)
+                UpdateDatasetValue = function(dataset)
+                    self:setState(dataset)
                 end,
                 ImportDataset = function()
                     local file = StudioService:PromptImportFile()

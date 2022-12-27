@@ -77,7 +77,8 @@ return function(props)
                 Placeholder = "25000",
                 Value = map.defaultInventory.currency,
                 OnChanged = function(val)
-                    props.UpdateDatasetValue("defaultInventory.currency", val)
+                    map.defaultInventory.currency = val
+                    props.UpdateDatasetValue(props.Dataset)
                 end
             }),
             Spacer = Block({
