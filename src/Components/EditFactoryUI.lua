@@ -81,6 +81,12 @@ return function(props)
                     props.UpdateDatasetValue(props.Dataset)
                 end
             }),
+            DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
+                Label = "Default Inventory Currency: "..map.defaultInventory.currency,
+                LayoutOrder = 3,
+                OnActivated = function() print("Launch modal") end,
+                Appearance = "Outline"
+            }),
             Spacer = Block({
                 Height = 10
             }),
@@ -152,6 +158,6 @@ return function(props)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        FactoryInfoPanel = FactoryInfoPanel
+        -- FactoryInfoPanel = FactoryInfoPanel
     })
 end
