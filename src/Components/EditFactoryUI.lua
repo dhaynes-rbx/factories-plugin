@@ -49,8 +49,7 @@ end
 return function(props)
     
     local modalEnabled, setModalEnabled = React.useState(false)
-    local modalTitle, setModalTitle = React.useState("NONE")
-    local modalCallback, setModalCallback = React.useState(function() print("NONE") end)
+    local modalTitle, setModalTitle = React.useState("NONE")    
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -94,7 +93,7 @@ return function(props)
                 OnActivated = function()
                     setModalEnabled(true)
                     setModalTitle("Default Inventory: Currency")
-                    setModalCallback(function() print("Callback") end)
+                    -- setModalCallback(function() print("Callback") end)
                 end,
             }),
             Spacer = Block({
@@ -165,13 +164,12 @@ return function(props)
             })
         })
     end
-    print("Modal state!", modalEnabled)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
             Title = modalTitle,
-            OnConfirm = modalCallback,
+            OnConfirm = function () print("Called Back") end,
             OnClosePanel = function() setModalEnabled(false) end
         }),
         FactoryInfoPanel = FactoryInfoPanel

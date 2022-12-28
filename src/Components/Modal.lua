@@ -25,7 +25,8 @@ return function(props)
             Position = UDim2.fromScale(0.5, 0.5),
             AutomaticSize = Enum.AutomaticSize.Y,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            OnClosePanel = props.OnClosePanel
+            OnClosePanel = props.OnClosePanel,
+            ZIndex = 100
         }, {
             Content = Column({ --This overrides the built-in panel Column
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -33,6 +34,7 @@ return function(props)
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 PaddingHorizontal = 20,
                 PaddingVertical = 20,
+                ZIndex = 200,
             }, {
                 Button1 = Button({
                     Label = "Confirm",
@@ -40,6 +42,7 @@ return function(props)
                     TextXAlignment = Enum.TextXAlignment.Center,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Width = UDim.new(1, 0),
+                    ZIndex = 300,
                 }),
             })
         }),
