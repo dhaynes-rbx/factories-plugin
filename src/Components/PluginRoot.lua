@@ -132,7 +132,6 @@ function PluginRoot:render()
             }, {}),
             EditProductListUI = nil,
             EditPowerupListUI = nil,
-            Modal = Modal({Title = "Modal"})
         })
     })
 end

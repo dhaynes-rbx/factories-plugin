@@ -47,6 +47,13 @@ local function smallButton(text)
 end
 
 return function(props)
+    
+    local modalState, setModalState = React.useState({
+        enabled = false,
+        title = "Modal",
+        callback = function() print("Callback") end,
+    })
+
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
     local map = datasetIsLoaded and dataset.maps[2] or nil
@@ -58,7 +65,6 @@ return function(props)
         Content = Column({ --This overrides the built-in panel Column
             AutomaticSize = Enum.AutomaticSize.Y,
             Gaps = 8,
-            -- HorizontalAlignment = Enum.HorizontalAlignment.Center,
             PaddingHorizontal = 20,
             PaddingVertical = 20,
             Width = 300,
@@ -163,10 +169,13 @@ return function(props)
         })
     end
     
+    local EditModal = modalState.enabled and Modal({
+        Title = modalState.title,
+    })
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        -- Modal = EditModal,
+        Modal = EditModal,
         -- FactoryInfoPanel = FactoryInfoPanel
     })
 end

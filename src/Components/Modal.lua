@@ -11,15 +11,11 @@ local Scene = require(script.Parent.Parent.Scene)
 
 return function(props)
 
-    print("Modal")
+    
 
     return Overlay({
         Size = UDim2.new(1, 40,1, 40),
         Position = UDim2.new(0, -20, 0, -20)
-        -- PaddingLeft = -20,
-        -- PaddingRight = -20,
-        -- PaddingTop = -20,
-        -- PaddingBottom = -20,
     }, {
         Panel({
             AnchorPoint = Vector2.new(0.5, 0.5),
@@ -29,6 +25,7 @@ return function(props)
             Position = UDim2.fromScale(0.5, 0.5),
             AutomaticSize = Enum.AutomaticSize.Y,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            OnClosePanel = props.OnClosePanel
         }, {
             Content = Column({ --This overrides the built-in panel Column
                 AutomaticSize = Enum.AutomaticSize.Y,
