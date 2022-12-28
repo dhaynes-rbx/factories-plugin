@@ -48,11 +48,9 @@ end
 
 return function(props)
     
-    local modalState, setModalState = React.useState({
-        enabled = false,
-        title = "Modal",
-        callback = function() print("Callback") end,
-    })
+    local modalEnabled, setModalEnabled = React.useState(false)
+    local modalTitle, setModalTitle = React.useState("NONE")
+    local modalCallback, setModalCallback = React.useState(function() print("NONE") end)
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -79,26 +77,25 @@ return function(props)
             --         SceneConfig.setDatasetName(str)
             --     end
             -- }),
-            DefaultInventoryCurrencyLabel = Text({
-                Text = "Default Inventory: Currency",
+            DefaultInventoryCurrencyLabel = datasetIsLoaded and Text({
                 Bold = true,
                 Color = Color3.new(1,1,1),
                 FontSize = 20,
                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                RichText = true,
                 LayoutOrder = 20,
+                RichText = true,
+                Text = "Default Inventory: Currency",
             }),
             DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
+                Appearance = "Outline",
                 Label = map.defaultInventory.currency,
                 LayoutOrder = 21,
-                Appearance = "Outline",
                 TextXAlignment = Enum.TextXAlignment.Left,
-                OnActivated = function(val)
-                    
-                    -- map.defaultInventory.currency = val
-                    -- props.UpdateDatasetValue(props.Dataset)
+                OnActivated = function()
+                    setModalEnabled(true)
+                    setModalTitle("Default Inventory: Currency")
+                    setModalCallback(function() print("Callback") end)
                 end,
-
             }),
             Spacer = Block({
                 Height = 10,
@@ -168,14 +165,15 @@ return function(props)
             })
         })
     end
-    
-    local EditModal = modalState.enabled and Modal({
-        Title = modalState.title,
-    })
+    print("Modal state!", modalEnabled)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        Modal = EditModal,
-        -- FactoryInfoPanel = FactoryInfoPanel
+        Modal = modalEnabled and Modal({
+            Title = modalTitle,
+            OnConfirm = modalCallback,
+            OnClosePanel = function() setModalEnabled(false) end
+        }),
+        FactoryInfoPanel = FactoryInfoPanel
     })
 end

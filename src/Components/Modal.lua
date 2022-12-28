@@ -35,11 +35,8 @@ return function(props)
                 PaddingVertical = 20,
             }, {
                 Button1 = Button({
-                    Label = "Initialize Scene",
-                    OnActivated = function()
-                        Scene.loadScene()
-                        props.ShowEditFactoryPanel()
-                    end,
+                    Label = "Confirm",
+                    OnActivated = props.OnConfirm,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Width = UDim.new(1, 0),
