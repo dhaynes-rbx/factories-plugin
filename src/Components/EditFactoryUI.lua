@@ -46,10 +46,19 @@ local function smallButton(text)
       })
 end
 
+local function getModalCallback()
+    return function()
+        print("Barf")
+    end
+end
+
 return function(props)
     
     local modalEnabled, setModalEnabled = React.useState(false)
-    local modalTitle, setModalTitle = React.useState("NONE")    
+    local modalTitle, setModalTitle = React.useState("NONE")
+    local modalProperty, setModalProperty = React.useState(nil)
+
+    local modalCallback, setModalCallback = React.useState(getModalCallback)
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -93,7 +102,8 @@ return function(props)
                 OnActivated = function()
                     setModalEnabled(true)
                     setModalTitle("Default Inventory: Currency")
-                    -- setModalCallback(function() print("Callback") end)
+                    setModalProperty(map.defaultInventory.currency)
+                    -- setModalCallback(function() print("Callback! Currency") end)
                 end,
             }),
             Spacer = Block({
@@ -117,61 +127,63 @@ return function(props)
         })
     })
 
-    local textElements = {}
-    local FactoryInfoPanel = nil
+    local factoryInfoElements = {}
     if datasetIsLoaded then
         for _, mapData in dataset["maps"] do
             if mapData.id ~= "mapA" then
                 continue
             end
 
-            table.insert(textElements, smallButton(map.id))
-            table.insert(textElements, smallButton("Default Inventory Currency: "..mapData.defaultInventory.currency))
-            table.insert(textElements, Gap({Size = 10}))
-            table.insert(textElements, smallLabel("Items:"))
+            table.insert(factoryInfoElements, smallButton(map.id))
+            table.insert(factoryInfoElements, smallButton("Default Inventory Currency: "..mapData.defaultInventory.currency))
+            table.insert(factoryInfoElements, Gap({Size = 10}))
+            table.insert(factoryInfoElements, smallLabel("Items:"))
             for _, item in map["items"] do
-                table.insert(textElements, smallButton(item.id))
+                table.insert(factoryInfoElements, smallButton(item.id))
             end
-            table.insert(textElements, Gap({Size = 10}))
-            table.insert(textElements, smallLabel("Machines:"))
+            table.insert(factoryInfoElements, Gap({Size = 10}))
+            table.insert(factoryInfoElements, smallLabel("Machines:"))
             for _,machine in map["machines"] do
-                table.insert(textElements, smallButton(machine.id))
+                table.insert(factoryInfoElements, smallButton(machine.id))
             end
         end
-        
-        FactoryInfoPanel = Panel({
-            AnchorPoint = Vector2.new(1,0),
-            Corners = 0,
-            Size = UDim2.new(0, 300, 1, 0),
-            Position = UDim2.fromScale(1, 0)
-        }, {
-            ScrollingFrame = React.createElement("ScrollingFrame", {
-                Size = UDim2.fromScale(1, 1),
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                CanvasSize = UDim2.fromScale(1, 0),
-                AutomaticCanvasSize = Enum.AutomaticSize.Y,
-                ScrollingDirection = Enum.ScrollingDirection.Y,
-            }, {
-                Content = Column({ --This overrides the built-in panel Column
-                    AutomaticSize = Enum.AutomaticSize.Y,
-                    Gaps = 4,
-                    HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                    PaddingHorizontal = 20,
-                    PaddingVertical = 20,
-                    Width = 300,
-                }, textElements)
-            })
-        })
     end
+
+    local FactoryInfoPanel = Panel({
+        AnchorPoint = Vector2.new(1,0),
+        Corners = 0,
+        Size = UDim2.new(0, 300, 1, 0),
+        Position = UDim2.fromScale(1, 0)
+    }, {
+        ScrollingFrame = React.createElement("ScrollingFrame", {
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            CanvasSize = UDim2.fromScale(1, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+        }, {
+            Content = Column({ --This overrides the built-in panel Column
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Gaps = 4,
+                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                PaddingHorizontal = 20,
+                PaddingVertical = 20,
+                Width = 300,
+            }, factoryInfoElements)
+        })
+    })
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
             Title = modalTitle,
-            OnConfirm = function () print("Called Back") end,
+            OnConfirm = function (property, value)
+                modalProperty = value
+                props.UpdateDatasetValue(dataset)
+            end,
             OnClosePanel = function() setModalEnabled(false) end
         }),
-        FactoryInfoPanel = FactoryInfoPanel
+        FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
     })
 end
