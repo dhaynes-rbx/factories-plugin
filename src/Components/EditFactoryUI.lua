@@ -1,6 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local StudioService = game:GetService("StudioService")
 local Packages = script.Parent.Parent.Packages
+local Dash = require(Packages.Dash)
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
@@ -46,19 +47,10 @@ local function smallButton(text)
       })
 end
 
-local function getModalCallback()
-    return function()
-        print("Barf")
-    end
-end
-
 return function(props)
-    
     local modalEnabled, setModalEnabled = React.useState(false)
     local modalTitle, setModalTitle = React.useState("NONE")
     local modalProperty, setModalProperty = React.useState(nil)
-
-    local modalCallback, setModalCallback = React.useState(getModalCallback)
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -85,28 +77,28 @@ return function(props)
             --         SceneConfig.setDatasetName(str)
             --     end
             -- }),
-            DefaultInventoryCurrencyLabel = datasetIsLoaded and Text({
-                Bold = true,
-                Color = Color3.new(1,1,1),
-                FontSize = 20,
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                LayoutOrder = 20,
-                RichText = true,
-                Text = "Default Inventory: Currency",
-            }),
-            DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
-                Appearance = "Outline",
-                Label = map.defaultInventory.currency,
-                LayoutOrder = 21,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                OnActivated = function()
-                    setModalEnabled(true)
-                    setModalTitle("Default Inventory: Currency")
-                    setModalProperty(map.defaultInventory.currency)
-                    -- setModalCallback(function() print("Callback! Currency") end)
-                end,
-            }),
-            Spacer = Block({
+            -- DefaultInventoryCurrencyLabel = datasetIsLoaded and Text({
+            --     Bold = true,
+            --     Color = Color3.new(1,1,1),
+            --     FontSize = 20,
+            --     HorizontalAlignment = Enum.HorizontalAlignment.Left,
+            --     LayoutOrder = 20,
+            --     RichText = true,
+            --     Text = "Default Inventory: Currency",
+            -- }),
+            -- DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
+            --     Appearance = "Outline",
+            --     Label = map.defaultInventory.currency,
+            --     LayoutOrder = 21,
+            --     TextXAlignment = Enum.TextXAlignment.Left,
+            --     OnActivated = function()
+            --         setModalEnabled(true)
+            --         setModalTitle("Default Inventory: Currency")
+            --         setModalProperty(map.defaultInventory.currency)
+            --         -- setModalCallback(function() print("Callback! Currency") end)
+            --     end,
+            -- }),
+            Spacer = datasetIsLoaded and Block({
                 Height = 10,
                 LayoutOrder = 22,
             }),
@@ -178,11 +170,11 @@ return function(props)
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
             Title = modalTitle,
-            OnConfirm = function (property, value)
-                modalProperty = value
-                props.UpdateDatasetValue(dataset)
+            OnConfirm = function ()
+                print("On Confirm")
             end,
-            OnClosePanel = function() setModalEnabled(false) end
+            OnClosePanel = function() setModalEnabled(false) end,
+            ModalProperty = modalProperty
         }),
         FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
     })
