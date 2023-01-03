@@ -30,7 +30,7 @@ local function smallLabel(text)
     })
 end
 
-local function smallButton(text)
+local function smallButton(props)
     return React.createElement("TextButton", {
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = Color3.fromRGB(32, 117, 233),
@@ -38,9 +38,9 @@ local function smallButton(text)
         FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
         RichText = true,
         Size = UDim2.fromOffset(20, 20),
-        Text = text,
+        Text = props.Text,
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 14,
+        TextSize = 20,
         TextXAlignment = Enum.TextXAlignment.Left,
       }, {
         uICorner = React.createElement("UICorner"),
@@ -56,6 +56,49 @@ return function(props)
     local dataset = props.Dataset
     local map = datasetIsLoaded and dataset.maps[2] or nil
 
+    local children = {
+        Spacer = Block({
+            Height = 10,
+            LayoutOrder = 100,
+        }),
+        ImportJSONButton = Button({
+            Label = "Import Dataset",
+            TextXAlignment = Enum.TextXAlignment.Center,
+            LayoutOrder = 110,
+            OnActivated = props.ImportDataset,
+            Size = UDim2.new(1, 0, 0, 0)
+        }),
+    }
+
+    if datasetIsLoaded then
+        
+        children.ExportJSONButton = Button({
+            Label = "Export Dataset",
+            LayoutOrder = 120,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            Size = UDim2.new(1, 0, 0, 0),
+            OnActivated = props.ExportDataset,
+        })
+
+        local iterateMapElements = function(property, j)
+            local i = 0
+            local j = j or 0
+            for k,v in Dash.iterable(property) do
+                if typeof(v) == "table" then
+                    print(k, v)
+                    iterateMapElements(property[k], i)
+                end
+                children[tostring(k)] = smallButton({
+                    Text = k..": "..tostring(v),
+                    LayoutOrder = 0 + i + j
+                })
+            end
+        end
+        iterateMapElements(map.machines)
+        -- children = Dash.join(children, mapProperties)
+    end
+
+
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
         Size = UDim2.new(0, 300, 1, 0),
@@ -66,7 +109,8 @@ return function(props)
             PaddingHorizontal = 20,
             PaddingVertical = 20,
             Width = 300,
-        }, {
+        }, children
+        -- {
             -- DatasetNameInput = datasetIsLoaded and TextInput({
             --     Label = "Dataset Name:",
             --     LayoutOrder = 1,
@@ -98,25 +142,9 @@ return function(props)
             --         -- setModalCallback(function() print("Callback! Currency") end)
             --     end,
             -- }),
-            Spacer = datasetIsLoaded and Block({
-                Height = 10,
-                LayoutOrder = 22,
-            }),
-            ImportJSONButton = Button({
-                Label = "Import Dataset",
-                TextXAlignment = Enum.TextXAlignment.Center,
-                LayoutOrder = 100,
-                OnActivated = props.ImportDataset,
-                Size = UDim2.new(1, 0, 0, 0)
-            }),
-            ExportJSONButton = datasetIsLoaded and Button({
-                Label = "Export Dataset",
-                LayoutOrder = 110,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                Size = UDim2.new(1, 0, 0, 0),
-                OnActivated = props.ExportDataset,
-            }),
-        })
+            
+        -- }
+    )
     })
 
     local factoryInfoElements = {}
@@ -126,17 +154,17 @@ return function(props)
                 continue
             end
 
-            table.insert(factoryInfoElements, smallButton(map.id))
-            table.insert(factoryInfoElements, smallButton("Default Inventory Currency: "..mapData.defaultInventory.currency))
+            table.insert(factoryInfoElements, smallButton({Text = map.id}))
+            table.insert(factoryInfoElements, smallButton({Text = "Default Inventory Currency: "..mapData.defaultInventory.currency}))
             table.insert(factoryInfoElements, Gap({Size = 10}))
             table.insert(factoryInfoElements, smallLabel("Items:"))
             for _, item in map["items"] do
-                table.insert(factoryInfoElements, smallButton(item.id))
+                table.insert(factoryInfoElements, smallButton({Text = item.id}))
             end
             table.insert(factoryInfoElements, Gap({Size = 10}))
             table.insert(factoryInfoElements, smallLabel("Machines:"))
             for _,machine in map["machines"] do
-                table.insert(factoryInfoElements, smallButton(machine.id))
+                table.insert(factoryInfoElements, smallButton({Text = machine.id}))
             end
         end
     end
