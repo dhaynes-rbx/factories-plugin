@@ -3,6 +3,7 @@ local StudioService = game:GetService("StudioService")
 local Packages = script.Parent.Parent.Packages
 local Dash = require(Packages.Dash)
 local React = require(Packages.React)
+local Roact = require(Packages.Roact)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
@@ -30,6 +31,7 @@ local function smallLabel(text)
     })
 end
 
+
 local function smallButton(props)
     return React.createElement("TextButton", {
         AutomaticSize = Enum.AutomaticSize.X,
@@ -42,15 +44,39 @@ local function smallButton(props)
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 20,
         TextXAlignment = Enum.TextXAlignment.Left,
-      }, {
+        [Roact.Event.MouseButton1Click] = props.OnActivated
+    }, {
         uICorner = React.createElement("UICorner"),
-      })
+    })
 end
+
+
 
 return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
-    local modalTitle, setModalTitle = React.useState("NONE")
-    local modalProperty, setModalProperty = React.useState(nil)
+    local currentFieldKey, setCurrentFieldKey = React.useState(nil)
+    local currentFieldValue, setCurrentFieldValue = React.useState(nil)
+    local updateCurrentField, setUpdateCurrentField = React.useState(nil)
+
+    -- local createSmallTextChangingButton = function(key, object)
+    --     return smallButton(
+    --         {
+    --             Text = key,
+    --             OnActivated = function()
+    --                 --set modal enabled
+    --                 print("Click")
+    --                 setModalEnabled(true)
+    --                 -- setCurrentFieldKey(key)
+    --                 -- setCurrentFieldValue(object[key])
+    --                 -- setUpdateCurrentField(function(value)
+    --                 --     object[key] = value
+    --                 --     props.ForceUpdate()
+    --                 -- end)
+    --             end
+    --         }
+    --     )
+    -- end
+
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -68,6 +94,10 @@ return function(props)
             OnActivated = props.ImportDataset,
             Size = UDim2.new(1, 0, 0, 0)
         }),
+        TestButton = Button({
+            Label = "Test",
+            OnActivated = function() setModalEnabled(true) end
+        })
     }
 
     if datasetIsLoaded then
@@ -79,25 +109,9 @@ return function(props)
             Size = UDim2.new(1, 0, 0, 0),
             OnActivated = props.ExportDataset,
         })
+        -- children.id = createSmallTextChangingButton("id", map)
 
-        local iterateMapElements = function(property, j)
-            local i = 0
-            local j = j or 0
-            for k,v in Dash.iterable(property) do
-                if typeof(v) == "table" then
-                    print(k, v)
-                    iterateMapElements(property[k], i)
-                end
-                children[tostring(k)] = smallButton({
-                    Text = k..": "..tostring(v),
-                    LayoutOrder = 0 + i + j
-                })
-            end
-        end
-        iterateMapElements(map.machines)
-        -- children = Dash.join(children, mapProperties)
     end
-
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
@@ -110,42 +124,7 @@ return function(props)
             PaddingVertical = 20,
             Width = 300,
         }, children
-        -- {
-            -- DatasetNameInput = datasetIsLoaded and TextInput({
-            --     Label = "Dataset Name:",
-            --     LayoutOrder = 1,
-            --     Placeholder = "Enter dataset name here",
-            --     Value = SceneConfig.getDatasetName() or "",
-            --     OnChanged = function(val)
-            --         local str = "dataset_"..val
-            --         SceneConfig.setDatasetName(str)
-            --     end
-            -- }),
-            -- DefaultInventoryCurrencyLabel = datasetIsLoaded and Text({
-            --     Bold = true,
-            --     Color = Color3.new(1,1,1),
-            --     FontSize = 20,
-            --     HorizontalAlignment = Enum.HorizontalAlignment.Left,
-            --     LayoutOrder = 20,
-            --     RichText = true,
-            --     Text = "Default Inventory: Currency",
-            -- }),
-            -- DefaultInventoryCurrencyButton = datasetIsLoaded and Button({
-            --     Appearance = "Outline",
-            --     Label = map.defaultInventory.currency,
-            --     LayoutOrder = 21,
-            --     TextXAlignment = Enum.TextXAlignment.Left,
-            --     OnActivated = function()
-            --         setModalEnabled(true)
-            --         setModalTitle("Default Inventory: Currency")
-            --         setModalProperty(map.defaultInventory.currency)
-            --         -- setModalCallback(function() print("Callback! Currency") end)
-            --     end,
-            -- }),
-            
-        -- }
-    )
-    })
+    )})
 
     local factoryInfoElements = {}
     if datasetIsLoaded then
@@ -196,14 +175,11 @@ return function(props)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        Modal = modalEnabled and Modal({
-            Title = modalTitle,
-            OnConfirm = function ()
-                print("On Confirm")
-            end,
-            OnClosePanel = function() setModalEnabled(false) end,
-            ModalProperty = modalProperty
-        }),
+        -- Modal = modalEnabled and Modal({
+        --     Title = currentFieldKey,
+        --     Value = currentFieldValue,
+        --     OnConfirm = updateCurrentField
+        -- }),
         FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
     })
 end

@@ -120,8 +120,12 @@ function PluginRoot:render()
                     if fileSaved then
                         print("File saved")
                     end
+                end,
+                ForceUpdate = function()
+                    self:forceUpdate()
                 end
             }, {}),
+
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
                 Dataset = self.state.dataset,
                 MachineAnchor = self.state.selectedMachineAnchor,
