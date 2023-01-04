@@ -59,8 +59,6 @@ local function smallButton(props)
     })
 end
 
-
-
 return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
@@ -109,7 +107,7 @@ return function(props)
     }
 
     if datasetIsLoaded then
-        children.ExportJSONButton = Button({
+        children["ExportJSONButton"] = Button({
             Label = "Export Dataset",
             LayoutOrder = 120,
             OnActivated = props.ExportDataset,
@@ -117,7 +115,6 @@ return function(props)
             TextXAlignment = Enum.TextXAlignment.Center,
         })
         children["ShowOrHideDatasetButton"] = Button({
-            Appearance = "Outline",
             Label = showDatasetInfoPanel and "Hide Dataset View" or "Show Dataset View",
             LayoutOrder = 130,
             OnActivated = function()
@@ -218,7 +215,7 @@ return function(props)
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
-            Title = currentFieldKey,
+            Key = currentFieldKey,
             Value = currentFieldValue,
             OnConfirm = function(value)
                 setModalEnabled(false)

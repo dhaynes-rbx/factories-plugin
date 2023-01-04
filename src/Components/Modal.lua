@@ -9,25 +9,24 @@ local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 
-
 local function Modal(props)
     
-    local value, setValue = React.useState("New Value")
+    local value, setValue = React.useState(props.Value)
 
-    return Overlay({
-        Size = UDim2.new(1, 40,1, 40),
-        Position = UDim2.new(0, -20, 0, -20)
-    }, {
-        Panel({
+    -- return Overlay({
+    --     Size = UDim2.new(1, 40,1, 40),
+    --     Position = UDim2.new(0, -20, 0, -20),
+    -- }, {
+    return Panel({
             AnchorPoint = Vector2.new(0.5, 0.5),
-            Title = props.Title,
+            Title = "Edit Field",
             Size = UDim2.new(0, 500, 0, 0),
             ShowClose = true,
             Position = UDim2.fromScale(0.5, 0.5),
             AutomaticSize = Enum.AutomaticSize.Y,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             OnClosePanel = props.OnClosePanel,
-            ZIndex = 100
+            -- ZIndex = 100
         }, {
             Content = Column({ --This overrides the built-in panel Column
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -35,19 +34,29 @@ local function Modal(props)
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 PaddingHorizontal = 20,
                 PaddingVertical = 20,
-                ZIndex = 200,
+                -- ZIndex = 200,
             }, {
+                TextInput = TextInput({
+                    Label = props.Key,
+                    OnChanged = function(newValue)
+                        setValue(newValue)
+                    end,
+                    Placeholder = "X",
+                    Value = props.Value,
+                    Size = UDim2.new(1, 0, 0, 100),
+                    -- ZIndex = 300,
+                }),
                 Button1 = Button({
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Label = "Confirm",
+                    LayoutOrder = 100,
                     OnActivated = function() props.OnConfirm(value) end,
                     TextXAlignment = Enum.TextXAlignment.Center,
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Width = UDim.new(1, 0),
-                    ZIndex = 300,
+                    -- ZIndex = 300,
                 }),
             })
-        }),
-    })
+        })
 end
 
 return function(props)
