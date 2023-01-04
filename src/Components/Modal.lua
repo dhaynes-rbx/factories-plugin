@@ -12,8 +12,8 @@ local Scene = require(script.Parent.Parent.Scene)
 
 local function Modal(props)
     
-    local value, setValue = React.useState(false)
-    
+    local value, setValue = React.useState("New Value")
+
     return Overlay({
         Size = UDim2.new(1, 40,1, 40),
         Position = UDim2.new(0, -20, 0, -20)
@@ -39,7 +39,7 @@ local function Modal(props)
             }, {
                 Button1 = Button({
                     Label = "Confirm",
-                    OnActivated = props.OnConfirm,
+                    OnActivated = function() props.OnConfirm(value) end,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Width = UDim.new(1, 0),
