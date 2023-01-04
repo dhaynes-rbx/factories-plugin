@@ -9,8 +9,11 @@ local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 
-return function(props)
-    -- local butts, setButts = React.useState(false)
+
+local function Modal(props)
+    
+    local value, setValue = React.useState(false)
+    
     return Overlay({
         Size = UDim2.new(1, 40,1, 40),
         Position = UDim2.new(0, -20, 0, -20)
@@ -45,4 +48,8 @@ return function(props)
             })
         }),
     })
+end
+
+return function(props)
+    return React.createElement(Modal, props)
 end

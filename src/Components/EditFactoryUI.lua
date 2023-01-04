@@ -58,25 +58,24 @@ return function(props)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local updateCurrentField, setUpdateCurrentField = React.useState(function() print("updated field") end)
 
-    print(modalEnabled)
-    -- local createSmallTextChangingButton = function(key, object)
-    --     return smallButton(
-    --         {
-    --             Text = key,
-    --             OnActivated = function()
-    --                 --set modal enabled
-    --                 print("Click")
-    --                 setModalEnabled(true)
-    --                 -- setCurrentFieldKey(key)
-    --                 -- setCurrentFieldValue(object[key])
-    --                 -- setUpdateCurrentField(function(value)
-    --                 --     object[key] = value
-    --                 --     props.ForceUpdate()
-    --                 -- end)
-    --             end
-    --         }
-    --     )
-    -- end
+    local createSmallTextChangingButton = function(key, object)
+        return smallButton(
+            {
+                Text = key,
+                OnActivated = function()
+                    --set modal enabled
+                    print("Click")
+                    setModalEnabled(true)
+                    setCurrentFieldKey(key)
+                    setCurrentFieldValue(object[key])
+                    setUpdateCurrentField(function(value)
+                        object[key] = value
+                        props.ForceUpdate()
+                    end)
+                end
+            }
+        )
+    end
 
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
@@ -95,17 +94,6 @@ return function(props)
             OnActivated = props.ImportDataset,
             Size = UDim2.new(1, 0, 0, 0)
         }),
-        TestButton = Button({
-            Label = "Test",
-            OnActivated = function()
-                print("Click")
-                if modalEnabled then
-                    setModalEnabled(false)
-                else
-                    setModalEnabled(true)
-                end
-            end
-        })
     }
 
     if datasetIsLoaded then
@@ -117,7 +105,8 @@ return function(props)
             Size = UDim2.new(1, 0, 0, 0),
             OnActivated = props.ExportDataset,
         })
-        -- children.id = createSmallTextChangingButton("id", map)
+        children.id = createSmallTextChangingButton("id", map)
+        children.locName = createSmallTextChangingButton("locName", map)
 
     end
 
@@ -156,38 +145,40 @@ return function(props)
         end
     end
 
-    local FactoryInfoPanel = Panel({
-        AnchorPoint = Vector2.new(1,0),
-        Corners = 0,
-        Size = UDim2.new(0, 300, 1, 0),
-        Position = UDim2.fromScale(1, 0)
-    }, {
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-            Size = UDim2.fromScale(1, 1),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            CanvasSize = UDim2.fromScale(1, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            ScrollingDirection = Enum.ScrollingDirection.Y,
-        }, {
-            Content = Column({ --This overrides the built-in panel Column
-                AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = 4,
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                PaddingHorizontal = 20,
-                PaddingVertical = 20,
-                Width = 300,
-            }, factoryInfoElements)
-        })
-    })
+    -- local FactoryInfoPanel = Panel({
+    --     AnchorPoint = Vector2.new(1,0),
+    --     Corners = 0,
+    --     Size = UDim2.new(0, 300, 1, 0),
+    --     Position = UDim2.fromScale(1, 0)
+    -- }, {
+    --     ScrollingFrame = React.createElement("ScrollingFrame", {
+    --         Size = UDim2.fromScale(1, 1),
+    --         BackgroundTransparency = 1,
+    --         BorderSizePixel = 0,
+    --         CanvasSize = UDim2.fromScale(1, 0),
+    --         AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    --         ScrollingDirection = Enum.ScrollingDirection.Y,
+    --     }, {
+    --         Content = Column({ --This overrides the built-in panel Column
+    --             AutomaticSize = Enum.AutomaticSize.Y,
+    --             Gaps = 4,
+    --             HorizontalAlignment = Enum.HorizontalAlignment.Left,
+    --             PaddingHorizontal = 20,
+    --             PaddingVertical = 20,
+    --             Width = 300,
+    --         }, factoryInfoElements)
+    --     })
+    -- })
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
             Title = currentFieldKey,
             Value = currentFieldValue,
-            OnConfirm = function() setModalEnabled(false) end
+            OnConfirm = function()
+                setModalEnabled(false)
+            end
         }),
-        FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
+        -- FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
     })
 end
