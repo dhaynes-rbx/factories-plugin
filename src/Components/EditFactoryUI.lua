@@ -19,7 +19,6 @@ local Modal = require(script.Parent.Modal)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
--- local Dash = require(Packages.Dash)
 local function smallLabel(text)
     return Text({
         Bold = true,
@@ -30,7 +29,6 @@ local function smallLabel(text)
         Text = text or "EMPTY",
     })
 end
-
 
 local function smallButton(props)
     return React.createElement("TextButton", {
@@ -58,8 +56,7 @@ return function(props)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
 
-    local createSmallTextChangingButton = function(key, object)
-        print(key, object)
+    local createTextChangingButton = function(key, object)
         return smallButton(
             {
                 Text = key..": "..tostring(object[key]),
@@ -76,7 +73,6 @@ return function(props)
                     end)
                     
                 end,
-                
             }
         )
     end
@@ -109,8 +105,8 @@ return function(props)
             Size = UDim2.new(1, 0, 0, 0),
             OnActivated = props.ExportDataset,
         })
-        children.id = createSmallTextChangingButton("id", map)
-        children.locName = createSmallTextChangingButton("locName", map)
+        children.id = createTextChangingButton("id", map)
+        children.locName = createTextChangingButton("locName", map)
 
     end
 
