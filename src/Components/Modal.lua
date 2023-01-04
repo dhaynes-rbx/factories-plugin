@@ -10,8 +10,7 @@ local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 
 return function(props)
-    -- local value, setValue = React.useState(props.Value)
-    local value = 1
+    -- local butts, setButts = React.useState(false)
     return Overlay({
         Size = UDim2.new(1, 40,1, 40),
         Position = UDim2.new(0, -20, 0, -20)
@@ -37,7 +36,7 @@ return function(props)
             }, {
                 Button1 = Button({
                     Label = "Confirm",
-                    OnActivated = function() props.OnConfirm(value) end,
+                    OnActivated = props.OnConfirm,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     Width = UDim.new(1, 0),

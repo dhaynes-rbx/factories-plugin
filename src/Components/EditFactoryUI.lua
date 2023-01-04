@@ -56,8 +56,9 @@ return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
-    local updateCurrentField, setUpdateCurrentField = React.useState(nil)
+    local updateCurrentField, setUpdateCurrentField = React.useState(function() print("updated field") end)
 
+    print(modalEnabled)
     -- local createSmallTextChangingButton = function(key, object)
     --     return smallButton(
     --         {
@@ -96,7 +97,14 @@ return function(props)
         }),
         TestButton = Button({
             Label = "Test",
-            OnActivated = function() setModalEnabled(true) end
+            OnActivated = function()
+                print("Click")
+                if modalEnabled then
+                    setModalEnabled(false)
+                else
+                    setModalEnabled(true)
+                end
+            end
         })
     }
 
@@ -175,11 +183,11 @@ return function(props)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        -- Modal = modalEnabled and Modal({
-        --     Title = currentFieldKey,
-        --     Value = currentFieldValue,
-        --     OnConfirm = updateCurrentField
-        -- }),
+        Modal = modalEnabled and Modal({
+            Title = currentFieldKey,
+            Value = currentFieldValue,
+            OnConfirm = function() setModalEnabled(false) end
+        }),
         FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
     })
 end
