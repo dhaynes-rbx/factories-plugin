@@ -37,14 +37,25 @@ local function smallButton(props)
         BackgroundTransparency = 0.85,
         FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
         RichText = true,
-        Size = UDim2.fromOffset(20, 20),
+        Size = UDim2.fromOffset(20, 30),
         Text = props.Label,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 20,
         TextXAlignment = Enum.TextXAlignment.Left,
         [Roact.Event.MouseButton1Click] = props.OnActivated
     }, {
-        uICorner = React.createElement("UICorner"),
+        uiCorner = React.createElement("UICorner"),
+        uiStroke = React.createElement("UIStroke", {
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+            Color = Color3.fromRGB(79, 159, 243),
+            Thickness = 1,
+        }),
+        uiPadding = Roact.createElement("UIPadding", {
+            PaddingBottom = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 10),
+            PaddingRight = UDim.new(0, 10),
+            PaddingTop = UDim.new(0, 10),
+          })
     })
 end
 
@@ -106,6 +117,7 @@ return function(props)
             TextXAlignment = Enum.TextXAlignment.Center,
         })
         children["ShowOrHideDatasetButton"] = Button({
+            Appearance = "Outline",
             Label = showDatasetInfoPanel and "Hide Dataset View" or "Show Dataset View",
             LayoutOrder = 130,
             OnActivated = function()
