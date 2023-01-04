@@ -38,7 +38,7 @@ local function smallButton(props)
         FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
         RichText = true,
         Size = UDim2.fromOffset(20, 20),
-        Text = props.Text,
+        Text = props.Label,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 20,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -56,10 +56,12 @@ return function(props)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
 
+    local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
+
     local createTextChangingButton = function(key, object)
         return smallButton(
             {
-                Text = key..": "..tostring(object[key]),
+                Label = key..": "..tostring(object[key]),
                 OnActivated = function()
                     --set modal enabled
                     setModalEnabled(true)
@@ -67,7 +69,6 @@ return function(props)
                     setCurrentFieldValue(object[key])
                     setCurrentFieldCallback(function()
                         return function(value)
-                            print("Updating...", value)
                             object[key] = value
                         end
                     end)
@@ -89,25 +90,32 @@ return function(props)
         }),
         ImportJSONButton = Button({
             Label = "Import Dataset",
-            TextXAlignment = Enum.TextXAlignment.Center,
             LayoutOrder = 110,
             OnActivated = props.ImportDataset,
-            Size = UDim2.new(1, 0, 0, 0)
+            Size = UDim2.new(1, 0, 0, 0),
+            TextXAlignment = Enum.TextXAlignment.Center,
         }),
     }
 
     if datasetIsLoaded then
-        
         children.ExportJSONButton = Button({
             Label = "Export Dataset",
             LayoutOrder = 120,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            Size = UDim2.new(1, 0, 0, 0),
             OnActivated = props.ExportDataset,
+            Size = UDim2.new(1, 0, 0, 0),
+            TextXAlignment = Enum.TextXAlignment.Center,
         })
-        children.id = createTextChangingButton("id", map)
-        children.locName = createTextChangingButton("locName", map)
+        children["ShowOrHideDatasetButton"] = Button({
+            Label = showDatasetInfoPanel and "Hide Dataset View" or "Show Dataset View",
+            LayoutOrder = 130,
+            OnActivated = function()
+                setShowDatasetInfoPanel(not showDatasetInfoPanel)
+            end,
+            Size = UDim2.new(1, 0, 0, 20),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        })
 
+        children.locName = createTextChangingButton("locName", map)
     end
 
     local EditFactoryPanel = Panel({
@@ -123,52 +131,77 @@ return function(props)
         }, children
     )})
 
-    -- local factoryInfoElements = {}
-    -- if datasetIsLoaded then
-    --     for _, mapData in dataset["maps"] do
-    --         if mapData.id ~= "mapA" then
-    --             continue
-    --         end
+    local factoryInfoElements = {
+        smallButton({
+            Size = UDim2.fromScale(1, 0),
+            Label = "Print Dataset to Console",
+            OnActivated = function()
+                print("Dataset:")
+                print(dataset)
+            end
+        }),
+        Gap({Size = 10})
+    }
+    if datasetIsLoaded then
+        for _, mapData in dataset["maps"] do
+            if mapData.id ~= "mapA" then
+                continue
+            end
 
-    --         table.insert(factoryInfoElements, smallButton({Text = map.id}))
-    --         table.insert(factoryInfoElements, smallButton({Text = "Default Inventory Currency: "..mapData.defaultInventory.currency}))
-    --         table.insert(factoryInfoElements, Gap({Size = 10}))
-    --         table.insert(factoryInfoElements, smallLabel("Items:"))
-    --         for _, item in map["items"] do
-    --             table.insert(factoryInfoElements, smallButton({Text = item.id}))
-    --         end
-    --         table.insert(factoryInfoElements, Gap({Size = 10}))
-    --         table.insert(factoryInfoElements, smallLabel("Machines:"))
-    --         for _,machine in map["machines"] do
-    --             table.insert(factoryInfoElements, smallButton({Text = machine.id}))
-    --         end
-    --     end
-    -- end
+            table.insert(factoryInfoElements, smallButton({Label = "id: "..map.id}))
+            table.insert(factoryInfoElements, smallButton({Label = "locName: "..mapData.locName}))
+            table.insert(factoryInfoElements, smallButton({Label = "locDesc: "..mapData.locDesc}))
+            table.insert(factoryInfoElements, smallButton({Label = "scene: "..mapData.scene}))
+            table.insert(factoryInfoElements, smallButton({Label = "thumb: "..mapData.thumb}))
+            table.insert(factoryInfoElements, smallButton({Label = "stepsPerRun: "..mapData.stepsPerRun}))
+            table.insert(factoryInfoElements, smallButton({Label = "stepUnit (singular): "..mapData.stepUnit.singular}))
+            table.insert(factoryInfoElements, smallButton({Label = "stepUnit (plural): "..mapData.stepUnit.plural}))
+            table.insert(factoryInfoElements, smallButton({Label = "defaultInventory (currency): "..mapData.defaultInventory.currency}))
 
-    -- local FactoryInfoPanel = Panel({
-    --     AnchorPoint = Vector2.new(1,0),
-    --     Corners = 0,
-    --     Size = UDim2.new(0, 300, 1, 0),
-    --     Position = UDim2.fromScale(1, 0)
-    -- }, {
-    --     ScrollingFrame = React.createElement("ScrollingFrame", {
-    --         Size = UDim2.fromScale(1, 1),
-    --         BackgroundTransparency = 1,
-    --         BorderSizePixel = 0,
-    --         CanvasSize = UDim2.fromScale(1, 0),
-    --         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-    --         ScrollingDirection = Enum.ScrollingDirection.Y,
-    --     }, {
-    --         Content = Column({ --This overrides the built-in panel Column
-    --             AutomaticSize = Enum.AutomaticSize.Y,
-    --             Gaps = 4,
-    --             HorizontalAlignment = Enum.HorizontalAlignment.Left,
-    --             PaddingHorizontal = 20,
-    --             PaddingVertical = 20,
-    --             Width = 300,
-    --         }, factoryInfoElements)
-    --     })
-    -- })
+            table.insert(factoryInfoElements, Gap({Size = 10}))
+            table.insert(factoryInfoElements, smallLabel("Items:"))
+            for _, item in map["items"] do
+                table.insert(factoryInfoElements, smallButton({Label = item.id}))
+            end
+            table.insert(factoryInfoElements, Gap({Size = 10}))
+            table.insert(factoryInfoElements, smallLabel("Machines:"))
+            for _,machine in map["machines"] do
+                table.insert(factoryInfoElements, smallButton({Label = machine.id}))
+            end
+            table.insert(factoryInfoElements, Gap({Size = 10}))
+            table.insert(factoryInfoElements, smallLabel("Powerups:"))
+            for _,powerup in map["powerups"] do
+                table.insert(factoryInfoElements, smallButton({Label = powerup.id}))
+            end
+        end
+        
+    end
+
+    local FactoryInfoPanel = Panel({
+        AnchorPoint = Vector2.new(1,0),
+        Corners = 0,
+        Size = UDim2.new(0, 300, 1, 0),
+        Position = UDim2.fromScale(1, 0)
+    }, {
+        ScrollingFrame = React.createElement("ScrollingFrame", {
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            CanvasSize = UDim2.fromScale(1, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+        }, {
+            Content = Column({ --This overrides the built-in panel Column
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Gaps = 4,
+                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                PaddingHorizontal = 20,
+                PaddingVertical = 20,
+                Width = 300,
+            }, factoryInfoElements)
+        }),
+        
+    })
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
@@ -176,7 +209,6 @@ return function(props)
             Title = currentFieldKey,
             Value = currentFieldValue,
             OnConfirm = function(value)
-                print(value)
                 setModalEnabled(false)
                 currentFieldCallback(value)
                 props.ForceUpdate()
@@ -188,6 +220,6 @@ return function(props)
                 setCurrentFieldCallback(nil)
             end
         }),
-        -- FactoryInfoPanel = datasetIsLoaded and FactoryInfoPanel
+        FactoryInfoPanel = (datasetIsLoaded and showDatasetInfoPanel) and FactoryInfoPanel
     })
 end
