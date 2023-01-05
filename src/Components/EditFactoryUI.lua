@@ -17,7 +17,6 @@ local TextInput = FishBloxComponents.TextInput
 local Modal = require(script.Parent.Modal)
 local SmallButton = require(script.Parent.SmallButton)
 local SmallLabel = require(script.Parent.SmallLabel)
-local SmallLabelAndButton = require(script.Parent.SmallLabelAndButton)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -42,7 +41,7 @@ return function(props)
     local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
 
     local createTextChangingButton = function(key, object, layoutOrder)
-        return SmallLabelAndButton(
+        return SmallButton(
             {
                 Label = key..": ",
                 ButtonLabel = tostring(object[key]),
@@ -121,7 +120,7 @@ return function(props)
         SmallButton({
             Appearance = "Filled",
             Size = UDim2.fromScale(1, 0),
-            Label = "Print Dataset to Console",
+            ButtonLabel = "Print Dataset to Console",
             OnActivated = function()
                 print("Dataset:")
                 print(dataset)
@@ -136,30 +135,30 @@ return function(props)
             end
 
             table.insert(factoryInfoElements, SmallLabel({Label = "Factory Settings:"}))
-            table.insert(factoryInfoElements, SmallButton({Label = "id: "..map.id}))
-            table.insert(factoryInfoElements, SmallButton({Label = "locName: "..mapData.locName}))
-            table.insert(factoryInfoElements, SmallButton({Label = "locDesc: "..mapData.locDesc}))
-            table.insert(factoryInfoElements, SmallButton({Label = "scene: "..mapData.scene}))
-            table.insert(factoryInfoElements, SmallButton({Label = "thumb: "..mapData.thumb}))
-            table.insert(factoryInfoElements, SmallButton({Label = "stepsPerRun: "..mapData.stepsPerRun}))
-            table.insert(factoryInfoElements, SmallButton({Label = "stepUnit (singular): "..mapData.stepUnit.singular}))
-            table.insert(factoryInfoElements, SmallButton({Label = "stepUnit (plural): "..mapData.stepUnit.plural}))
-            table.insert(factoryInfoElements, SmallButton({Label = "defaultInventory (currency): "..mapData.defaultInventory.currency}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "id: "..map.id}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "locName: "..mapData.locName}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "locDesc: "..mapData.locDesc}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "scene: "..mapData.scene}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "thumb: "..mapData.thumb}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "stepsPerRun: "..mapData.stepsPerRun}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "stepUnit (singular): "..mapData.stepUnit.singular}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "stepUnit (plural): "..mapData.stepUnit.plural}))
+            table.insert(factoryInfoElements, SmallButton({ButtonLabel = "defaultInventory (currency): "..mapData.defaultInventory.currency}))
 
             table.insert(factoryInfoElements, Gap({Size = 10}))
             table.insert(factoryInfoElements, SmallLabel({Label = "Items:"}))
             for _, item in map["items"] do
-                table.insert(factoryInfoElements, SmallButton({Label = item.id}))
+                table.insert(factoryInfoElements, SmallButton({ButtonLabel = item.id}))
             end
             table.insert(factoryInfoElements, Gap({Size = 10}))
             table.insert(factoryInfoElements, SmallLabel({Label = "Machines:"}))
             for _,machine in map["machines"] do
-                table.insert(factoryInfoElements, SmallButton({Label = machine.id}))
+                table.insert(factoryInfoElements, SmallButton({ButtonLabel = machine.id}))
             end
             table.insert(factoryInfoElements, Gap({Size = 10}))
             table.insert(factoryInfoElements, SmallLabel({Label = "Powerups:"}))
             for _,powerup in map["powerups"] do
-                table.insert(factoryInfoElements, SmallButton({Label = powerup.id}))
+                table.insert(factoryInfoElements, SmallButton({ButtonLabel = powerup.id}))
             end
         end
         
@@ -167,7 +166,6 @@ return function(props)
 
     local FactoryInfoPanel = Panel({
         AnchorPoint = Vector2.new(1,0),
-        Corners = 0,
         Size = UDim2.new(0, 400, 1, 0),
         Position = UDim2.fromScale(1, 0)
     }, {
@@ -181,10 +179,10 @@ return function(props)
         }, {
             Content = Column({ --This overrides the built-in panel Column
                 AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = 4,
+                -- Gaps = 4,
                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
                 PaddingHorizontal = 20,
-                PaddingVertical = 20,
+                -- PaddingVertical = 10,
                 Size = UDim2.fromScale(1, 1)
                 -- Width = 300,
             }, factoryInfoElements)

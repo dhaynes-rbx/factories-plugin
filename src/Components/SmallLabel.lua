@@ -15,8 +15,9 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 return function(props)
+    local isBold = (props.Bold == nil) and true or props.Bold
     return Text({
-        Bold = (props.Bold ~= nil) and props.Bold or false,
+        Bold = true,
         Color = Color3.new(1,1,1),
         FontSize = 24,
         HorizontalAlignment = Enum.HorizontalAlignment.Left,
