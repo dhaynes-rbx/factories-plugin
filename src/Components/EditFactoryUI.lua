@@ -95,10 +95,17 @@ return function(props)
             TextXAlignment = Enum.TextXAlignment.Center,
         })
 
-        children["scene"] = SmallLabel({Label = "scene: "..map.scene})
-        children["id"] = SmallLabel({Label = "id: "..map.id})
-        children["locName"] = createTextChangingButton("locName", map, 1)
-        children["locDesc"] = createTextChangingButton("locDesc", map, 2)
+        children["scene"] = createTextChangingButton("scene", map, 0)
+        children["id"] = createTextChangingButton("id", map, 1)
+        children["locName"] = createTextChangingButton("locName", map, 2)
+        children["locDesc"] = createTextChangingButton("locDesc", map, 3)
+        children["thumb"] = createTextChangingButton("thumb", map, 4)
+        children["stepsPerRun"] = createTextChangingButton("stepsPerRun", map, 5)
+        children["stepUnits"] = SmallLabel({Label = "stepUnits", LayoutOrder = 6})
+        children["stepUnits"]["singular"] = createTextChangingButton("singular", map, 7)
+        children["stepUnits"]["plural"] = createTextChangingButton("plural", map, 8)
+        children["defaultInventory"] = SmallLabel({Label = "defaultInventory", LayoutOrder = 9})
+        children["defaultInventory"]["currency"] = createTextChangingButton("locDesc", map, 10)
         
     end
 

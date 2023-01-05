@@ -1,6 +1,5 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
-
 local Scene = {}
 
 Scene.machinesFolder = nil
@@ -75,7 +74,6 @@ function Scene.loadScene()
     Lighting.GeographicLatitude = 0
     
     Scene.setCamera()
-    
 
     ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
 end

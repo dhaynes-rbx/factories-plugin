@@ -101,6 +101,7 @@ function PluginRoot:render()
 
                     local newDatasetInstance = Instance.new("ModuleScript")
                     newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
+                    -- newDatasetInstance.Source = table.unpack(dataset)
                     newDatasetInstance.Name = file.Name:split(".")[1]
                     newDatasetInstance.Parent = game.Workspace
                     SceneConfig.replaceDataset(newDatasetInstance)
