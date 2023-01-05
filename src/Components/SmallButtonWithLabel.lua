@@ -19,8 +19,9 @@ local SmallLabel = require(script.Parent.SmallLabel)
 
 type Props = {
     Appearance : string,
-    Label : string,
     ButtonLabel : string,
+    IndentAmount : number,
+    Label : string,
     LayoutOrder : number,
     OnActivated : any,
 }
@@ -28,14 +29,19 @@ type Props = {
 return function(props: Props)
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
+    local indentAmount = props.IndentAmount or 0
 
     return Row({
         AutomaticSize = Enum.AutomaticSize.Y,
         Size = UDim2.new(1, 0, 0, 0),
         LayoutOrder = props.LayoutOrder
     }, {
+        Block = Block({
+            LayoutOrder = 0,
+            Size = UDim2.fromOffset(indentAmount, 0)
+        }),
         Label = hasLabel and SmallLabel({
-            Bold = true,
+            Bold = false,
             Label = props.Label,
             LayoutOrder = 1,
         }),

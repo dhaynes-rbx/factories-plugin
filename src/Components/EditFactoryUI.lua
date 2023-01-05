@@ -21,6 +21,8 @@ local SmallLabel = require(script.Parent.SmallLabel)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
+local indentAmount = 40
+
 return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
@@ -29,10 +31,11 @@ return function(props)
 
     local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
 
-    local createTextChangingButton = function(key, object, layoutOrder)
+    local createTextChangingButton = function(key, object, layoutOrder, indent)
         return SmallButtonWithLabel({
-            Label = key..": ",
             ButtonLabel = tostring(object[key]),
+            IndentAmount = indent,
+            Label = key..": ",
             LayoutOrder = layoutOrder or 1,
             OnActivated = function()
                 --set modal enabled
@@ -91,10 +94,10 @@ return function(props)
         -- children["thumb"] = createTextChangingButton("thumb", map, 4)
         children["stepsPerRun"] = createTextChangingButton("stepsPerRun", map, 5)
         children["stepUnit"] = SmallLabel({Label = "stepUnit", LayoutOrder = 6})
-        children["singular"] = createTextChangingButton("singular", map["stepUnit"], 7)
-        children["plural"] = createTextChangingButton("plural", map["stepUnit"], 8)
+        children["singular"] = createTextChangingButton("singular", map["stepUnit"], 7, indentAmount)
+        children["plural"] = createTextChangingButton("plural", map["stepUnit"], 8, indentAmount)
         children["defaultInventory"] = SmallLabel({Label = "defaultInventory", LayoutOrder = 9})
-        children["defaultInventory"]["currency"] = createTextChangingButton("locDesc", map, 10)
+        children["currency"] = createTextChangingButton("currency", map["defaultInventory"], 10, indentAmount)
         
     end
 
