@@ -70,7 +70,7 @@ function PluginRoot:render()
             PaddingLeft = 20,
             PaddingRight = 20,
             PaddingTop = 20,
-            PaddingBottom = 20,
+            PaddingBottom = 90,
             Size = UDim2.new(1, 0, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
@@ -107,7 +107,7 @@ function PluginRoot:render()
                         print("File saved")
                     end
                 end,
-                
+
                 ForceUpdate = function()
                     self:forceUpdate()
                 end,

@@ -103,16 +103,26 @@ return function(props)
 
     local EditFactoryPanel = Panel({
         Title = "Edit Factory",
-        Size = UDim2.new(0, 300, 1, 0),
-    }, {
-        Content = Column({ --This overrides the built-in panel Column
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Gaps = 8,
-            PaddingHorizontal = 20,
-            PaddingVertical = 20,
-            Width = 300,
-        }, children
-    )})
+        Size = UDim2.new(0, 400, 1, 0),
+    },{
+        ScrollingFrame = React.createElement("ScrollingFrame", {
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            -- CanvasSize = UDim2.fromScale(1, 0),
+            -- AutomaticCanvasSize = Enum.AutomaticSize.X,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+        }, {
+            Content = Column({ --This overrides the built-in panel Column
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Gaps = 8,
+                PaddingHorizontal = 20,
+                PaddingVertical = 20,
+                -- Width = 300,
+            }, children)
+        })
+    })
+
 
     local factoryInfoElements = {
         SmallButtonWithLabel({

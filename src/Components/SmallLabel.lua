@@ -21,7 +21,7 @@ type Props = {
     Label : string
 }
 
-return function(props)
+return function(props: Props)
     local isBold = (props.Bold == nil) and true or props.Bold
     return Text({
         Bold = isBold,
