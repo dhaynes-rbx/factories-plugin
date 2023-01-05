@@ -1,3 +1,6 @@
+local HttpService = game:GetService("HttpService")
+local StudioService = game:GetService("StudioService")
+
 local Packages = script.Parent.Packages
 local Utilities = require(Packages.Utilities)
 
@@ -14,13 +17,13 @@ local function getOrCreateFolder(name:string, parent:Instance)
     return folder
 end
 
-function SceneConfig.replaceDataset(obj)
+function SceneConfig.replaceDataset(datasetInstance)
     local folder = getOrCreateFolder("SceneConfig", game.Workspace)
     local datasetFolder = getOrCreateFolder("Dataset", folder)
     if #datasetFolder:GetChildren() then
         datasetFolder:ClearAllChildren()
     end
-    obj.Parent = datasetFolder
+    datasetInstance.Parent = datasetFolder
 end
 
 function SceneConfig.getDatasetInstance()
@@ -31,6 +34,7 @@ function SceneConfig.getDatasetInstance()
     return nil
 end
 
+
 function SceneConfig.checkIfDatasetInstanceExists()
     local instance = SceneConfig.getDatasetInstance()
     if instance then
@@ -38,6 +42,32 @@ function SceneConfig.checkIfDatasetInstanceExists()
     else
         return false
     end
+end
+
+function SceneConfig.getDatasetAsTable()
+    local str = SceneConfig.getDatasetInstance().Source
+    return HttpService:JSONDecode(string.sub(str, #"return [[" + 1, #str - 2))
+end
+
+function SceneConfig.importNewDataset()
+    local file = StudioService:PromptImportFile()
+    if not file then
+        return
+    end
+    
+    local newDatasetInstance = Instance.new("ModuleScript")
+    newDatasetInstance.Source = "return [["..file:GetBinaryContents().."]]"
+    
+    newDatasetInstance.Name = file.Name:split(".")[1]
+    newDatasetInstance.Parent = game.Workspace
+    SceneConfig.replaceDataset(newDatasetInstance)
+
+    return SceneConfig.getDatasetAsTable(), newDatasetInstance
+end
+
+function SceneConfig.updateDataset(dataset:table)
+    local datasetInstance = SceneConfig.getDatasetInstance()
+    datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
 end
 
 function SceneConfig.getDatasetName()

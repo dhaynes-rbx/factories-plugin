@@ -62,10 +62,6 @@ function PluginRoot:init()
     table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
 end
 
-function PluginRoot:showModal(modalProps)
-
-end
-
 function PluginRoot:render()
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
@@ -87,36 +83,26 @@ function PluginRoot:render()
             }, {}),
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
-                UpdateDatasetValue = function(dataset)
-                    self:setState(dataset)
+                UpdateDataset = function(dataset)
+                    print("Updating...")
+                    self:setState({dataset = dataset})
+                    SceneConfig.updateDataset(dataset)
                 end,
                 ImportDataset = function()
-                    local file = StudioService:PromptImportFile()
-                    if not file then
-                        return
-                    end
                     
-                    local dataset = HttpService:JSONDecode(file:GetBinaryContents())
-                    self:setState({dataset = dataset, datasetIsLoaded = true})
-
-                    local newDatasetInstance = Instance.new("ModuleScript")
-                    newDatasetInstance.Source = "return [[\n"..file:GetBinaryContents().."\n]]"
-                    -- newDatasetInstance.Source = table.unpack(dataset)
-                    newDatasetInstance.Name = file.Name:split(".")[1]
-                    newDatasetInstance.Parent = game.Workspace
-                    SceneConfig.replaceDataset(newDatasetInstance)
-
+                    local dataset, newDatasetInstance = SceneConfig.importNewDataset()
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                     newDatasetInstance.AncestryChanged:Connect(function(_,_)
                         self:setState({dataset = "NONE", datasetIsLoaded = false})
                     end)
+
+                    self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
                 ExportDataset = function()
                     local saveFile = Instance.new("ModuleScript")
                     saveFile.Source = HttpService:JSONEncode(self.state.dataset)
                     saveFile.Parent = game.Workspace.SceneConfig.Dataset
                     Selection:Set({saveFile})
-                    -- StudioService:PromptSaveSelection()
                     local fileSaved = getfenv(0).plugin:PromptSaveSelection()
                     if fileSaved then
                         print("File saved")
@@ -124,7 +110,7 @@ function PluginRoot:render()
                 end,
                 ForceUpdate = function()
                     self:forceUpdate()
-                end
+                end,
             }, {}),
 
             EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
