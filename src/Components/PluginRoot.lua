@@ -36,9 +36,8 @@ function PluginRoot:init()
     self.machines = Scene.getMachines()
     
     local dataset = "NONE"
-    local datasetInstance = SceneConfig.getDatasetInstance()
-    if datasetInstance then
-        dataset = HttpService:JSONDecode(require(datasetInstance))
+    if SceneConfig.getDatasetInstance() then
+        dataset = SceneConfig.getDatasetAsTable()
     end
     self:setState({
         currentPanel = not Scene.isLoaded() and 1 or 2,
@@ -84,7 +83,6 @@ function PluginRoot:render()
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
                 UpdateDataset = function(dataset)
-                    print("Updating...")
                     self:setState({dataset = dataset})
                     SceneConfig.updateDataset(dataset)
                 end,
@@ -99,9 +97,8 @@ function PluginRoot:render()
                     self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
                 ExportDataset = function()
-                    local saveFile = Instance.new("ModuleScript")
-                    saveFile.Source = HttpService:JSONEncode(self.state.dataset)
-                    saveFile.Parent = game.Workspace.SceneConfig.Dataset
+                    SceneConfig.updateDataset(self.state.dataset)
+                    local saveFile = SceneConfig.getDatasetInstance()
                     Selection:Set({saveFile})
                     local fileSaved = getfenv(0).plugin:PromptSaveSelection()
                     if fileSaved then
