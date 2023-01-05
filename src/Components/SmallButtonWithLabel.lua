@@ -32,17 +32,18 @@ return function(props: Props)
     return Row({
         AutomaticSize = Enum.AutomaticSize.Y,
         Size = UDim2.new(1, 0, 0, 0),
+        LayoutOrder = props.LayoutOrder
     }, {
         Label = hasLabel and SmallLabel({
             Bold = true,
             Label = props.Label,
             LayoutOrder = 1,
         }),
-        Gap = (hasLabel and (not props.Inactive)) and Block({
+        Gap = hasLabel and Block({
             LayoutOrder = 2,
             Size = UDim2.new(0, 10, 0, 0),
         }),
-        Button = not props.Inactive and React.createElement("TextButton", {
+        Button = React.createElement("TextButton", {
             AutomaticSize = Enum.AutomaticSize.X,
             BackgroundColor3 = Color3.fromRGB(32, 117, 233),
             BackgroundTransparency = filled and 0 or 0.85,

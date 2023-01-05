@@ -21,17 +21,6 @@ local SmallLabel = require(script.Parent.SmallLabel)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
-local textFieldKeys = {
-    -- "id",
-    "locName",
-    "locDesc",
-    -- "scene",
-    -- "thumb",
-    "stepsPerRun",
-    -- "stepUnit",
-    -- "defaultInventory",
-}
-
 return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
@@ -99,7 +88,7 @@ return function(props)
         children["id"] = createTextChangingButton("id", map, 1)
         children["locName"] = createTextChangingButton("locName", map, 2)
         -- children["locDesc"] = createTextChangingButton("locDesc", map, 3)
-        children["thumb"] = createTextChangingButton("thumb", map, 4)
+        -- children["thumb"] = createTextChangingButton("thumb", map, 4)
         children["stepsPerRun"] = createTextChangingButton("stepsPerRun", map, 5)
         children["stepUnit"] = SmallLabel({Label = "stepUnit", LayoutOrder = 6})
         children["singular"] = createTextChangingButton("singular", map["stepUnit"], 7)

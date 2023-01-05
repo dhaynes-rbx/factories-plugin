@@ -82,12 +82,13 @@ function PluginRoot:render()
             }, {}),
             EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
+
                 UpdateDataset = function(dataset)
                     self:setState({dataset = dataset})
                     SceneConfig.updateDataset(dataset)
                 end,
+
                 ImportDataset = function()
-                    
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                     newDatasetInstance.AncestryChanged:Connect(function(_,_)
@@ -96,6 +97,7 @@ function PluginRoot:render()
 
                     self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
+
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
                     local saveFile = SceneConfig.getDatasetInstance()
@@ -105,6 +107,7 @@ function PluginRoot:render()
                         print("File saved")
                     end
                 end,
+                
                 ForceUpdate = function()
                     self:forceUpdate()
                 end,

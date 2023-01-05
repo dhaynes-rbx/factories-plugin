@@ -14,6 +14,13 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
+type Props = {
+    Bold : boolean,
+    FontSize : number,
+    LayoutOrder : number,
+    Label : string
+}
+
 return function(props)
     local isBold = (props.Bold == nil) and true or props.Bold
     return Text({
