@@ -15,49 +15,23 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local Modal = require(script.Parent.Modal)
+local SmallButton = require(script.Parent.SmallButton)
+local SmallLabel = require(script.Parent.SmallLabel)
+local SmallLabelAndButton = require(script.Parent.SmallLabelAndButton)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
-local function smallLabel(text)
-    return Text({
-        Bold = true,
-        Color = Color3.new(1,1,1),
-        FontSize = 24,
-        HorizontalAlignment = Enum.HorizontalAlignment.Left,
-        RichText = true,
-        Text = text or "EMPTY",
-    })
-end
-
-local function smallButton(props)
-    return React.createElement("TextButton", {
-        AutomaticSize = Enum.AutomaticSize.X,
-        BackgroundColor3 = Color3.fromRGB(32, 117, 233),
-        BackgroundTransparency = 0.85,
-        FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
-        RichText = true,
-        Size = UDim2.fromOffset(20, 30),
-        Text = props.Label,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 20,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        [Roact.Event.MouseButton1Click] = props.OnActivated
-    }, {
-        uiCorner = React.createElement("UICorner"),
-        uiStroke = React.createElement("UIStroke", {
-            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-            Color = Color3.fromRGB(79, 159, 243),
-            Thickness = 1,
-        }),
-        uiPadding = Roact.createElement("UIPadding", {
-            PaddingBottom = UDim.new(0, 10),
-            PaddingLeft = UDim.new(0, 10),
-            PaddingRight = UDim.new(0, 10),
-            PaddingTop = UDim.new(0, 10),
-          })
-    })
-end
+local textFieldKeys = {
+    -- "id",
+    "locName",
+    "locDesc",
+    -- "scene",
+    -- "thumb",
+    "stepsPerRun",
+    -- "stepUnit",
+    -- "defaultInventory",
+}
 
 return function(props)
     local modalEnabled, setModalEnabled = React.useState(false)
@@ -67,10 +41,12 @@ return function(props)
 
     local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
 
-    local createTextChangingButton = function(key, object)
-        return smallButton(
+    local createTextChangingButton = function(key, object, layoutOrder)
+        return SmallLabelAndButton(
             {
-                Label = key..": "..tostring(object[key]),
+                Label = key..": ",
+                ButtonLabel = tostring(object[key]),
+                LayoutOrder = layoutOrder or 1,
                 OnActivated = function()
                     --set modal enabled
                     setModalEnabled(true)
@@ -124,7 +100,8 @@ return function(props)
             TextXAlignment = Enum.TextXAlignment.Center,
         })
 
-        children.locName = createTextChangingButton("locName", map)
+        children["scene"] = createTextChangingButton("scene", map, 1)
+        children["id"] = createTextChangingButton("id", map, 2)
     end
 
     local EditFactoryPanel = Panel({
@@ -141,7 +118,8 @@ return function(props)
     )})
 
     local factoryInfoElements = {
-        smallButton({
+        SmallButton({
+            Appearance = "Filled",
             Size = UDim2.fromScale(1, 0),
             Label = "Print Dataset to Console",
             OnActivated = function()
@@ -157,30 +135,31 @@ return function(props)
                 continue
             end
 
-            table.insert(factoryInfoElements, smallButton({Label = "id: "..map.id}))
-            table.insert(factoryInfoElements, smallButton({Label = "locName: "..mapData.locName}))
-            table.insert(factoryInfoElements, smallButton({Label = "locDesc: "..mapData.locDesc}))
-            table.insert(factoryInfoElements, smallButton({Label = "scene: "..mapData.scene}))
-            table.insert(factoryInfoElements, smallButton({Label = "thumb: "..mapData.thumb}))
-            table.insert(factoryInfoElements, smallButton({Label = "stepsPerRun: "..mapData.stepsPerRun}))
-            table.insert(factoryInfoElements, smallButton({Label = "stepUnit (singular): "..mapData.stepUnit.singular}))
-            table.insert(factoryInfoElements, smallButton({Label = "stepUnit (plural): "..mapData.stepUnit.plural}))
-            table.insert(factoryInfoElements, smallButton({Label = "defaultInventory (currency): "..mapData.defaultInventory.currency}))
+            table.insert(factoryInfoElements, SmallLabel({Label = "Factory Settings:"}))
+            table.insert(factoryInfoElements, SmallButton({Label = "id: "..map.id}))
+            table.insert(factoryInfoElements, SmallButton({Label = "locName: "..mapData.locName}))
+            table.insert(factoryInfoElements, SmallButton({Label = "locDesc: "..mapData.locDesc}))
+            table.insert(factoryInfoElements, SmallButton({Label = "scene: "..mapData.scene}))
+            table.insert(factoryInfoElements, SmallButton({Label = "thumb: "..mapData.thumb}))
+            table.insert(factoryInfoElements, SmallButton({Label = "stepsPerRun: "..mapData.stepsPerRun}))
+            table.insert(factoryInfoElements, SmallButton({Label = "stepUnit (singular): "..mapData.stepUnit.singular}))
+            table.insert(factoryInfoElements, SmallButton({Label = "stepUnit (plural): "..mapData.stepUnit.plural}))
+            table.insert(factoryInfoElements, SmallButton({Label = "defaultInventory (currency): "..mapData.defaultInventory.currency}))
 
             table.insert(factoryInfoElements, Gap({Size = 10}))
-            table.insert(factoryInfoElements, smallLabel("Items:"))
+            table.insert(factoryInfoElements, SmallLabel({Label = "Items:"}))
             for _, item in map["items"] do
-                table.insert(factoryInfoElements, smallButton({Label = item.id}))
+                table.insert(factoryInfoElements, SmallButton({Label = item.id}))
             end
             table.insert(factoryInfoElements, Gap({Size = 10}))
-            table.insert(factoryInfoElements, smallLabel("Machines:"))
+            table.insert(factoryInfoElements, SmallLabel({Label = "Machines:"}))
             for _,machine in map["machines"] do
-                table.insert(factoryInfoElements, smallButton({Label = machine.id}))
+                table.insert(factoryInfoElements, SmallButton({Label = machine.id}))
             end
             table.insert(factoryInfoElements, Gap({Size = 10}))
-            table.insert(factoryInfoElements, smallLabel("Powerups:"))
+            table.insert(factoryInfoElements, SmallLabel({Label = "Powerups:"}))
             for _,powerup in map["powerups"] do
-                table.insert(factoryInfoElements, smallButton({Label = powerup.id}))
+                table.insert(factoryInfoElements, SmallButton({Label = powerup.id}))
             end
         end
         
@@ -189,7 +168,7 @@ return function(props)
     local FactoryInfoPanel = Panel({
         AnchorPoint = Vector2.new(1,0),
         Corners = 0,
-        Size = UDim2.new(0, 300, 1, 0),
+        Size = UDim2.new(0, 400, 1, 0),
         Position = UDim2.fromScale(1, 0)
     }, {
         ScrollingFrame = React.createElement("ScrollingFrame", {
@@ -197,7 +176,7 @@ return function(props)
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
             CanvasSize = UDim2.fromScale(1, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            AutomaticCanvasSize = Enum.AutomaticSize.XY,
             ScrollingDirection = Enum.ScrollingDirection.Y,
         }, {
             Content = Column({ --This overrides the built-in panel Column
@@ -206,7 +185,8 @@ return function(props)
                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
                 PaddingHorizontal = 20,
                 PaddingVertical = 20,
-                Width = 300,
+                Size = UDim2.fromScale(1, 1)
+                -- Width = 300,
             }, factoryInfoElements)
         }),
         

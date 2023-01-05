@@ -41,7 +41,7 @@ local function Modal(props)
                     OnChanged = function(newValue)
                         setValue(newValue)
                     end,
-                    Placeholder = "X",
+                    Placeholder = "",
                     Value = props.Value,
                     Size = UDim2.new(1, 0, 0, 100),
                     -- ZIndex = 300,
