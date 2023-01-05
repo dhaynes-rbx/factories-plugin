@@ -49,7 +49,7 @@ return function(props: Props)
             FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
             LayoutOrder = 3,
             RichText = true,
-            Size = UDim2.fromOffset(20, 30),
+            Size = UDim2.new(0, 50, 0, 30),
             Text = props.ButtonLabel,
             TextColor3 = Color3.fromRGB(255, 255, 255),
             TextSize = 20,
