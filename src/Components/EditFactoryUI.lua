@@ -17,6 +17,7 @@ local TextInput = FishBloxComponents.TextInput
 local Modal = require(script.Parent.Modal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
+local SidePanel = require(script.Parent.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -67,7 +68,7 @@ return function(props)
     }
 
     if datasetIsLoaded then
-        
+
         children["scene"] = createTextChangingButton("scene", map, 0)
         children["id"] = createTextChangingButton("id", map, 1)
         children["locName"] = createTextChangingButton("locName", map, 2)
@@ -82,28 +83,12 @@ return function(props)
         
     end
 
-    local EditFactoryPanel = Panel({
+    local EditFactoryPanel = SidePanel({
         OnClosePanel = props.OnClosePanel,
         Title = "Edit Factory",
         ShowClose = true,
-        Size = UDim2.new(0, 400, 1, 0),
-    },{
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-            Size = UDim2.fromScale(1, 1),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            ScrollingDirection = Enum.ScrollingDirection.Y,
-        }, {
-            Content = Column({ --This overrides the built-in panel Column
-                AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = 8,
-                PaddingHorizontal = 20,
-                PaddingVertical = 20,
-                -- Width = 300,
-            }, children)
-        })
-    })
-
+        
+    }, children)
 
     local factoryInfoElements = {
         SmallButtonWithLabel({
