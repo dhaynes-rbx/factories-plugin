@@ -45,6 +45,7 @@ return function(props, children)
             AutomaticSize = Enum.AutomaticSize.Y,
             Gaps = 8,
             PaddingHorizontal = 20,
+            PaddingTop = 5,
             }, children)
         })
     })

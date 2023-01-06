@@ -31,7 +31,7 @@ return function(props: Props)
     local filled = (props.Appearance == "Filled")
     local indentAmount = props.IndentAmount or 0
 
-    return Row({
+    return Block({
         AutomaticSize = Enum.AutomaticSize.Y,
         Size = UDim2.new(1, 0, 0, 0),
         LayoutOrder = props.LayoutOrder
@@ -51,16 +51,18 @@ return function(props: Props)
         }),
         Button = React.createElement("TextButton", {
             AutomaticSize = Enum.AutomaticSize.X,
+            AnchorPoint = Vector2.new(1, 0),
             BackgroundColor3 = Color3.fromRGB(32, 117, 233),
             BackgroundTransparency = filled and 0 or 0.85,
             FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
             LayoutOrder = 3,
+            Position = UDim2.new(1, 0, 0, 0),
             RichText = true,
-            Size = UDim2.new(0, 50, 0, 30),
+            Size = UDim2.new(0, 100, 0, 30),
             Text = props.ButtonLabel,
             TextColor3 = Color3.fromRGB(255, 255, 255),
             TextSize = 20,
-            TextXAlignment = Enum.TextXAlignment.Left,
+            TextXAlignment = Enum.TextXAlignment.Right,
             [Roact.Event.MouseButton1Click] = props.OnActivated
         }, {
             uiCorner = React.createElement("UICorner"),
