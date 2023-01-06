@@ -55,7 +55,6 @@ return function(props)
                     end
                 end)
             end,
-            
         })
     end
 

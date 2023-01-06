@@ -24,10 +24,7 @@ return function(props)
         }, {
             Button1 = Button({
                 Label = "Initialize Scene",
-                OnActivated = function()
-                    Scene.loadScene()
-                    props.ShowEditFactoryPanel()
-                end,
+                OnActivated = props.OnInitializeScene,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 Width = UDim.new(1, 0)
             }),

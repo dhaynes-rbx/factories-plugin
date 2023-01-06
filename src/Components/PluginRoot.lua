@@ -80,15 +80,22 @@ function PluginRoot:render()
         }, {
             InitializeFactoryUI = (self.state.currentPanel == Panels.InitializeFactoryUI) and React.createElement(InitializeFactoryUI, {
                 Dataset = self.state.dataset,
+                OnInitializeScene = function()
+                    Scene.loadScene()
+                    self:setCurrentPanel(Panels.EditDatasetUI)
+                end
+                
             }, {}),
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 Dataset = self.state.dataset,
                 Title = self.state.currentPanel,
+                
                 ShowEditFactoryPanel = function()
                     print("Showing factory panel...")
                     self:setCurrentPanel(Panels.EditFactoryUI)
                 end,
+
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
@@ -98,10 +105,8 @@ function PluginRoot:render()
 
                     self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
-                UpdateDataset = function(dataset)
-                    self:setState({dataset = dataset})
-                    SceneConfig.updateDataset(dataset)
-                end,
+
+
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
                     local saveFile = SceneConfig.getDatasetInstance()
@@ -118,6 +123,10 @@ function PluginRoot:render()
                 OnClosePanel = function()
                     self:setCurrentPanel(Panels.EditDatasetUI)
                 end,
+                UpdateDataset = function(dataset)
+                    self:setState({dataset = dataset})
+                    SceneConfig.updateDataset(dataset)
+                end,
             }, {}),
 
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
@@ -125,7 +134,7 @@ function PluginRoot:render()
                 MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
-                    self:setCurrentPanel(Panels.EditFactoryUI)
+                    self:setCurrentPanel(Panels.EditDatasetUI)
                 end
             }, {}),
             
