@@ -15,6 +15,7 @@ local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
 
 local DebugUI = require(script.Parent.DebugUI)
+local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
@@ -22,6 +23,8 @@ local Modal = require(script.Parent.Modal)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local Constants = require(script.Parent.Parent.Constants)
+local Panels = Constants.Panels
 
 local PluginRoot = React.Component:extend("PluginGui")
 
@@ -40,7 +43,7 @@ function PluginRoot:init()
         dataset = SceneConfig.getDatasetAsTable()
     end
     self:setState({
-        currentPanel = not Scene.isLoaded() and 1 or 2,
+        currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI,
         selectedMachineAnchor = nil,
         dataset = dataset
     })
@@ -50,9 +53,9 @@ function PluginRoot:init()
     local onSelectionChanged = function()
         if #Selection:Get() >= 1 then
             local obj = Selection:Get()[1]
-            if Scene.isMachine(obj) then
+            if self.state.datasetIsLoaded and Scene.isMachine(obj) then
                 self:setState({selectedMachineAnchor = obj})
-                self:setCurrentPanel(3)
+                self:setCurrentPanel(Panels.EditMachineUI)
             end
         end
     end
@@ -74,13 +77,17 @@ function PluginRoot:render()
             Size = UDim2.new(1, 0, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
-            InitializeFactoryUI = self.state.currentPanel == 1 and React.createElement(InitializeFactoryUI, {
+            InitializeFactoryUI = self.state.currentPanel == Panels.InitializeFactoryUI and React.createElement(InitializeFactoryUI, {
                 Dataset = self.state.dataset,
                 ShowEditFactoryPanel = function()
-                    self:setCurrentPanel(2)
+                    self:setCurrentPanel(Panels.EditFactoryUI)
                 end
             }, {}),
-            EditFactoryUI = self.state.currentPanel == 2 and React.createElement(EditFactoryUI, {
+            EditDatasetUI = self.state.currentPanel == Panels.EditDatasetUI and React.createElement(EditDatasetUI, {
+                Dataset = self.state.dataset,
+                Title = self.state.currentPanel
+            }),
+            EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
 
                 UpdateDataset = function(dataset)
@@ -113,12 +120,12 @@ function PluginRoot:render()
                 end,
             }, {}),
 
-            EditMachineUI = self.state.currentPanel == 3 and React.createElement(EditMachineUI, {
+            EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 Dataset = self.state.dataset,
                 MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
-                    self:setCurrentPanel(2)
+                    self:setCurrentPanel(Panels.EditFactoryUI)
                 end
             }, {}),
             EditProductListUI = nil,

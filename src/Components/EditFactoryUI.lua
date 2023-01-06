@@ -109,15 +109,15 @@ return function(props)
     end
 
     local EditFactoryPanel = Panel({
+        OnClosePanel = props.OnClosePanel,
         Title = "Edit Factory",
+        ShowClose = true,
         Size = UDim2.new(0, 400, 1, 0),
     },{
         ScrollingFrame = React.createElement("ScrollingFrame", {
             Size = UDim2.fromScale(1, 1),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            -- CanvasSize = UDim2.fromScale(1, 0),
-            -- AutomaticCanvasSize = Enum.AutomaticSize.X,
             ScrollingDirection = Enum.ScrollingDirection.Y,
         }, {
             Content = Column({ --This overrides the built-in panel Column
