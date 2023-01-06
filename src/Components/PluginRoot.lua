@@ -65,6 +65,7 @@ function PluginRoot:init()
 end
 
 function PluginRoot:render()
+
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
@@ -114,6 +115,9 @@ function PluginRoot:render()
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
+                OnClosePanel = function()
+                    self:setCurrentPanel(Panels.EditDatasetUI)
+                end,
             }, {}),
 
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {

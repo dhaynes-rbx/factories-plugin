@@ -68,7 +68,6 @@ return function(props)
 
     if datasetIsLoaded then
         
-
         children["scene"] = createTextChangingButton("scene", map, 0)
         children["id"] = createTextChangingButton("id", map, 1)
         children["locName"] = createTextChangingButton("locName", map, 2)
