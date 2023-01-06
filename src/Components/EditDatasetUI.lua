@@ -22,9 +22,7 @@ local SidePanel = require(script.Parent.SidePanel)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
-local function add(children, element)
-    table.insert(children, element)
-end
+local add = require(script.Parent.Helpers.add)
 
 type Props = {
 

@@ -53,7 +53,7 @@ function PluginRoot:init()
     local onSelectionChanged = function()
         if #Selection:Get() >= 1 then
             local obj = Selection:Get()[1]
-            if self.state.datasetIsLoaded and Scene.isMachine(obj) then
+            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(obj) then
                 self:setState({selectedMachineAnchor = obj})
                 self:setCurrentPanel(Panels.EditMachineUI)
             end

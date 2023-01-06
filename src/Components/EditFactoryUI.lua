@@ -22,6 +22,8 @@ local SidePanel = require(script.Parent.SidePanel)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
+local add = require(script.Parent.Helpers.add)
+
 local indentAmount = 40
 
 return function(props)
