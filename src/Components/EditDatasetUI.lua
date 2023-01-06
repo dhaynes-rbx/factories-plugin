@@ -41,6 +41,7 @@ local function EditDatasetUI(props:Props)
     if datasetIsLoaded then
         add(children, Button({
             Label = "Edit Factory",
+            OnActivated = props.ShowEditFactoryPanel,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
@@ -61,7 +62,7 @@ local function EditDatasetUI(props:Props)
 
         add(children, Button({
             Label = "Export Dataset",
-            -- OnActivated = props.ExportDataset,
+            OnActivated = props.ExportDataset,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))

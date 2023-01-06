@@ -77,24 +77,17 @@ function PluginRoot:render()
             Size = UDim2.new(1, 0, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
-            InitializeFactoryUI = self.state.currentPanel == Panels.InitializeFactoryUI and React.createElement(InitializeFactoryUI, {
+            InitializeFactoryUI = (self.state.currentPanel == Panels.InitializeFactoryUI) and React.createElement(InitializeFactoryUI, {
                 Dataset = self.state.dataset,
-                ShowEditFactoryPanel = function()
-                    self:setCurrentPanel(Panels.EditFactoryUI)
-                end
             }, {}),
-            EditDatasetUI = self.state.currentPanel == Panels.EditDatasetUI and React.createElement(EditDatasetUI, {
-                Dataset = self.state.dataset,
-                Title = self.state.currentPanel
-            }),
-            EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
-                Dataset = self.state.dataset,
 
-                UpdateDataset = function(dataset)
-                    self:setState({dataset = dataset})
-                    SceneConfig.updateDataset(dataset)
+            EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
+                Dataset = self.state.dataset,
+                Title = self.state.currentPanel,
+                ShowEditFactoryPanel = function()
+                    print("Showing factory panel...")
+                    self:setCurrentPanel(Panels.EditFactoryUI)
                 end,
-
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
@@ -104,7 +97,10 @@ function PluginRoot:render()
 
                     self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
-
+                UpdateDataset = function(dataset)
+                    self:setState({dataset = dataset})
+                    SceneConfig.updateDataset(dataset)
+                end,
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
                     local saveFile = SceneConfig.getDatasetInstance()
@@ -114,10 +110,10 @@ function PluginRoot:render()
                         print("File saved")
                     end
                 end,
+            }),
 
-                ForceUpdate = function()
-                    self:forceUpdate()
-                end,
+            EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
+                Dataset = self.state.dataset,
             }, {}),
 
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
@@ -128,6 +124,7 @@ function PluginRoot:render()
                     self:setCurrentPanel(Panels.EditFactoryUI)
                 end
             }, {}),
+            
             EditProductListUI = nil,
             EditPowerupListUI = nil,
         })

@@ -63,36 +63,11 @@ return function(props)
     local map = datasetIsLoaded and dataset.maps[2] or nil
 
     local children = {
-        Spacer = Block({
-            Height = 10,
-            LayoutOrder = 100,
-        }),
-        ImportJSONButton = Button({
-            Label = "Import Dataset",
-            LayoutOrder = 110,
-            OnActivated = props.ImportDataset,
-            Size = UDim2.new(1, 0, 0, 0),
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }),
+
     }
 
     if datasetIsLoaded then
-        children["ExportJSONButton"] = Button({
-            Label = "Export Dataset",
-            LayoutOrder = 120,
-            OnActivated = props.ExportDataset,
-            Size = UDim2.new(1, 0, 0, 0),
-            TextXAlignment = Enum.TextXAlignment.Center,
-        })
-        children["ShowOrHideDatasetButton"] = Button({
-            Label = showDatasetInfoPanel and "Hide Dataset View" or "Show Dataset View",
-            LayoutOrder = 130,
-            OnActivated = function()
-                setShowDatasetInfoPanel(not showDatasetInfoPanel)
-            end,
-            Size = UDim2.new(1, 0, 0, 20),
-            TextXAlignment = Enum.TextXAlignment.Center,
-        })
+        
 
         children["scene"] = createTextChangingButton("scene", map, 0)
         children["id"] = createTextChangingButton("id", map, 1)
