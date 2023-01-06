@@ -28,16 +28,22 @@ return function(props)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    local valueType, setValueType = React.useState(nil)
 
     local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
 
-    local createTextChangingButton = function(key, object, layoutOrder, indent)
+    local createTextChangingButton = function(key, object, layoutOrder, indent, isNumber)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(object[key]),
             IndentAmount = indent,
             Label = key..": ",
             LayoutOrder = layoutOrder or 1,
             OnActivated = function()
+                if isNumber then
+                    setValueType("number")
+                else
+                    setValueType("string")
+                end
                 --set modal enabled
                 setModalEnabled(true)
                 setCurrentFieldKey(key)
@@ -48,6 +54,7 @@ return function(props)
                     end
                 end)
             end,
+            
         })
     end
 
@@ -92,12 +99,12 @@ return function(props)
         children["locName"] = createTextChangingButton("locName", map, 2)
         -- children["locDesc"] = createTextChangingButton("locDesc", map, 3)
         -- children["thumb"] = createTextChangingButton("thumb", map, 4)
-        children["stepsPerRun"] = createTextChangingButton("stepsPerRun", map, 5)
+        children["stepsPerRun"] = createTextChangingButton("stepsPerRun", map, 5, 0, true)
         children["stepUnit"] = SmallLabel({Label = "stepUnit", LayoutOrder = 6})
         children["singular"] = createTextChangingButton("singular", map["stepUnit"], 7, indentAmount)
         children["plural"] = createTextChangingButton("plural", map["stepUnit"], 8, indentAmount)
         children["defaultInventory"] = SmallLabel({Label = "defaultInventory", LayoutOrder = 9})
-        children["currency"] = createTextChangingButton("currency", map["defaultInventory"], 10, indentAmount)
+        children["currency"] = createTextChangingButton("currency", map["defaultInventory"], 10, indentAmount, true)
         
     end
 
@@ -199,6 +206,7 @@ return function(props)
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
+            IsNumber = valueType,
             Key = currentFieldKey,
             Value = currentFieldValue,
             OnConfirm = function(value)
