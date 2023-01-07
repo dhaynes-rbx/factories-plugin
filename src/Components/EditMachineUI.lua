@@ -1,101 +1,142 @@
 local HttpService = game:GetService("HttpService")
-local Selection = game:GetService("Selection")
-
+local StudioService = game:GetService("StudioService")
 local Packages = script.Parent.Parent.Packages
-local React = Packages.React
 local Dash = require(Packages.Dash)
-local Types = require(script.Parent.Parent.Types)
 local React = require(Packages.React)
+local Roact = require(Packages.Roact)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
-
 local Block = FishBloxComponents.Block
 local Button = FishBloxComponents.Button
 local Column = FishBloxComponents.Column
+local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
-local Row = FishBloxComponents.Row
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
-local Vector2Row = require(script.Parent.Vector2Row)
+local Modal = require(script.Parent.Modal)
+local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
+local SmallLabel = require(script.Parent.SmallLabel)
+local SidePanel = require(script.Parent.SidePanel)
 
-return function(props)
-    
-    -- local showModal, setShowModal = React.useState({enabled = true, machineProperty = "locName"))
+local Scene = require(script.Parent.Parent.Scene)
+local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
-    local dataset = props.Dataset
-    local machineAnchor = props.MachineAnchor
-    -- print(dataset["maps"][2]["machines"][1].coordinates)
-    --Find the machine anchor's corresponding machine entry in the dataset
-    local machine : Types.Machine = nil
-    local coordString = string.sub(machineAnchor.Name, 2, #machineAnchor.Name - 1):split(",")
-    local map = dataset["maps"][2] --Only worried about non-tutorial maps for now
-    local machines = map["machines"]
-    for _, val in machines do
-        if coordString[1] == tostring(val.coordinates.X) then
-            if coordString[2] == tostring(val.coordinates.Y) then
-                machine = val
-                break
-            end
+local add = require(script.Parent.Helpers.add)
+
+type Props = {
+
+}
+
+local function getMachineFromCoordinates(x, y, map)
+    local machine = nil
+    for _,v in map["machines"] do
+        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
+            machine = v
         end
     end
-
-    -- "id": "rubberPurchaser",
-    -- "type": "purchaser",
-    -- "locName": "Rubber Purchaser",
-    -- "thumb": "",
-    -- "asset": "Assets.Machines.Purchaser",
-    -- "defaultProductionDelay": 0,
-    -- "defaultMaxStorage": 2000,
-    -- "state": "ready",
-    -- "currentOutputIndex": 1,
-    -- "currentOutputCount": 125,
-    -- "outputRange": {
-    --     "min": 0,
-    --     "max": 1000
-    -- },
-    -- "outputs": [
-    --     "rubber"
-    -- ],
-    -- "storage": {},
-    -- "coordinates": {
-    --     "X": -2,
-    --     "Y": 1
-    -- },
-    -- "supportsPowerup": false
-
-    local contents = {
-        MachineNameText = Text({
-            Bold = true,
-            Color = Color3.new(1,1,1),
-            FontSize = 24,
-            LayoutOrder = 1,
-            RichText = true,
-            Text = machine.locName,
-        }),
-        Coordinates = Vector2Row({
-            Label = "Coordinates",
-            LayoutOrder = 2,
-            X = machine.coordinates.X, 
-            Y = machine.coordinates.Y
-        }),
-
-    }
-
-    return Panel({
-        OnClosePanel = props.OnClosePanel,
-        ShowClose = true,
-        Size = UDim2.new(0, 300, 1, 0),
-        Title = "Edit Machine",
-    }, {
-        Content = Column({ --This overrides the built-in panel Column
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Gaps = 8,
-            HorizontalAlignment = Enum.HorizontalAlignment.Left,
-            PaddingHorizontal = 20,
-            PaddingVertical = 20,
-            Width = 300,
-        }, contents)
-    })
+    return machine
 end
 
+local callbacks = {}
+return function(props:Props)
+
+    local modalEnabled, setModalEnabled = React.useState(false)
+    local currentFieldKey, setCurrentFieldKey = React.useState(nil)
+    local currentFieldValue, setCurrentFieldValue = React.useState(nil)
+    local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    local valueType, setValueType = React.useState(nil)
+
+    local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
+    local dataset = props.Dataset
+    local map = datasetIsLoaded and dataset.maps[2] or nil
+
+    callbacks.OnModalConfirm = function(value)
+        setModalEnabled(false)
+        currentFieldCallback(value)
+        props.UpdateDataset(dataset)
+    end
+    callbacks.OnClosePanel = function()
+        setModalEnabled(false)
+        setCurrentFieldKey(nil)
+        setCurrentFieldValue(nil)
+        setCurrentFieldCallback(nil)
+    end
+
+    local createTextChangingButton = function(key, object, isNumber)
+        print(key, object)
+        return SmallButtonWithLabel({
+            ButtonLabel = tostring(object[key]),
+            Label = key..": ",
+            OnActivated = function()
+                if isNumber then
+                    setValueType("number")
+                else
+                    setValueType("string")
+                end
+                --set modal enabled
+                setModalEnabled(true)
+                setCurrentFieldKey(key)
+                setCurrentFieldValue(object[key])
+                setCurrentFieldCallback(function()
+                    return function(value)
+                        object[key] = value
+                    end
+                end)
+            end,
+        })
+    end
+
+    local buttonSize = UDim2.new(1,0,0,0)
+
+    local name = props.MachineAnchor.Name
+    local x, y = table.unpack(string.split(string.sub(name, 2, #name - 1), ","))
+    x = tonumber(x)
+    y = tonumber(y)
+    local machine = getMachineFromCoordinates(x, y, map)
+    local machineFields = {}
+
+    local children = {}
+
+    if datasetIsLoaded then
+        add(children, createTextChangingButton("id", machine))
+        add(children, createTextChangingButton("type", machine))
+        add(children, createTextChangingButton("defaultProductionDelay", machine, true))
+        add(children, createTextChangingButton("defaultMaxStorage", machine, true))
+        add(children, createTextChangingButton("currentOutputIndex", machine, true))
+        add(children, createTextChangingButton("currentOutputCount", machine, true))
+        add(children, SmallLabel({Label = "outputRange"}))
+        add(children, createTextChangingButton("min", machine["outputRange"], true))
+        add(children, createTextChangingButton("max", machine["outputRange"], true))
+        add(children, SmallLabel({Label = "outputs"}))
+        add(children, SmallLabel({Label = "coordinates"}))
+        add(children, createTextChangingButton("X", machine["coordinates"], true))
+        add(children, createTextChangingButton("Y", machine["coordinates"], true))
+        add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerups"])}))
+    end
+
+    return React.createElement(React.Fragment, nil, {
+        EditMachineUI = SidePanel({
+        OnClosePanel = props.OnClosePanel,
+        ShowClose = true,
+        Title = "Edit Machine "..props.MachineAnchor.Name
+        }, children),
+
+        Modal = modalEnabled and Modal({
+            IsNumber = valueType,
+            Key = currentFieldKey,
+            Value = currentFieldValue,
+            OnConfirm = function(value)
+                props.UpdateDataset(dataset)
+                setModalEnabled(false)
+                currentFieldCallback(value)
+            end,
+            OnClosePanel = function()
+                setModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(nil)
+            end
+        }),
+    })
+end

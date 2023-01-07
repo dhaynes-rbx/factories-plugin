@@ -65,7 +65,8 @@ function PluginRoot:init()
 end
 
 function PluginRoot:render()
-
+    -- print("Dataset at beginning of render...", self.state.dataset)
+    
     --TODO: Figure out why the ribbon tool keeps getting set to None
     getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
 
@@ -92,7 +93,6 @@ function PluginRoot:render()
                 Title = self.state.currentPanel,
                 
                 ShowEditFactoryPanel = function()
-                    print("Showing factory panel...")
                     self:setCurrentPanel(Panels.EditFactoryUI)
                 end,
 
@@ -124,8 +124,8 @@ function PluginRoot:render()
                     self:setCurrentPanel(Panels.EditDatasetUI)
                 end,
                 UpdateDataset = function(dataset)
-                    self:setState({dataset = dataset})
                     SceneConfig.updateDataset(dataset)
+                    self:setState({dataset = dataset})
                 end,
             }, {}),
 
@@ -135,7 +135,11 @@ function PluginRoot:render()
                 OnClosePanel = function()
                     Selection:Set({})
                     self:setCurrentPanel(Panels.EditDatasetUI)
-                end
+                end,
+                UpdateDataset = function(dataset)
+                    self:setState({dataset = dataset})
+                    SceneConfig.updateDataset(dataset)
+                end,
             }, {}),
             
             EditProductListUI = nil,

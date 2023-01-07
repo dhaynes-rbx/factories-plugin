@@ -33,7 +33,9 @@ return function(props)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
     local valueType, setValueType = React.useState(nil)
 
-    local showDatasetInfoPanel, setShowDatasetInfoPanel = React.useState(false)
+    local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
+    local dataset = props.Dataset
+    local map = datasetIsLoaded and dataset.maps[2] or nil
 
     local createTextChangingButton = function(key, object, layoutOrder, indent, isNumber)
         return SmallButtonWithLabel({
@@ -60,16 +62,12 @@ return function(props)
         })
     end
 
-    local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
-    local dataset = props.Dataset
-    local map = datasetIsLoaded and dataset.maps[2] or nil
 
     local children = {
 
     }
 
     if datasetIsLoaded then
-
         children["scene"] = createTextChangingButton("scene", map, 0)
         children["id"] = createTextChangingButton("id", map, 1)
         children["locName"] = createTextChangingButton("locName", map, 2)
@@ -99,6 +97,7 @@ return function(props)
             OnConfirm = function(value)
                 setModalEnabled(false)
                 currentFieldCallback(value)
+                --Once the value has been changed, update the dataset and write it to the datasetInstance.
                 props.UpdateDataset(dataset)
             end,
             OnClosePanel = function()
