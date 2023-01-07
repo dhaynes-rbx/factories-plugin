@@ -21,6 +21,7 @@ local SidePanel = require(script.Parent.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
 
@@ -56,6 +57,8 @@ return function(props)
                 setCurrentFieldCallback(function()
                     return function(value)
                         object[key] = value
+                        setModalEnabled(false)
+                        Studio.setSelectionTool()
                     end
                 end)
             end,
@@ -91,11 +94,8 @@ return function(props)
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
         Modal = modalEnabled and Modal({
-            IsNumber = valueType,
             Key = currentFieldKey,
-            Value = currentFieldValue,
             OnConfirm = function(value)
-                setModalEnabled(false)
                 currentFieldCallback(value)
                 --Once the value has been changed, update the dataset and write it to the datasetInstance.
                 props.UpdateDataset(dataset)
@@ -105,7 +105,9 @@ return function(props)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
                 setCurrentFieldCallback(nil)
-            end
+            end,
+            Value = currentFieldValue,
+            ValueType = valueType,
         }),
     })
 end

@@ -21,6 +21,7 @@ local SidePanel = require(script.Parent.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
 
@@ -38,7 +39,6 @@ local function getMachineFromCoordinates(x, y, map)
     return machine
 end
 
-local callbacks = {}
 return function(props:Props)
 
     local modalEnabled, setModalEnabled = React.useState(false)
@@ -51,20 +51,7 @@ return function(props:Props)
     local dataset = props.Dataset
     local map = datasetIsLoaded and dataset.maps[2] or nil
 
-    callbacks.OnModalConfirm = function(value)
-        setModalEnabled(false)
-        currentFieldCallback(value)
-        props.UpdateDataset(dataset)
-    end
-    callbacks.OnClosePanel = function()
-        setModalEnabled(false)
-        setCurrentFieldKey(nil)
-        setCurrentFieldValue(nil)
-        setCurrentFieldCallback(nil)
-    end
-
     local createTextChangingButton = function(key, object, isNumber)
-        print(key, object)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(object[key]),
             Label = key..": ",
@@ -81,24 +68,33 @@ return function(props:Props)
                 setCurrentFieldCallback(function()
                     return function(value)
                         object[key] = value
+                        
+                        --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
+                        --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
+                        if props.MachineAnchor and (key == "X" or key == "Y") then
+                            props.MachineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                        end
+
+                        setModalEnabled(false)
+                        Studio.setSelectionTool()
                     end
                 end)
             end,
         })
     end
 
-    local buttonSize = UDim2.new(1,0,0,0)
-
     local name = props.MachineAnchor.Name
     local x, y = table.unpack(string.split(string.sub(name, 2, #name - 1), ","))
     x = tonumber(x)
     y = tonumber(y)
     local machine = getMachineFromCoordinates(x, y, map)
-    local machineFields = {}
 
     local children = {}
 
-    if datasetIsLoaded then
+    -- print("Machine", machine)
+    -- print("Map", map)
+
+    if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
         add(children, createTextChangingButton("type", machine))
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))
@@ -115,6 +111,15 @@ return function(props:Props)
         add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerups"])}))
     end
 
+    if not machine then
+        add(children, Text({
+            Color = Color3.new(1, 0, 0),
+            FontSize = 24,
+            Text = "Error: Machine Anchor "..props.MachineAnchor.Name.." does not have corresponding machine data in this dataset!",
+        }))
+    end
+
+
     return React.createElement(React.Fragment, nil, {
         EditMachineUI = SidePanel({
         OnClosePanel = props.OnClosePanel,
@@ -123,20 +128,21 @@ return function(props:Props)
         }, children),
 
         Modal = modalEnabled and Modal({
-            IsNumber = valueType,
             Key = currentFieldKey,
-            Value = currentFieldValue,
             OnConfirm = function(value)
-                props.UpdateDataset(dataset)
-                setModalEnabled(false)
                 currentFieldCallback(value)
+                --Make sure to change the name of the machine.
+
+                props.UpdateDataset(dataset)
             end,
             OnClosePanel = function()
                 setModalEnabled(false)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
                 setCurrentFieldCallback(nil)
-            end
+            end,
+            Value = currentFieldValue,
+            ValueType = valueType,
         }),
     })
 end

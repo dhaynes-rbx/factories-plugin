@@ -10,11 +10,19 @@ local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 
-local function Modal(props)
+type Props = {
+    Key: string,
+    OnClosePanel: any,
+    OnConfirm: any,
+    Value: string | number,
+    ValueType: string,
+}
+
+local function Modal(props: Props)
     
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
-    local isNumber = props.IsNumber == "number"
+    local isNumber = props.ValueType == "number"
 
     -- return Overlay({
     --     Size = UDim2.new(1, 40,1, 40),

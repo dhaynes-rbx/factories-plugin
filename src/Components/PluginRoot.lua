@@ -25,16 +25,17 @@ local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Constants = require(script.Parent.Parent.Constants)
 local Panels = Constants.Panels
+local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
 
 function PluginRoot:setCurrentPanel(panelId)
     self:setState({currentPanel = panelId})
-    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+    Studio.setSelectionTool()
 end
 
 function PluginRoot:init()
-    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+    Studio.setSelectionTool()
 
     self.machines = Scene.getMachines()
     
@@ -68,7 +69,7 @@ function PluginRoot:render()
     -- print("Dataset at beginning of render...", self.state.dataset)
     
     --TODO: Figure out why the ribbon tool keeps getting set to None
-    getfenv(0).plugin:SelectRibbonTool(Enum.RibbonTool.Select, UDim2.new())
+    Studio.setSelectionTool()
 
     return React.createElement("ScreenGui", {}, {
         Block({
