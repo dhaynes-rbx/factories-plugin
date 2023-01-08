@@ -32,9 +32,28 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
 
-function PluginRoot:setCurrentPanel(panelId)
-    self:setState({currentPanel = panelId})
+function PluginRoot:setPanel()
+    self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})
     Studio.setSelectionTool()
+end
+
+function PluginRoot:setCurrentPanel(panelId)
+    if panelId == self.state.panelStack[#self.state.panelStack] then
+        Studio.setSelectionTool()
+        return
+    end
+    if panelId == Panels.EditDatasetUI then
+        table.clear(self.state.panelStack)
+    end
+    table.insert(self.state.panelStack, panelId)
+    self:setPanel()
+end
+
+function PluginRoot:showPreviousPanel()
+    local stack = self.state.panelStack
+    table.remove(stack, #stack)
+    local newPanel = stack[#stack]
+    self:setPanel()
 end
 
 function PluginRoot:init()
@@ -46,10 +65,12 @@ function PluginRoot:init()
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetAsTable()
     end
+    local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
-        currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI,
+        currentPanel = currentPanel,
+        dataset = dataset,
+        panelStack = {currentPanel},
         selectedMachineAnchor = nil,
-        dataset = dataset
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
@@ -135,7 +156,7 @@ function PluginRoot:render()
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
                     SceneConfig.updateDataset(dataset)
@@ -146,7 +167,7 @@ function PluginRoot:render()
             EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
                     SceneConfig.updateDataset(dataset)
@@ -161,7 +182,7 @@ function PluginRoot:render()
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
                     SceneConfig.updateDataset(dataset)
@@ -172,7 +193,7 @@ function PluginRoot:render()
             EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
                     SceneConfig.updateDataset(dataset)
@@ -186,7 +207,7 @@ function PluginRoot:render()
                 MachineAnchor = self.state.selectedMachineAnchor, 
                 OnClosePanel = function()
                     Selection:Set({})
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
                     self:setState({dataset = dataset})

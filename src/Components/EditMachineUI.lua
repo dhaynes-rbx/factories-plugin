@@ -43,7 +43,7 @@ return function(props:Props)
     local dataset = props.Dataset
     local map = datasetIsLoaded and dataset.maps[2] or nil
 
-    local createTextChangingButton = function(key, object, isNumber)
+    local createTextChangingButton = function(key:string, object:table, isNumber:boolean)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(object[key]),
             Label = key..": ",
@@ -86,7 +86,11 @@ return function(props:Props)
 
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
-        add(children, createTextChangingButton("type", machine))
+        -- add(children, createTextChangingButton("type", machine))
+        add(children, createTextChangingButton("locName", machine))
+        add(children, SmallLabel({Label = "coordinates"}))
+        add(children, createTextChangingButton("X", machine["coordinates"], true))
+        add(children, createTextChangingButton("Y", machine["coordinates"], true))
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))
         add(children, createTextChangingButton("defaultMaxStorage", machine, true))
         add(children, createTextChangingButton("currentOutputIndex", machine, true))
@@ -95,9 +99,6 @@ return function(props:Props)
         add(children, createTextChangingButton("min", machine["outputRange"], true))
         add(children, createTextChangingButton("max", machine["outputRange"], true))
         add(children, SmallLabel({Label = "outputs"}))
-        add(children, SmallLabel({Label = "coordinates"}))
-        add(children, createTextChangingButton("X", machine["coordinates"], true))
-        add(children, createTextChangingButton("Y", machine["coordinates"], true))
         add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerups"])}))
     end
 
