@@ -32,13 +32,20 @@ type Props = {
 
 local function EditMachinesListUI(props: Props)
 
+    local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
+    local dataset = props.Dataset
+    local map = datasetIsLoaded and dataset.maps[2] or nil
+
+    local children = {}
+    for i,v in map["machines"] do
+        add(children, SmallButtonWithLabel({Label = v.id, ButtonLabel = "Edit"}))
+    end
+
     return SidePanel({
             Title = "Edit Machines List",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
-        }, {
-
-        }
+        }, children
     )
 end
 

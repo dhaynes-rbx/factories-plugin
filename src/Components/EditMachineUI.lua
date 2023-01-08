@@ -113,9 +113,9 @@ return function(props:Props)
 
     return React.createElement(React.Fragment, nil, {
         EditMachineUI = SidePanel({
-        OnClosePanel = props.OnClosePanel,
-        ShowClose = true,
-        Title = "Edit Machine "..props.MachineAnchor.Name
+            OnClosePanel = props.OnClosePanel,
+            ShowClose = true,
+            Title = "Edit Machine "..props.MachineAnchor.Name
         }, children),
 
         Modal = modalEnabled and Modal({
