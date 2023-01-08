@@ -36,7 +36,8 @@ return function(props, children)
     },{
         ScrollingFrame = React.createElement("ScrollingFrame", {
             AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.fromScale(1, 0),
+            CanvasSize = UDim2.new(0, 0, 5, 0),
+            Size = UDim2.fromScale(1, 1),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
             ScrollingDirection = Enum.ScrollingDirection.Y,
