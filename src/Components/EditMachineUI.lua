@@ -25,6 +25,7 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
 local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
+local getCoordinatesFromName = require(script.Parent.Helpers.getCoordinatesFromName)
 
 type Props = {
 
@@ -75,9 +76,7 @@ return function(props:Props)
     end
 
     local name = props.MachineAnchor.Name
-    local x, y = table.unpack(string.split(string.sub(name, 2, #name - 1), ","))
-    x = tonumber(x)
-    y = tonumber(y)
+    local x, y = getCoordinatesFromName(name)
     local machine = getMachineFromCoordinates(x, y, map)
 
     local children = {}

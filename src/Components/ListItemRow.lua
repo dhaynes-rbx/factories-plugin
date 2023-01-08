@@ -29,7 +29,6 @@ type Props = {
 return function(props: Props)
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
-    local indentAmount = props.IndentAmount or 0
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),
@@ -46,45 +45,53 @@ return function(props: Props)
         })
     }
 
-    return Row({
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Gaps = 8,
-        Size = UDim2.new(1, 0, 0, 0),
-        LayoutOrder = props.LayoutOrder
+    return Column({
+
     }, {
-        Label = hasLabel and SmallLabel({
-            Bold = false,
-            Label = props.Label,
-            LayoutOrder = 1,
+        Row = Row({
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Gaps = 8,
+            Size = UDim2.new(1, 0, 0, 0),
+            LayoutOrder = props.LayoutOrder
+        }, {
+            Label = hasLabel and SmallLabel({
+                Bold = false,
+                Label = props.Label,
+                LayoutOrder = 1,
+            }),
+            EditButton = React.createElement("TextButton", {
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundColor3 = Color3.fromRGB(32, 117, 233),
+                BackgroundTransparency = filled and 0 or 0.85,
+                FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
+                LayoutOrder = 2,
+                RichText = true,
+                Size = UDim2.new(0, 30, 0, 30),
+                Text = "Edit",
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 20,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                [Roact.Event.MouseButton1Click] = function() print("Edit Clicked") end,
+            }, buttonStyle),
+            DeleteButton = React.createElement("TextButton", {
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundColor3 = Color3.fromRGB(32, 117, 233),
+                BackgroundTransparency = filled and 0 or 0.85,
+                FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
+                LayoutOrder = 3,
+                RichText = true,
+                Size = UDim2.new(0, 30, 0, 30),
+                Text = "Del",
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 20,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                [Roact.Event.MouseButton1Click] = function() print("Delete Clicked") end,
+            }, buttonStyle),
+            
         }),
-        EditButton = React.createElement("TextButton", {
-            AutomaticSize = Enum.AutomaticSize.X,
-            BackgroundColor3 = Color3.fromRGB(32, 117, 233),
-            BackgroundTransparency = filled and 0 or 0.85,
-            FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
-            LayoutOrder = 2,
-            RichText = true,
-            Size = UDim2.new(0, 30, 0, 30),
-            Text = "Edit",
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 20,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            [Roact.Event.MouseButton1Click] = function() print("Edit Clicked") end,
-        }, buttonStyle),
-        DeleteButton = React.createElement("TextButton", {
-            AutomaticSize = Enum.AutomaticSize.X,
-            BackgroundColor3 = Color3.fromRGB(32, 117, 233),
-            BackgroundTransparency = filled and 0 or 0.85,
-            FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
-            LayoutOrder = 3,
-            RichText = true,
-            Size = UDim2.new(0, 30, 0, 30),
-            Text = "Del",
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 20,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            [Roact.Event.MouseButton1Click] = function() print("Delete Clicked") end,
-        }, buttonStyle),
-        
+        Error = props.ShowError and Text({
+            Text = "Cannot find corresponding Machine Anchor ("..props.Coordinates.X..","..props.Coordinates.Y..")!",
+            Color = Color3.new(1, 0, 0),
+        }),
     })
 end
