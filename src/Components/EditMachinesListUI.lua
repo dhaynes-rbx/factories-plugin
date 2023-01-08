@@ -30,14 +30,6 @@ local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCo
 
 type Props = {}
 
-local function getMachineAnchorFromCoordinates(x, y)
-    -- local name = props.MachineAnchor.Name
-    -- local x, y = table.unpack(string.split(string.sub(name, 2, #name - 1), ","))
-    -- x = tonumber(x)
-    -- y = tonumber(y)
-    -- local machine = getMachineFromCoordinates(x, y, map)
-end
-
 local function EditMachinesListUI(props: Props)
 	local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
 	local dataset = props.Dataset
@@ -59,13 +51,17 @@ local function EditMachinesListUI(props: Props)
         local x = tonumber(v["coordinates"]["X"])
         local y = tonumber(v["coordinates"]["Y"])
         assert((x or y), "Machine coordinate error in data!")
-        local showError: boolean = not Scene.isMachine(Scene.getMachineAnchor(x,y))
+        local machineAnchor = Scene.getMachineAnchor(x,y)
+        local showError: boolean = not Scene.isMachine(machineAnchor)
         local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
 		add(children, ListItemRow({
-            Label = v.id, 
             ButtonLabel = "Edit",
-            ErrorText = errorText
+            ErrorText = errorText,
+            Label = v.id,
+            Machine = v,
+            MachineAnchor = machineAnchor,
+            OnMachineEditClicked = props.OnMachineEditClicked
          }))
 	end
 

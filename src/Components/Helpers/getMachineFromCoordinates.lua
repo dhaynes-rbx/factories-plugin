@@ -1,3 +1,4 @@
+--returns the machine data in the dataset, based on the coordinates provided
 return function(x, y, map)
     local machine = nil
     for _,v in map["machines"] do

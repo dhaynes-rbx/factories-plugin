@@ -71,7 +71,6 @@ end
 function PluginRoot:render()
     -- print("Dataset at beginning of render...", self.state.dataset)
     
-    --TODO: Figure out why the ribbon tool keeps getting set to None
     Studio.setSelectionTool()
 
     return React.createElement("ScreenGui", {}, {
@@ -153,6 +152,10 @@ function PluginRoot:render()
                     SceneConfig.updateDataset(dataset)
                     self:setState({dataset = dataset})
                 end,
+                OnMachineEditClicked = function(machineAnchor)
+                    print(typeof(machineAnchor))
+                    Selection:Set({machineAnchor})
+                end
             }),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
@@ -179,7 +182,8 @@ function PluginRoot:render()
 
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 Dataset = self.state.dataset,
-                MachineAnchor = self.state.selectedMachineAnchor,
+                --TODO: Change this to take the machine data object as an input, not the anchor
+                MachineAnchor = self.state.selectedMachineAnchor, 
                 OnClosePanel = function()
                     Selection:Set({})
                     self:setCurrentPanel(Panels.EditDatasetUI)

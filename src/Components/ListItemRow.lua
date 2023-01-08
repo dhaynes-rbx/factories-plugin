@@ -29,6 +29,7 @@ type Props = {
 return function(props: Props)
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
+    local showError = props.ErrorText or false
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),
@@ -45,7 +46,6 @@ return function(props: Props)
         })
     }
 
-    local showError = props.ErrorText or false
     return Column({
     }, {
         Row = Row({
@@ -71,7 +71,9 @@ return function(props: Props)
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
-                [Roact.Event.MouseButton1Click] = function() print("Edit Clicked") end,
+                [Roact.Event.MouseButton1Click] = function()
+                    props.OnMachineEditClicked(props.MachineAnchor)
+                end,
             }, buttonStyle),
             DeleteButton = React.createElement("TextButton", {
                 AutomaticSize = Enum.AutomaticSize.X,
