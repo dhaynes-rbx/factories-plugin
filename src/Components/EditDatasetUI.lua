@@ -45,11 +45,19 @@ local function EditDatasetUI(props:Props)
         }))
         add(children, Button({
             Label = "Edit Machine List",
+            OnActivated = props.ShowEditMachinesListUI,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
         add(children, Button({
             Label = "Edit Items List",
+            OnActivated = props.ShowEditItemsListUI,
+            Size = buttonSize,
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, Button({
+            Label = "Edit Powerups List",
+            OnActivated = props.ShowEditPowerupsListUI,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))

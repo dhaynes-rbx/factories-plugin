@@ -24,20 +24,11 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
+local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 type Props = {
 
 }
-
-local function getMachineFromCoordinates(x, y, map)
-    local machine = nil
-    for _,v in map["machines"] do
-        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
-            machine = v
-        end
-    end
-    return machine
-end
 
 return function(props:Props)
 

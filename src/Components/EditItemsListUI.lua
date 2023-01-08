@@ -17,36 +17,31 @@ local TextInput = FishBloxComponents.TextInput
 local Modal = require(script.Parent.Modal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
+local SidePanel = require(script.Parent.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local Studio = require(script.Parent.Parent.Studio)
 
-return function(props, children)
-    children = children or {}
-    local showClose = props.ShowClose
-    if props.ShowClose == nil then
-        showClose = true
-    end
+local add = require(script.Parent.Helpers.add)
+local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
-    return Panel({
-        OnClosePanel = props.OnClosePanel,
-        Title = props.Title,
-        ShowClose = showClose,
-        Size = UDim2.new(0, 400, 1, 0),
-    },{
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.fromScale(1, 0),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            ScrollingDirection = Enum.ScrollingDirection.Y,
-        },{
-            Content = Column({ --This overrides the built-in panel Column
-            -- AutomaticSize = Enum.AutomaticSize.Y,
-            Gaps = 8,
-            PaddingHorizontal = 20,
-            PaddingTop = 5,
-            }, children)
-        })
-    })
+type Props = {
+
+}
+
+local function EditItemsListUI(props: Props)
+
+    return SidePanel({
+            Title = "Edit Items List",
+            ShowClose = true,
+            OnClosePanel = props.OnClosePanel,
+        }, {
+
+        }
+    )
+end
+
+return function(props)
+    return React.createElement(EditItemsListUI, props)
 end

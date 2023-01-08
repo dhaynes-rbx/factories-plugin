@@ -18,6 +18,9 @@ local DebugUI = require(script.Parent.DebugUI)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
+local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
+local EditItemsListUI = require(script.Parent.EditItemsListUI)
+local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
 
@@ -76,7 +79,7 @@ function PluginRoot:render()
             PaddingLeft = 20,
             PaddingRight = 20,
             PaddingTop = 20,
-            PaddingBottom = 90,
+            PaddingBottom = 20,
             Size = UDim2.new(1, 0, 1, 0),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
@@ -97,6 +100,18 @@ function PluginRoot:render()
                     self:setCurrentPanel(Panels.EditFactoryUI)
                 end,
 
+                ShowEditMachinesListUI = function()
+                   self:setCurrentPanel(Panels.EditMachinesListUI) 
+                end,
+
+                ShowEditItemsListUI = function()
+                    self:setCurrentPanel(Panels.EditItemsListUI)
+                end,
+
+                ShowEditPowerupsListUI = function()
+                    self:setCurrentPanel(Panels.EditPowerupsListUI)
+                end,
+
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
@@ -106,7 +121,6 @@ function PluginRoot:render()
 
                     self:setState({dataset = dataset, datasetIsLoaded = true})
                 end,
-
 
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
@@ -130,6 +144,39 @@ function PluginRoot:render()
                 end,
             }, {}),
 
+            EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
+                Dataset = self.state.dataset,
+                OnClosePanel = function()
+                    self:setCurrentPanel(Panels.EditDatasetUI)
+                end,
+                UpdateDataset = function(dataset)
+                    SceneConfig.updateDataset(dataset)
+                    self:setState({dataset = dataset})
+                end,
+            }),
+
+            EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
+                Dataset = self.state.dataset,
+                OnClosePanel = function()
+                    self:setCurrentPanel(Panels.EditDatasetUI)
+                end,
+                UpdateDataset = function(dataset)
+                    SceneConfig.updateDataset(dataset)
+                    self:setState({dataset = dataset})
+                end,
+            }),
+
+            EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
+                Dataset = self.state.dataset,
+                OnClosePanel = function()
+                    self:setCurrentPanel(Panels.EditDatasetUI)
+                end,
+                UpdateDataset = function(dataset)
+                    SceneConfig.updateDataset(dataset)
+                    self:setState({dataset = dataset})
+                end,
+            }),
+
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 Dataset = self.state.dataset,
                 MachineAnchor = self.state.selectedMachineAnchor,
@@ -143,8 +190,7 @@ function PluginRoot:render()
                 end,
             }, {}),
             
-            EditProductListUI = nil,
-            EditPowerupListUI = nil,
+            EditPowerupUI = nil,
         })
     })
 end
