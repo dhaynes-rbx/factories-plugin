@@ -95,7 +95,6 @@ end
 
 function Scene.isMachine(obj)
     if not obj then
-        print(obj)
         return false
     end
     if obj.Parent.Name == "Machines" then

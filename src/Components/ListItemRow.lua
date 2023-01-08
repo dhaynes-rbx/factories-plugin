@@ -45,8 +45,8 @@ return function(props: Props)
         })
     }
 
+    local showError = props.ErrorText or false
     return Column({
-
     }, {
         Row = Row({
             AutomaticSize = Enum.AutomaticSize.Y,
@@ -89,8 +89,8 @@ return function(props: Props)
             }, buttonStyle),
             
         }),
-        Error = props.ShowError and Text({
-            Text = "Cannot find corresponding Machine Anchor ("..props.Coordinates.X..","..props.Coordinates.Y..")!",
+        Error = showError and Text({
+            Text = props.ErrorText,
             Color = Color3.new(1, 0, 0),
         }),
     })

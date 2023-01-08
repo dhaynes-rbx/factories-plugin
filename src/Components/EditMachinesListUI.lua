@@ -60,12 +60,12 @@ local function EditMachinesListUI(props: Props)
         local y = tonumber(v["coordinates"]["Y"])
         assert((x or y), "Machine coordinate error in data!")
         local showError: boolean = not Scene.isMachine(Scene.getMachineAnchor(x,y))
+        local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
-		add(children, ListItemRow({ 
-            Coordinates = {X = x, Y = y},
+		add(children, ListItemRow({
             Label = v.id, 
             ButtonLabel = "Edit",
-            ShowError = showError
+            ErrorText = errorText
          }))
 	end
 
