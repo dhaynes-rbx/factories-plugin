@@ -1,7 +1,7 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
 local Utilities = require(script.Parent.Packages.Utilities)
-local getCoordinatesFromName = require(script.Parent.Components.Helpers.getCoordinatesFromName)
+local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
 
 local Scene = {}
 
@@ -43,7 +43,7 @@ end
 function Scene.getMachineAnchor(x:number, y:number)
     local machines = Scene.getMachineAnchors()
     for _,v in machines do
-        local nameX, nameY = getCoordinatesFromName(v.Name)
+        local nameX, nameY = getCoordinatesFromAnchorName(v.Name)
         if nameX == x and nameY == y then
             return v
         end

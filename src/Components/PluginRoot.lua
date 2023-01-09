@@ -37,7 +37,7 @@ local Studio = require(script.Parent.Parent.Studio)
 local PluginRoot = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Helpers.add)
-local getCoordinatesFromName = require(script.Parent.Helpers.getCoordinatesFromName)
+local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
 local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 function PluginRoot:setPanel()
@@ -69,13 +69,19 @@ function PluginRoot:init()
     self.machines = Scene.getMachineAnchors()
     
     local dataset = "NONE"
+    local datasetIsLoaded = false
+    local currentMap = nil
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetAsTable()
+        datasetIsLoaded = true
+        currentMap = dataset["maps"][2]
     end
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
+        currentMap = currentMap,
         currentPanel = currentPanel,
         dataset = dataset,
+        datasetIsLoaded = datasetIsLoaded,
         panelStack = {currentPanel},
         selectedMachineAnchor = nil,
     })
@@ -104,8 +110,9 @@ function PluginRoot:render()
     local billboardGuis = {}
     local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"
     if datasetIsLoaded then
+
         for _,machineAnchor in Scene.getMachineAnchors() do
-            local x,y = getCoordinatesFromName(machineAnchor.Name)
+            local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
             local map = self.state.dataset["maps"][2]
             local machine = getMachineFromCoordinates(x, y, map)
             local outputsString = ""
@@ -189,7 +196,8 @@ function PluginRoot:render()
                         self:setState({dataset = "NONE", datasetIsLoaded = false})
                     end)
 
-                    self:setState({dataset = dataset, datasetIsLoaded = true})
+                    local currentMap = dataset["maps"][2]
+                    self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                 end,
 
                 ExportDataset = function()
@@ -275,7 +283,9 @@ function PluginRoot:render()
                 Name = "BillboardGUIs"
             }, billboardGuis),
 
-            ConnectionGizmos = ConnectionGizmos()
+            ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
+                CurrentMap = self.state.currentMap
+            })
         })
     })
 end
