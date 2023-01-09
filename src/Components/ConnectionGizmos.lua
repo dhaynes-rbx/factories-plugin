@@ -51,11 +51,13 @@ local function ConnectionGizmos(props: Props)
             end
         end
 
+        local spacing = 3
         if machine["sources"] then
             local numSources = #machine["sources"]
-            local startX = 0.5
-            for i,source in machine["sources"] do
-                local cframe = CFrame.new(Vector3.new(0, 0, -zOffset))
+            -- for i,source in machine["sources"] do
+            for i = 0, numSources - 1, 1 do
+                local xOffset = (spacing * i) - (((numSources - 1) * spacing) / 2)
+                local cframe = CFrame.new(Vector3.new(xOffset, 0, -zOffset))
                 add(boxes, boxGizmo(machineAnchor, cframe))
             end
 
