@@ -17,14 +17,14 @@ type Props = {
     CurrentMap:table,
 }
 
-local function boxGizmo(adornee, xOffset, zOffset)
+local function boxGizmo(adornee, cframe)
     xOffset = xOffset or 0
     return React.createElement("BoxHandleAdornment", {
         AdornCullingMode = Enum.AdornCullingMode.Never,
         Adornee = adornee,
         AlwaysOnTop = true,
         Color3 = Color3.new(0, 1, 0),
-        SizeRelativeOffset = Vector3.new(xOffset, 0, zOffset)
+        CFrame = cframe
     })
 end
 
@@ -41,19 +41,24 @@ local function ConnectionGizmos(props: Props)
         local x = machine["coordinates"]["X"]
         local y = machine["coordinates"]["Y"]
         local machineAnchor = Scene.getMachineAnchor(x, y)
-
+        local zOffset = 2
         if machine["outputs"] then
-            local numOutputs = machine["outputs"]
+            local numOutputs = #machine["outputs"]
+            
             for i,output in machine["outputs"] do
-                add(boxes, boxGizmo(machineAnchor, 0, 1))
+                local cframe = CFrame.new(Vector3.new(0, 0, zOffset))
+                add(boxes, boxGizmo(machineAnchor, cframe))
             end
         end
 
         if machine["sources"] then
             local numSources = #machine["sources"]
+            local startX = 0.5
             for i,source in machine["sources"] do
-                add(boxes, boxGizmo(machineAnchor, 0, -1))
+                local cframe = CFrame.new(Vector3.new(0, 0, -zOffset))
+                add(boxes, boxGizmo(machineAnchor, cframe))
             end
+
         end
     end
 
