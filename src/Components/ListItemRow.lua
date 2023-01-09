@@ -50,12 +50,13 @@ return function(props: Props)
     }, {
         Row = Row({
             AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundTransparency = 0.5,
             Gaps = 8,
             Size = UDim2.new(1, 0, 0, 0),
             LayoutOrder = props.LayoutOrder
         }, {
             Label = hasLabel and SmallLabel({
-                Bold = false,
+                FontSize = 18,
                 Label = props.Label,
                 LayoutOrder = 1,
             }),

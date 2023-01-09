@@ -13,6 +13,8 @@ local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
+local Column = FishBloxComponents.Column
+local Text = FishBloxComponents.Text
 
 local DebugUI = require(script.Parent.DebugUI)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -23,6 +25,8 @@ local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
+local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
+
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -31,6 +35,10 @@ local Panels = Constants.Panels
 local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
+
+local add = require(script.Parent.Helpers.add)
+local getCoordinatesFromName = require(script.Parent.Helpers.getCoordinatesFromName)
+local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 function PluginRoot:setPanel()
     self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})
@@ -58,7 +66,7 @@ end
 function PluginRoot:init()
     Studio.setSelectionTool()
 
-    self.machines = Scene.getMachines()
+    self.machines = Scene.getMachineAnchors()
     
     local dataset = "NONE"
     if SceneConfig.getDatasetInstance() then
@@ -92,6 +100,45 @@ function PluginRoot:render()
     -- print("Dataset at beginning of render...", self.state.dataset)
     
     Studio.setSelectionTool()
+
+    local billboardGuis = {}
+    local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"
+    if datasetIsLoaded then
+        for _,machineAnchor in Scene.getMachineAnchors() do
+            local x,y = getCoordinatesFromName(machineAnchor.Name)
+            local map = self.state.dataset["maps"][2]
+            local machine = getMachineFromCoordinates(x, y, map)
+            local outputsString = ""
+            for i,output in machine["outputs"] do
+                local separator = i > 1 and ", " or ""
+                outputsString = outputsString..separator..output
+            end
+            add(billboardGuis, React.createElement("BillboardGui", {
+                Adornee = machineAnchor,
+                AlwaysOnTop = true,
+                Size = UDim2.new(0, 100, 0, 20),
+            }, {
+                Column = Column({
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center
+                }, {
+                    Text = Text({
+                        Color = Color3.new(1,1,1),
+                        FontSize = 16,
+                        LayoutOrder = 1,
+                        Text = "("..x..","..y..")"
+                    }),
+                    Text2 = Text({
+                        Color = Color3.new(1,1,1),
+                        FontSize = 16,
+                        LayoutOrder = 2,
+                        Size = UDim2.fromOffset(0, 35),
+                        Text = outputsString,
+                    })
+                })
+            }))
+        end
+    end
 
     return React.createElement("ScreenGui", {}, {
         Block({
@@ -147,12 +194,17 @@ function PluginRoot:render()
 
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
-                    local saveFile = SceneConfig.getDatasetInstance()
+                    local datasetInstance = SceneConfig.getDatasetInstance()
+                    local saveFile = datasetInstance:Clone()
+                    saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
+                    saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
+                    saveFile.Parent = datasetInstance.Parent
                     Selection:Set({saveFile})
                     local fileSaved = getfenv(0).plugin:PromptSaveSelection()
                     if fileSaved then
                         print("File saved")
                     end
+                    saveFile:Destroy()
                 end,
             }),
 
@@ -177,7 +229,6 @@ function PluginRoot:render()
                     self:setState({dataset = dataset})
                 end,
                 OnMachineEditClicked = function(machineAnchor)
-                    print(typeof(machineAnchor))
                     Selection:Set({machineAnchor})
                 end
             }),
@@ -219,6 +270,12 @@ function PluginRoot:render()
             }, {}),
             
             EditPowerupUI = nil,
+
+            MachineBillboardGUIs = React.createElement("Folder", {
+                Name = "BillboardGUIs"
+            }, billboardGuis),
+
+            ConnectionGizmos = ConnectionGizmos()
         })
     })
 end

@@ -56,13 +56,25 @@ local function EditMachinesListUI(props: Props)
         local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
 		add(children, ListItemRow({
-            ButtonLabel = "Edit",
-            ErrorText = errorText,
-            Label = v.id,
-            Machine = v,
-            MachineAnchor = machineAnchor,
-            OnMachineEditClicked = props.OnMachineEditClicked
-         }))
+			ButtonLabel = "Edit",
+			ErrorText = errorText,
+			Label = v.id,
+			Machine = v,
+			MachineAnchor = machineAnchor,
+			OnMachineEditClicked = props.OnMachineEditClicked
+		}))
+
+		local outputStr = "outputs: "
+		for j,output in v["outputs"] do
+			local separator = j > 1 and ", " or ""
+			outputStr = outputStr..separator..output
+		end
+		add(children, SmallLabel({
+			Bold = false,
+			FontSize = 16,
+			Label = outputStr
+		}))	
+		
 	end
 
 	return SidePanel({

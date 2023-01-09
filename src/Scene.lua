@@ -35,13 +35,13 @@ function Scene.getMachinesFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
 end
 
-function Scene.getMachines()
+function Scene.getMachineAnchors()
     local machinesFolder = Scene.getMachinesFolder()
     return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
 end
 
-function Scene.getMachineAnchor(x, y)
-    local machines = Scene.getMachines()
+function Scene.getMachineAnchor(x:number, y:number)
+    local machines = Scene.getMachineAnchors()
     for _,v in machines do
         local nameX, nameY = getCoordinatesFromName(v.Name)
         if nameX == x and nameY == y then
