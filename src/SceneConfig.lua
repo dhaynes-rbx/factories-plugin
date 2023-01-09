@@ -52,7 +52,7 @@ end
 function SceneConfig.importNewDataset()
     local file = StudioService:PromptImportFile()
     if not file then
-        return
+        return nil
     end
     
     local newDatasetInstance = Instance.new("ModuleScript")

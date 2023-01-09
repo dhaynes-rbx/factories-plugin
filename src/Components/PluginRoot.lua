@@ -37,7 +37,7 @@ function PluginRoot:setPanel()
     Studio.setSelectionTool()
 end
 
-function PluginRoot:setCurrentPanel(panelId)
+function PluginRoot:changePanel(panelId)
     if panelId == self.state.panelStack[#self.state.panelStack] then
         Studio.setSelectionTool()
         return
@@ -52,7 +52,6 @@ end
 function PluginRoot:showPreviousPanel()
     local stack = self.state.panelStack
     table.remove(stack, #stack)
-    local newPanel = stack[#stack]
     self:setPanel()
 end
 
@@ -80,7 +79,7 @@ function PluginRoot:init()
             local obj = Selection:Get()[1]
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(obj) then
                 self:setState({selectedMachineAnchor = obj})
-                self:setCurrentPanel(Panels.EditMachineUI)
+                self:changePanel(Panels.EditMachineUI)
             end
         end
     end
@@ -107,7 +106,7 @@ function PluginRoot:render()
                 Dataset = self.state.dataset,
                 OnInitializeScene = function()
                     Scene.loadScene()
-                    self:setCurrentPanel(Panels.EditDatasetUI)
+                    self:changePanel(Panels.EditDatasetUI)
                 end
                 
             }, {}),
@@ -117,23 +116,27 @@ function PluginRoot:render()
                 Title = self.state.currentPanel,
                 
                 ShowEditFactoryPanel = function()
-                    self:setCurrentPanel(Panels.EditFactoryUI)
+                    self:changePanel(Panels.EditFactoryUI)
                 end,
 
                 ShowEditMachinesListUI = function()
-                   self:setCurrentPanel(Panels.EditMachinesListUI) 
+                   self:changePanel(Panels.EditMachinesListUI) 
                 end,
 
                 ShowEditItemsListUI = function()
-                    self:setCurrentPanel(Panels.EditItemsListUI)
+                    self:changePanel(Panels.EditItemsListUI)
                 end,
 
                 ShowEditPowerupsListUI = function()
-                    self:setCurrentPanel(Panels.EditPowerupsListUI)
+                    self:changePanel(Panels.EditPowerupsListUI)
                 end,
 
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
+
+                    if not newDatasetInstance then
+                        return
+                    end
                     --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                     newDatasetInstance.AncestryChanged:Connect(function(_,_)
                         self:setState({dataset = "NONE", datasetIsLoaded = false})
