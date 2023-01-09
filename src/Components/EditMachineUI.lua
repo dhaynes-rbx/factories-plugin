@@ -88,13 +88,22 @@ return function(props:Props)
         add(children, SmallLabel({Label = "coordinates"}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
         add(children, createTextChangingButton("Y", machine["coordinates"], true))
+
         add(children, SmallLabel({Label = "outputs"}))
         for i,_ in machine["outputs"] do
             add(children, createTextChangingButton(i, machine["outputs"]))
         end
+
+        -- if machine["sources"] then
+        --     add(children, SmallLabel({Label = "sources"}))
+        --     for i,_ in machine["sources"] do
+        --         add(children, createTextChangingButton(i, machine["sources"]))
+        --     end    
+        -- end
+
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))
         add(children, createTextChangingButton("defaultMaxStorage", machine, true))
-        add(children, createTextChangingButton("currentOutputIndex", machine, true))
+        -- add(children, createTextChangingButton("currentOutputIndex", machine, true))
         add(children, createTextChangingButton("currentOutputCount", machine, true))
         add(children, SmallLabel({Label = "outputRange"}))
         add(children, createTextChangingButton("min", machine["outputRange"], true))

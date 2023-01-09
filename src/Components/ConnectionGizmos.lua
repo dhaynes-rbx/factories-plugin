@@ -41,7 +41,7 @@ local function ConnectionGizmos(props: Props)
         local x = machine["coordinates"]["X"]
         local y = machine["coordinates"]["Y"]
         local machineAnchor = Scene.getMachineAnchor(x, y)
-        local zOffset = 2
+        local zOffset = 2.5
         if machine["outputs"] then
             local numOutputs = #machine["outputs"]
             
