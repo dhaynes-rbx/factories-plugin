@@ -94,20 +94,20 @@ return function(props:Props)
             add(children, createTextChangingButton(i, machine["outputs"]))
         end
 
-        -- if machine["sources"] then
-        --     add(children, SmallLabel({Label = "sources"}))
-        --     for i,_ in machine["sources"] do
-        --         add(children, createTextChangingButton(i, machine["sources"]))
-        --     end    
-        -- end
+        if machine["sources"] then
+            add(children, SmallLabel({Label = "sources"}))
+            for i,_ in machine["sources"] do
+                add(children, createTextChangingButton(i, machine["sources"]))
+            end    
+        end
 
-        add(children, createTextChangingButton("defaultProductionDelay", machine, true))
-        add(children, createTextChangingButton("defaultMaxStorage", machine, true))
+        -- add(children, createTextChangingButton("defaultProductionDelay", machine, true))
+        -- add(children, createTextChangingButton("defaultMaxStorage", machine, true))
         -- add(children, createTextChangingButton("currentOutputIndex", machine, true))
-        add(children, createTextChangingButton("currentOutputCount", machine, true))
-        add(children, SmallLabel({Label = "outputRange"}))
-        add(children, createTextChangingButton("min", machine["outputRange"], true))
-        add(children, createTextChangingButton("max", machine["outputRange"], true))
+        -- add(children, createTextChangingButton("currentOutputCount", machine, true))
+        -- add(children, SmallLabel({Label = "outputRange"}))
+        -- add(children, createTextChangingButton("min", machine["outputRange"], true))
+        -- add(children, createTextChangingButton("max", machine["outputRange"], true))
         add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerup"])}))
     end
 

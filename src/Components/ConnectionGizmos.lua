@@ -40,7 +40,8 @@ local function boxGizmo(adornee, cframe)
         Adornee = adornee,
         AlwaysOnTop = true,
         Color3 = Color3.new(0, 1, 0),
-        CFrame = cframe
+        CFrame = cframe,
+        Name = adornee.Name
     })
 end
 
@@ -51,7 +52,7 @@ local function lineGizmo(adornee, length, thickness, cframe)
         AlwaysOnTop = true,
         Color3 = Color3.new(0, 1, 0),
         CFrame = cframe,
-        Length = -length,
+        Length = length,
         Thickness = thickness,
     })
 end
@@ -75,12 +76,12 @@ local function ConnectionGizmos(props: Props)
         connectionInfo[machine].sources = {}
 
         if machine["outputs"] then
-
             local numOutputs = #machine["outputs"]
             
             for i,output in machine["outputs"] do
                 local index = i - 1
                 local xOffset = (xSpacing * index) - (((numOutputs - 1) * xSpacing) / 2)
+                -- local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, zOffset))
                 add(boxes, boxGizmo(machineAnchor, cframe))
 
@@ -100,6 +101,7 @@ local function ConnectionGizmos(props: Props)
             for i,source in machine["sources"] do
                 local index = i - 1
                 local xOffset = (xSpacing * index) - (((numSources - 1) * xSpacing) / 2)
+                -- local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, -zOffset))
                 add(boxes, boxGizmo(machineAnchor, cframe))
 
@@ -115,7 +117,7 @@ local function ConnectionGizmos(props: Props)
 
     --Loop through again and draw connections between the machines.
     for _,machine in machines do
-        print("Machine: "..machine["id"], machine)
+        -- print("Machine: "..machine["id"], machine)
         if machine["sources"] then
             local x = machine["coordinates"]["X"]
             local y = machine["coordinates"]["Y"]
@@ -125,18 +127,25 @@ local function ConnectionGizmos(props: Props)
 
             for i,source in machine["sources"] do
                 local lineTarget = getMachineFromId(source, props.CurrentMap)
-                local cframe1 = connectionInfo[machine].sources[i].cframe
-                local lookAt = connectionInfo[machine].anchor:GetPivot():VectorToObjectSpace()
-                local magnitude = (cframe1:VectorToWorldSpace() - connectionInfo[machine].anchor:GetPivot().Position).Magnitude
-                add(boxes, lineGizmo(machineAnchor, magnitude, 10, CFrame.new(cframe1.Position, lookAt)))
-                -- add(boxes, lineGizmo(machineAnchor, 25, 10, CFrame.new(cframe1.Position)))
+                local sourceCFrameRelativeToAnchor = connectionInfo[machine].sources[i].cframe                
+                local outputWorldCFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
+                local outputCFrameRelativeToSource = CFrame.new(outputWorldCFrame.Position - machineAnchor:GetPivot().Position)
+                local magnitude = (sourceCFrameRelativeToAnchor.Position - outputCFrameRelativeToSource.Position).Magnitude
+                add(boxes, lineGizmo(machineAnchor, magnitude, 5, CFrame.new(sourceCFrameRelativeToAnchor.Position, outputCFrameRelativeToSource.Position)))
+
                 
-                
-                -- print("Source: "..source)
-                -- print("Machine ID: "..machine["id"], connectionInfo[lineTarget].outputs[i])
-                -- print(" ")
-                -- local cframe2 = connectionInfo[lineTarget].outputs[i].worldCFrame
-                -- print(connectionInfo[lineTarget].outputs, i)
+                -- add(boxes, boxGizmo(machineAnchor, cframe1))
+                -- add(boxes, boxGizmo(machineAnchor, CFrame.new(outputWorldCFrame.Position - machineAnchor:GetPivot().Position)))
+                -- local part1 = Instance.new("Part")
+                -- part1.CFrame = cframe1:ToWorldSpace(machineAnchor:GetPivot())
+                -- part1.Anchored = true
+                -- part1.Parent = game.Workspace
+
+                -- local part2 = Instance.new("Part")
+                -- part2.CFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
+                -- part2.Anchored = true
+                -- part2.Parent = game.Workspace
+
             end
         end
     end

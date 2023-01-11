@@ -27,7 +27,6 @@ local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 
-
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Constants = require(script.Parent.Parent.Constants)
@@ -66,7 +65,7 @@ end
 function PluginRoot:init()
     Studio.setSelectionTool()
 
-    self.machines = Scene.getMachineAnchors()
+    self.machinesAnchors = Scene.getMachineAnchors()
     
     local dataset = "NONE"
     local datasetIsLoaded = false
