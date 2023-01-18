@@ -32,13 +32,66 @@ type Props = {
 
 local function EditItemsListUI(props: Props)
 
+    local modalEnabled, setModalEnabled = React.useState(false)
+    local currentFieldKey, setCurrentFieldKey = React.useState(nil)
+    local currentFieldValue, setCurrentFieldValue = React.useState(nil)
+    local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    local valueType, setValueType = React.useState(nil)
+
+    --use this to create a consistent layout order that plays nice with Roact
+    local index = 0
+    local getLayoutOrderIndex = function()
+        index = index + 1
+        return index
+    end
+
+    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean)
+        return SmallButtonWithLabel({
+            ButtonLabel = tostring(object[key]),
+            Label = key..": ",
+            LayoutOrder = getLayoutOrderIndex(),
+            OnActivated = function()
+                if isNumber then
+                    setValueType("number")
+                else
+                    setValueType("string")
+                end
+                --set modal enabled
+                setModalEnabled(true)
+                setCurrentFieldKey(key)
+                setCurrentFieldValue(object[key])
+                setCurrentFieldCallback(function()
+                    return function(value)
+                        object[key] = value
+                        
+                        --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
+                        --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
+                        if props.MachineAnchor and (key == "X" or key == "Y") then
+                            props.MachineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                        end
+
+                        setModalEnabled(false)
+                        Studio.setSelectionTool()
+                    end
+                end)
+            end,
+        })
+    end
+
+    local map = props.CurrentMap
+
+
+    local children = {}
+    local items = map["items"]
+    for _,item in items do
+        add(children, createTextChangingButton("id", item))
+    end
+
     return SidePanel({
             Title = "Edit Items List",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
-        }, {
-
-        }
+        }, children
     )
 end
 

@@ -133,19 +133,6 @@ local function ConnectionGizmos(props: Props)
                 local magnitude = (sourceCFrameRelativeToAnchor.Position - outputCFrameRelativeToSource.Position).Magnitude
                 add(boxes, lineGizmo(machineAnchor, magnitude, 5, CFrame.new(sourceCFrameRelativeToAnchor.Position, outputCFrameRelativeToSource.Position)))
 
-                
-                -- add(boxes, boxGizmo(machineAnchor, cframe1))
-                -- add(boxes, boxGizmo(machineAnchor, CFrame.new(outputWorldCFrame.Position - machineAnchor:GetPivot().Position)))
-                -- local part1 = Instance.new("Part")
-                -- part1.CFrame = cframe1:ToWorldSpace(machineAnchor:GetPivot())
-                -- part1.Anchored = true
-                -- part1.Parent = game.Workspace
-
-                -- local part2 = Instance.new("Part")
-                -- part2.CFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
-                -- part2.Anchored = true
-                -- part2.Parent = game.Workspace
-
             end
         end
     end

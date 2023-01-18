@@ -241,6 +241,7 @@ function PluginRoot:render()
             }),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
                     self:showPreviousPanel()

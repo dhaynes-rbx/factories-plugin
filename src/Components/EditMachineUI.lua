@@ -43,10 +43,18 @@ return function(props:Props)
     local dataset = props.Dataset
     local map = datasetIsLoaded and dataset.maps[2] or nil
 
+    --use this to create a consistent layout order that plays nice with Roact
+    local index = 0
+    local incrementLayoutOrder = function()
+        index = index + 1
+        return index
+    end
+
     local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(object[key]),
             Label = key..": ",
+            LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
                 if isNumber then
                     setValueType("number")
@@ -83,32 +91,32 @@ return function(props:Props)
 
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
-        -- add(children, createTextChangingButton("type", machine))
-        -- add(children, createTextChangingButton("locName", machine))
-        add(children, SmallLabel({Label = "coordinates"}))
+        add(children, createTextChangingButton("type", machine))
+        add(children, createTextChangingButton("locName", machine))
+        add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
         add(children, createTextChangingButton("Y", machine["coordinates"], true))
 
-        add(children, SmallLabel({Label = "outputs"}))
+        add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         for i,_ in machine["outputs"] do
             add(children, createTextChangingButton(i, machine["outputs"]))
         end
 
         if machine["sources"] then
-            add(children, SmallLabel({Label = "sources"}))
+            add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
             for i,_ in machine["sources"] do
                 add(children, createTextChangingButton(i, machine["sources"]))
             end    
         end
-
-        -- add(children, createTextChangingButton("defaultProductionDelay", machine, true))
-        -- add(children, createTextChangingButton("defaultMaxStorage", machine, true))
-        -- add(children, createTextChangingButton("currentOutputIndex", machine, true))
-        -- add(children, createTextChangingButton("currentOutputCount", machine, true))
-        -- add(children, SmallLabel({Label = "outputRange"}))
-        -- add(children, createTextChangingButton("min", machine["outputRange"], true))
-        -- add(children, createTextChangingButton("max", machine["outputRange"], true))
-        add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerup"])}))
+        add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
+        add(children, createTextChangingButton("defaultProductionDelay", machine, true))
+        add(children, createTextChangingButton("defaultMaxStorage", machine, true))
+        add(children, createTextChangingButton("currentOutputIndex", machine, true))
+        add(children, createTextChangingButton("currentOutputCount", machine, true))
+        add(children, SmallLabel({Label = "outputRange", LayoutOrder = incrementLayoutOrder()}))
+        add(children, createTextChangingButton("min", machine["outputRange"], true))
+        add(children, createTextChangingButton("max", machine["outputRange"], true))
+        add(children, SmallLabel({Label = "supportsPowerups: "..tostring(machine["supportsPowerup"]), LayoutOrder = incrementLayoutOrder()}))
     end
 
     if not machine then

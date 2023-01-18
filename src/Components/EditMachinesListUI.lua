@@ -74,6 +74,9 @@ local function EditMachinesListUI(props: Props)
 			FontSize = 16,
 			Label = outputStr
 		}))	
+		add(children, SmallLabel({
+			Label = "destination machines: "
+		}))
 		
 	end
 
