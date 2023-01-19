@@ -42,6 +42,7 @@ return function(props:Props)
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
     local map = props.CurrentMap
+    local machines = map["machines"]
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -50,8 +51,9 @@ return function(props:Props)
         return index
     end
 
-    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean)
+    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean, filled:boolean)
         return SmallButtonWithLabel({
+            Appearance = filled and "Filled",
             ButtonLabel = tostring(object[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
@@ -84,6 +86,17 @@ return function(props:Props)
                             --Get the anchor based on the previous coordinates
                             local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
                             machineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                        elseif key == "id" then
+                            --if we're changing the ID, we must also change it wherever it appears as a machine's source
+                            for i,machine in machines do
+                                if machine["sources"] then
+                                    for j,source in machine["sources"] do
+                                        if source == previousValue then
+                                            machines[i]["sources"][j] = value
+                                        end
+                                    end
+                                end
+                            end
                         end
 
                         setModalEnabled(false)
@@ -101,7 +114,7 @@ return function(props:Props)
 
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
-        add(children, createTextChangingButton("type", machine))
+        add(children, createTextChangingButton("type", machine, false, true))
         add(children, createTextChangingButton("locName", machine))
         add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
@@ -109,13 +122,13 @@ return function(props:Props)
 
         add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         for i,_ in machine["outputs"] do
-            add(children, createTextChangingButton(i, machine["outputs"]))
+            add(children, createTextChangingButton(i, machine["outputs"], false, true))
         end
 
         if machine["sources"] then
             add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
             for i,_ in machine["sources"] do
-                add(children, createTextChangingButton(i, machine["sources"]))
+                add(children, createTextChangingButton(i, machine["sources"], false, true))
             end    
         end
         add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
