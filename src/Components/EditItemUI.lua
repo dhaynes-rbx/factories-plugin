@@ -89,18 +89,10 @@ local function EditItemsListUI(props: Props)
     local map = props.CurrentMap
 
     local children = {}
-    local items = map["items"]
-    local itemKeys = Dash.keys(items)
-    table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
-        return a:lower() < b:lower()
-    end)
-    for _,itemKey in itemKeys do
-        add(children, createTextChangingButton(itemKey, items))
-    end
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
-            Title = "Edit Items List",
+            Title = props.Item["id"],
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),

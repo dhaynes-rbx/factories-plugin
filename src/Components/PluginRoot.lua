@@ -96,6 +96,7 @@ function PluginRoot:init()
         machines = machines,
         panelStack = {currentPanel},
         powerups = powerups,
+        selectedItem = nil,
         selectedMachine = nil,
     })
     
@@ -284,8 +285,14 @@ function PluginRoot:render()
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
+
+                ShowEditItemPanel = function(itemKey)
+                    self:changePanel(Panels.EditItemUI)
+                    self:setState({selectedItem = self.state.items[itemKey]})
+                end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
+                    self:setState({selectedItem = nil})
                 end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
@@ -295,6 +302,8 @@ function PluginRoot:render()
             EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
+                Item = self.state.selectedItem,
+                
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
