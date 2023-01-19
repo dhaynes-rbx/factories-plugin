@@ -271,7 +271,6 @@ function PluginRoot:render()
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-                --TODO: Change this to take the machine data object as an input, not the anchor
                 Machine = self.state.selectedMachine,
                 OnClosePanel = function()
                     Selection:Set({})

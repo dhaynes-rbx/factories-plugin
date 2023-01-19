@@ -69,8 +69,6 @@ return function(props:Props)
                     return function(value)
                         local previousValue = object[key]
                         object[key] = value
-
-                        print(previousValue)
                         
                         --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
                         --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
@@ -78,18 +76,13 @@ return function(props:Props)
                             local prevX = object["X"]
                             local prevY = object["Y"]
                             if key == "X" and object["X"] ~= previousValue then
-                                --the x value didn't change
-                                print("is X")
                                 prevX = previousValue
                             elseif key == "Y" and object["Y"] ~= previousValue then
-                                --the y value didn't change
-                                print("is Y")
                                 prevY = previousValue
                             end
                             
                             --Get the anchor based on the previous coordinates
                             local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
-                            print(prevX, prevY, typeof(machineAnchor))
                             machineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
                         end
 
