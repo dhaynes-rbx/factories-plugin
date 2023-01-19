@@ -172,6 +172,8 @@ function PluginRoot:render()
         end
     end
 
+    local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
+
     return React.createElement("ScreenGui", {}, {
         Block({
             PaddingLeft = 20,
@@ -193,7 +195,7 @@ function PluginRoot:render()
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-                Title = self.state.currentPanel..": "..self.state.currentMap["id"],
+                Title = self.state.currentPanel..": "..mapName,
                 
                 ShowEditFactoryPanel = function()
                     self:changePanel(Panels.EditFactoryUI)

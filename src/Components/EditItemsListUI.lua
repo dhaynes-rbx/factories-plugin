@@ -36,7 +36,6 @@ local function EditItemsListUI(props: Props)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
-    local valueType, setValueType = React.useState(nil)
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -45,24 +44,43 @@ local function EditItemsListUI(props: Props)
         return index
     end
 
-    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean)
+    local previousValue = nil
+    local createTextChangingButton = function(itemId:string, items:table)
+        -- print("Item ID:", itemId)
+        -- print("Table: ", items)
+        -- print("Value: ", items[itemId])
         return SmallButtonWithLabel({
-            ButtonLabel = tostring(object[key]),
-            Label = key..": ",
+            ButtonLabel = tostring(itemId),
+            Label = "id: ",
             LayoutOrder = getLayoutOrderIndex(),
             OnActivated = function()
-                if isNumber then
-                    setValueType("number")
-                else
-                    setValueType("string")
-                end
+                previousValue = itemId
                 --set modal enabled
                 setModalEnabled(true)
-                setCurrentFieldKey(key)
-                setCurrentFieldValue(object[key])
+                setCurrentFieldKey(itemId)
+                setCurrentFieldValue(itemId)
                 setCurrentFieldCallback(function()
                     return function(value)
-                        object[key] = value
+                        if value ~= previousValue then
+                            print(value, previousValue)
+                            items[value] = table.clone(items[previousValue])
+                            items[value]["id"] = value
+                            items[previousValue] = nil
+                            -- print(items)
+                            local machines = props.CurrentMap["machines"]
+                            for i,machine in machines do
+                                if machine["outputs"] then
+                                    
+                                    for j,output in machine["outputs"] do
+                                        if output == previousValue then
+                                            machines[i]["outputs"][j] = value
+                                            print("Machine: ", machine, output, value)
+                                        end
+                                    end    
+                                end
+                            end
+                        end
+                        
 
                         setModalEnabled(false)
                         Studio.setSelectionTool()
@@ -77,8 +95,11 @@ local function EditItemsListUI(props: Props)
 
     local children = {}
     local items = map["items"]
-    for _,item in items do
-        add(children, createTextChangingButton("id", item))
+    local itemKeys = Dash.keys(items)
+    table.sort(itemKeys, function(a,b) return a < b end) --Do this to make sure buttons show in alphabetical order
+
+    for _,itemKey in itemKeys do
+        add(children, createTextChangingButton(itemKey, items))
     end
 
     return React.createElement(React.Fragment, nil, {
@@ -102,7 +123,6 @@ local function EditItemsListUI(props: Props)
                 setCurrentFieldCallback(nil)
             end,
             Value = currentFieldValue,
-            ValueType = valueType,
     })})
 
 end

@@ -23,7 +23,7 @@ local function Modal(props: Props)
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
     local isNumber = props.ValueType == "number"
-
+    
     -- return Overlay({
     --     Size = UDim2.new(1, 40,1, 40),
     --     Position = UDim2.new(0, -20, 0, -20),
