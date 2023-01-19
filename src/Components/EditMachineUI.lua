@@ -67,12 +67,30 @@ return function(props:Props)
                 setCurrentFieldValue(object[key])
                 setCurrentFieldCallback(function()
                     return function(value)
+                        local previousValue = object[key]
                         object[key] = value
+
+                        print(previousValue)
                         
                         --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
                         --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
-                        if props.MachineAnchor and (key == "X" or key == "Y") then
-                            props.MachineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                        if key == "X" or key == "Y" then
+                            local prevX = object["X"]
+                            local prevY = object["Y"]
+                            if key == "X" and object["X"] ~= previousValue then
+                                --the x value didn't change
+                                print("is X")
+                                prevX = previousValue
+                            elseif key == "Y" and object["Y"] ~= previousValue then
+                                --the y value didn't change
+                                print("is Y")
+                                prevY = previousValue
+                            end
+                            
+                            --Get the anchor based on the previous coordinates
+                            local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
+                            print(prevX, prevY, typeof(machineAnchor))
+                            machineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
                         end
 
                         setModalEnabled(false)
@@ -84,13 +102,11 @@ return function(props:Props)
     end
 
     local machine = props.Machine
-    print(machine)
     local coordinateName = machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]
 
     local children = {}
 
     if datasetIsLoaded and machine then
-        print(machine)
         add(children, createTextChangingButton("id", machine))
         add(children, createTextChangingButton("type", machine))
         add(children, createTextChangingButton("locName", machine))
@@ -112,7 +128,6 @@ return function(props:Props)
         add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))
         add(children, createTextChangingButton("defaultMaxStorage", machine, true))
-        add(children, createTextChangingButton("currentOutputIndex", machine, true))
         add(children, createTextChangingButton("currentOutputCount", machine, true))
         add(children, SmallLabel({Label = "outputRange", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("min", machine["outputRange"], true))

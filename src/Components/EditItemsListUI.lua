@@ -95,7 +95,10 @@ local function EditItemsListUI(props: Props)
         return a:lower() < b:lower()
     end)
     for _,itemKey in itemKeys do
-        add(children, createTextChangingButton(itemKey, items))
+        add(children, Button({
+            Label = itemKey,
+            -- OnActivated
+        }))
     end
 
     return React.createElement(React.Fragment, nil, {
