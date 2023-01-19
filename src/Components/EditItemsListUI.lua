@@ -63,12 +63,6 @@ local function EditItemsListUI(props: Props)
                 setCurrentFieldCallback(function()
                     return function(value)
                         object[key] = value
-                        
-                        --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
-                        --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
-                        if props.MachineAnchor and (key == "X" or key == "Y") then
-                            props.MachineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
-                        end
 
                         setModalEnabled(false)
                         Studio.setSelectionTool()
@@ -87,12 +81,30 @@ local function EditItemsListUI(props: Props)
         add(children, createTextChangingButton("id", item))
     end
 
-    return SidePanel({
+    return React.createElement(React.Fragment, nil, {
+        SidePanel({
             Title = "Edit Items List",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
-        }, children
-    )
+        }, children),
+        Modal = modalEnabled and Modal({
+            Key = currentFieldKey,
+            OnConfirm = function(value)
+                currentFieldCallback(value)
+                --Make sure to change the name of the machine.
+    
+                props.UpdateDataset(props.Dataset)
+            end,
+            OnClosePanel = function()
+                setModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(nil)
+            end,
+            Value = currentFieldValue,
+            ValueType = valueType,
+    })})
+
 end
 
 return function(props)
