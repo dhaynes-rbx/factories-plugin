@@ -83,9 +83,9 @@ return function(props:Props)
         })
     end
 
-    local name = props.MachineAnchor.Name
-    local x, y = getCoordinatesFromAnchorName(name)
-    local machine = getMachineFromCoordinates(x, y, map)
+    local machine = props.Machine
+    print(machine)
+    local coordinateName = machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]
 
     local children = {}
 
@@ -133,7 +133,7 @@ return function(props:Props)
         EditMachineUI = SidePanel({
             OnClosePanel = props.OnClosePanel,
             ShowClose = true,
-            Title = "Edit Machine "..props.MachineAnchor.Name
+            Title = "Edit Machine "..coordinateName
         }, children),
 
         Modal = modalEnabled and Modal({

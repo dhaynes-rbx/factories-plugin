@@ -79,7 +79,7 @@ function PluginRoot:init()
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
-            currentMap = dataset["maps"][1] --TODO: Make functionality to toggle between maps.
+            currentMap = dataset["maps"][2] --TODO: Make functionality to toggle between maps.
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
@@ -95,17 +95,23 @@ function PluginRoot:init()
         machines = machines,
         panelStack = {currentPanel},
         powerups = powerups,
-        selectedMachineAnchor = nil,
+        selectedMachine = nil,
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
     --Otherwise, revert to EditFactoryUI.
     local onSelectionChanged = function()
         if #Selection:Get() >= 1 then
-            local obj = Selection:Get()[1]
-            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(obj) then
-                self:setState({selectedMachineAnchor = obj})
-                self:changePanel(Panels.EditMachineUI)
+            local selectedObj = Selection:Get()[1]
+            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(selectedObj) then
+                local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
+                local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
+                if machine then
+                    self:setState({selectedMachine = machine})
+                    self:changePanel(Panels.EditMachineUI)
+                else
+                    print("ERROR! No machine for selected anchor "..selectedObj.Name.."!")
+                end
             end
         end
     end
@@ -255,9 +261,23 @@ function PluginRoot:render()
                     self:updateDataset(dataset) 
                 end,
                 OnMachineEditClicked = function(machineAnchor)
-                    Selection:Set({machineAnchor})
+                    Selection:Set({machineAnchor}) --Todo: Don't use the anchor because the machine might not have an anchor.
                 end
             }),
+            
+            EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
+                CurrentMap = self.state.currentMap,
+                Dataset = self.state.dataset,
+                --TODO: Change this to take the machine data object as an input, not the anchor
+                Machine = self.state.selectedMachine,
+                OnClosePanel = function()
+                    Selection:Set({})
+                    self:showPreviousPanel()
+                end,
+                UpdateDataset = function(dataset)
+                    self:updateDataset(dataset)
+                end,
+            }, {}),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 CurrentMap = self.state.currentMap,
@@ -269,7 +289,7 @@ function PluginRoot:render()
                     self:updateDataset(dataset)
                 end,
             }),
-
+            
             EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
@@ -281,19 +301,6 @@ function PluginRoot:render()
                 end,
             }),
 
-            EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
-                CurrentMap = self.state.currentMap,
-                Dataset = self.state.dataset,
-                --TODO: Change this to take the machine data object as an input, not the anchor
-                MachineAnchor = self.state.selectedMachineAnchor, 
-                OnClosePanel = function()
-                    Selection:Set({})
-                    self:showPreviousPanel()
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-            }, {}),
             
             EditPowerupUI = nil,
 
