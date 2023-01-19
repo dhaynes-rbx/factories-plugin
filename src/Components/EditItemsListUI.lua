@@ -92,7 +92,7 @@ local function EditItemsListUI(props: Props)
     local items = map["items"]
     local itemKeys = Dash.keys(items)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
-        return a < b
+        return a:lower() < b:lower()
     end)
     for _,itemKey in itemKeys do
         add(children, createTextChangingButton(itemKey, items))
