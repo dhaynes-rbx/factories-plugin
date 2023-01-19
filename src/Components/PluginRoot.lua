@@ -185,7 +185,7 @@ function PluginRoot:render()
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-                Title = self.state.currentPanel,
+                Title = self.state.currentPanel..": "..self.state.currentMap["id"],
                 
                 ShowEditFactoryPanel = function()
                     self:changePanel(Panels.EditFactoryUI)

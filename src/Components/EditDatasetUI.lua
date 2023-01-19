@@ -31,6 +31,7 @@ type Props = {
 local function EditDatasetUI(props:Props)
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
+    local map = props.CurrentMap
 
     local buttonSize = UDim2.new(1,0,0,0)
 
