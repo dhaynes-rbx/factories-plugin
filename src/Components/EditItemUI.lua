@@ -31,11 +31,16 @@ type Props = {
 }
 
 local function EditItemsListUI(props: Props)
-
+    print("EditItemsListUI: ", props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    
+    local dataset = props.Dataset
+    local map = props.CurrentMap
+    local machines = props.CurrentMap["machines"]
+    local items = map["items"]
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -44,41 +49,39 @@ local function EditItemsListUI(props: Props)
         return index
     end
 
-    local previousValue = nil
-    local createTextChangingButton = function(key:string, items:table)
-
+    local createTextChangingButton = function(key:string, itemObject:table)
         return SmallButtonWithLabel({
-            ButtonLabel = tostring(items[key]),
-            Label = "id: ",
+            ButtonLabel = tostring(itemObject[key]),
+            Label = key,
             LayoutOrder = getLayoutOrderIndex(),
             OnActivated = function()
-                previousValue = key
                 --set modal enabled
                 setModalEnabled(true)
                 setCurrentFieldKey(key)
-                setCurrentFieldValue(key)
+                setCurrentFieldValue(itemObject[key])
                 setCurrentFieldCallback(function()
-                    return function(value)
-                        if value ~= previousValue then
+                    return function(newValue)
+                        local previousValue = itemObject[key]
+                        print(previousValue, newValue)
+                        if newValue ~= previousValue then
                             --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
-                            items[value] = table.clone(items[previousValue])
-                            items[value]["id"] = value
+                            items[newValue] = table.clone(items[previousValue])
+                            items[newValue]["id"] = newValue
                             items[previousValue] = nil
+                            print("Items: ", items)
 
-                            local machines = props.CurrentMap["machines"]
                             for i,machine in machines do
                                 if machine["outputs"] then
                                     
                                     for j,output in machine["outputs"] do
                                         if output == previousValue then
-                                            machines[i]["outputs"][j] = value
+                                            machines[i]["outputs"][j] = newValue
                                         end
                                     end
                                 end
                             end
                         end
                         
-                        setModalEnabled(false)
                         Studio.setSelectionTool()
                     end
                 end)
@@ -86,11 +89,10 @@ local function EditItemsListUI(props: Props)
         })
     end
 
-    local map = props.CurrentMap
 
     local children = {}
-
-    add(children, createTextChangingButton("id", props.Item))
+    local item = props.Item
+    add(children, createTextChangingButton("id", item))
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
@@ -102,13 +104,17 @@ local function EditItemsListUI(props: Props)
             Key = currentFieldKey,
             OnConfirm = function(value)
                 currentFieldCallback(value)
-                props.UpdateDataset(props.Dataset)
-            end,
-            OnClosePanel = function()
                 setModalEnabled(false)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
+                props.UpdateItem(value)
+                props.UpdateDataset(dataset)
+            end,
+            OnClosePanel = function()
                 setCurrentFieldCallback(nil)
+                setModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
             end,
             Value = currentFieldValue,
     })})

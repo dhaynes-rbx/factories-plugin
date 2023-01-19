@@ -71,6 +71,7 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
+    local currentMapIndex = 2
     local machines = nil
     local items = nil
     local powerups = nil
@@ -80,7 +81,7 @@ function PluginRoot:init()
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
-            currentMap = dataset["maps"][2] --TODO: Make functionality to toggle between maps.
+            currentMap = dataset["maps"][currentMapIndex] --TODO: Make functionality to toggle between maps.
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
@@ -88,7 +89,8 @@ function PluginRoot:init()
     end
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
-        currentMap = currentMap,
+        currentMap = currentMap, --TODO: remove this, use index instead
+        currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
@@ -124,11 +126,14 @@ end
 
 function PluginRoot:updateDataset(dataset)
     SceneConfig.updateDataset(dataset)
-    self:setState({dataset = dataset})
+    self:setState({
+        dataset = dataset,
+        
+    })
 end
 
 function PluginRoot:render()
-    -- print("Dataset at beginning of render...", self.state.dataset)
+    print("Selected Item at beginning of render...", self.state.selectedItem)
     
     Studio.setSelectionTool()
 
@@ -288,11 +293,10 @@ function PluginRoot:render()
 
                 ShowEditItemPanel = function(itemKey)
                     self:changePanel(Panels.EditItemUI)
-                    self:setState({selectedItem = self.state.items[itemKey]})
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
-                    self:setState({selectedItem = nil})
                 end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
@@ -306,6 +310,10 @@ function PluginRoot:render()
                 
                 OnClosePanel = function()
                     self:showPreviousPanel()
+                    self:setState({selectedItem = nil})
+                end,
+                UpdateItem = function(itemKey)
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)

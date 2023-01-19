@@ -51,10 +51,10 @@ return function(props:Props)
         return index
     end
 
-    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean, filled:boolean)
+    local createTextChangingButton = function(key:string | number, machineObject:table, isNumber:boolean, filled:boolean)
         return SmallButtonWithLabel({
             Appearance = filled and "Filled",
-            ButtonLabel = tostring(object[key]),
+            ButtonLabel = tostring(machineObject[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
@@ -66,40 +66,39 @@ return function(props:Props)
                 --set modal enabled
                 setModalEnabled(true)
                 setCurrentFieldKey(key)
-                setCurrentFieldValue(object[key])
+                setCurrentFieldValue(machineObject[key])
                 setCurrentFieldCallback(function()
-                    return function(value)
-                        local previousValue = object[key]
-                        object[key] = value
+                    return function(newValue)
+                        local previousValue = machineObject[key]
+                        machineObject[key] = newValue
                         
                         --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
                         --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
                         if key == "X" or key == "Y" then
-                            local prevX = object["X"]
-                            local prevY = object["Y"]
-                            if key == "X" and object["X"] ~= previousValue then
+                            local prevX = machineObject["X"]
+                            local prevY = machineObject["Y"]
+                            if key == "X" and machineObject["X"] ~= previousValue then
                                 prevX = previousValue
-                            elseif key == "Y" and object["Y"] ~= previousValue then
+                            elseif key == "Y" and machineObject["Y"] ~= previousValue then
                                 prevY = previousValue
                             end
                             
                             --Get the anchor based on the previous coordinates
                             local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
-                            machineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                            machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
                         elseif key == "id" then
                             --if we're changing the ID, we must also change it wherever it appears as a machine's source
                             for i,machine in machines do
                                 if machine["sources"] then
                                     for j,source in machine["sources"] do
                                         if source == previousValue then
-                                            machines[i]["sources"][j] = value
+                                            machines[i]["sources"][j] = newValue
                                         end
                                     end
                                 end
                             end
                         end
 
-                        setModalEnabled(false)
                         Studio.setSelectionTool()
                     end
                 end)
@@ -161,15 +160,17 @@ return function(props:Props)
             Key = currentFieldKey,
             OnConfirm = function(value)
                 currentFieldCallback(value)
-                --Make sure to change the name of the machine.
-
-                props.UpdateDataset(dataset)
-            end,
-            OnClosePanel = function()
                 setModalEnabled(false)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
+                --Make sure to change the name of the machine.
+                props.UpdateDataset(dataset)
+            end,
+            OnClosePanel = function()
                 setCurrentFieldCallback(nil)
+                setModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
             end,
             Value = currentFieldValue,
             ValueType = valueType,
