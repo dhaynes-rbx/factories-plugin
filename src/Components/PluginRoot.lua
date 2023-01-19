@@ -70,10 +70,20 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
+    local machines = nil
+    local items = nil
+    local powerups = nil
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetAsTable()
-        datasetIsLoaded = true
-        currentMap = dataset["maps"][2]
+        if not dataset then
+            print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
+        else
+            datasetIsLoaded = true
+            currentMap = dataset["maps"][2] --TODO: Make functionality to toggle between maps.
+            machines = currentMap["machines"]
+            items = currentMap["items"]
+            powerups = currentMap["powerups"]
+        end
     end
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
@@ -81,7 +91,10 @@ function PluginRoot:init()
         currentPanel = currentPanel,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
+        items = items,
+        machines = machines,
         panelStack = {currentPanel},
+        powerups = powerups,
         selectedMachineAnchor = nil,
     })
     
@@ -99,6 +112,11 @@ function PluginRoot:init()
     
     self.connections = {}
     table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
+end
+
+function PluginRoot:updateDataset(dataset)
+    SceneConfig.updateDataset(dataset)
+    self:setState({dataset = dataset})
 end
 
 function PluginRoot:render()
@@ -165,6 +183,7 @@ function PluginRoot:render()
             }, {}),
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 Title = self.state.currentPanel,
                 
@@ -216,24 +235,22 @@ function PluginRoot:render()
             }),
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
-                UpdateDataset = function(dataset)
-                    SceneConfig.updateDataset(dataset)
-                    self:setState({dataset = dataset})
-                end,
+                UpdateDataset = function(dataset) self:updateDataset(dataset) end,
             }, {}),
 
             EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
-                UpdateDataset = function(dataset)
-                    SceneConfig.updateDataset(dataset)
-                    self:setState({dataset = dataset})
+                UpdateDataset = function(dataset) 
+                    self:updateDataset(dataset) 
                 end,
                 OnMachineEditClicked = function(machineAnchor)
                     Selection:Set({machineAnchor})
@@ -247,19 +264,18 @@ function PluginRoot:render()
                     self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
-                    SceneConfig.updateDataset(dataset)
-                    self:setState({dataset = dataset})
+                    self:updateDataset(dataset)
                 end,
             }),
 
             EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
-                    SceneConfig.updateDataset(dataset)
-                    self:setState({dataset = dataset})
+                    self:updateDataset(dataset) 
                 end,
             }),
 
@@ -272,8 +288,7 @@ function PluginRoot:render()
                     self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset)
-                    self:setState({dataset = dataset})
-                    SceneConfig.updateDataset(dataset)
+                    self:updateDataset(dataset)
                 end,
             }, {}),
             

@@ -33,7 +33,7 @@ type Props = {}
 local function EditMachinesListUI(props: Props)
 	local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
 	local dataset = props.Dataset
-	local map = datasetIsLoaded and dataset.maps[2] or nil
+	local map = props.CurrentMap
 
 	local children = {}
 	add(
