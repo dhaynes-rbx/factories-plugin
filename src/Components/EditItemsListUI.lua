@@ -74,7 +74,6 @@ local function EditItemsListUI(props: Props)
                                     for j,output in machine["outputs"] do
                                         if output == previousValue then
                                             machines[i]["outputs"][j] = value
-                                            print("Machine: ", machine, output, value)
                                         end
                                     end    
                                 end
