@@ -45,18 +45,18 @@ local function EditItemsListUI(props: Props)
     end
 
     local previousValue = nil
-    local createTextChangingButton = function(itemId:string, items:table)
+    local createTextChangingButton = function(key:string, items:table)
 
         return SmallButtonWithLabel({
-            ButtonLabel = tostring(itemId),
+            ButtonLabel = tostring(items[key]),
             Label = "id: ",
             LayoutOrder = getLayoutOrderIndex(),
             OnActivated = function()
-                previousValue = itemId
+                previousValue = key
                 --set modal enabled
                 setModalEnabled(true)
-                setCurrentFieldKey(itemId)
-                setCurrentFieldValue(itemId)
+                setCurrentFieldKey(key)
+                setCurrentFieldValue(key)
                 setCurrentFieldCallback(function()
                     return function(value)
                         if value ~= previousValue then
@@ -89,6 +89,8 @@ local function EditItemsListUI(props: Props)
     local map = props.CurrentMap
 
     local children = {}
+
+    add(children, createTextChangingButton("id", props.Item))
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
