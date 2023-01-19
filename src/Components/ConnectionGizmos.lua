@@ -59,6 +59,8 @@ end
 
 local function ConnectionGizmos(props: Props)
 
+    local missingAnchor = false
+
     local connectionInfo = {}
     local boxes = {}
     local machines = props.CurrentMap["machines"]
@@ -66,6 +68,10 @@ local function ConnectionGizmos(props: Props)
         local x = machine["coordinates"]["X"]
         local y = machine["coordinates"]["Y"]
         local machineAnchor = Scene.getMachineAnchor(x, y)
+        if not machineAnchor then
+            print("No machine anchor found for ("..x..","..y..")")
+            return
+        end
 
         local zOffset = 2.5
         local xSpacing = 3

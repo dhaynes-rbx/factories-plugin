@@ -79,7 +79,7 @@ function PluginRoot:init()
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
-            currentMap = dataset["maps"][2] --TODO: Make functionality to toggle between maps.
+            currentMap = dataset["maps"][1] --TODO: Make functionality to toggle between maps.
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
@@ -130,37 +130,39 @@ function PluginRoot:render()
 
         for _,machineAnchor in Scene.getMachineAnchors() do
             local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
-            local map = self.state.dataset["maps"][2]
-            local machine = getMachineFromCoordinates(x, y, map)
-            local outputsString = ""
-            for i,output in machine["outputs"] do
-                local separator = i > 1 and ", " or ""
-                outputsString = outputsString..separator..output
-            end
-            add(billboardGuis, React.createElement("BillboardGui", {
-                Adornee = machineAnchor,
-                AlwaysOnTop = true,
-                Size = UDim2.new(0, 100, 0, 20),
-            }, {
-                Column = Column({
-                    AutomaticSize = Enum.AutomaticSize.Y,
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center
+            
+            local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
+            if machine then
+                local outputsString = ""
+                for i,output in machine["outputs"] do
+                    local separator = i > 1 and ", " or ""
+                    outputsString = outputsString..separator..output
+                end
+                add(billboardGuis, React.createElement("BillboardGui", {
+                    Adornee = machineAnchor,
+                    AlwaysOnTop = true,
+                    Size = UDim2.new(0, 100, 0, 20),
                 }, {
-                    Text = Text({
-                        Color = Color3.new(1,1,1),
-                        FontSize = 16,
-                        LayoutOrder = 1,
-                        Text = "("..x..","..y..")"
-                    }),
-                    Text2 = Text({
-                        Color = Color3.new(1,1,1),
-                        FontSize = 16,
-                        LayoutOrder = 2,
-                        Size = UDim2.fromOffset(0, 35),
-                        Text = outputsString,
+                    Column = Column({
+                        AutomaticSize = Enum.AutomaticSize.Y,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center
+                    }, {
+                        Text = Text({
+                            Color = Color3.new(1,1,1),
+                            FontSize = 16,
+                            LayoutOrder = 1,
+                            Text = "("..x..","..y..")"
+                        }),
+                        Text2 = Text({
+                            Color = Color3.new(1,1,1),
+                            FontSize = 16,
+                            LayoutOrder = 2,
+                            Size = UDim2.fromOffset(0, 35),
+                            Text = outputsString,
+                        })
                     })
-                })
-            }))
+                }))
+            end
         end
     end
 
@@ -280,6 +282,7 @@ function PluginRoot:render()
             }),
 
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
+                CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 --TODO: Change this to take the machine data object as an input, not the anchor
                 MachineAnchor = self.state.selectedMachineAnchor, 

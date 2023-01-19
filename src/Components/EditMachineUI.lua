@@ -41,7 +41,7 @@ return function(props:Props)
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
-    local map = datasetIsLoaded and dataset.maps[2] or nil
+    local map = props.CurrentMap
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -90,6 +90,7 @@ return function(props:Props)
     local children = {}
 
     if datasetIsLoaded and machine then
+        print(machine)
         add(children, createTextChangingButton("id", machine))
         add(children, createTextChangingButton("type", machine))
         add(children, createTextChangingButton("locName", machine))
