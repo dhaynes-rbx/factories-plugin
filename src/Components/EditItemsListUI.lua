@@ -46,9 +46,7 @@ local function EditItemsListUI(props: Props)
 
     local previousValue = nil
     local createTextChangingButton = function(itemId:string, items:table)
-        -- print("Item ID:", itemId)
-        -- print("Table: ", items)
-        -- print("Value: ", items[itemId])
+
         return SmallButtonWithLabel({
             ButtonLabel = tostring(itemId),
             Label = "id: ",
@@ -62,11 +60,11 @@ local function EditItemsListUI(props: Props)
                 setCurrentFieldCallback(function()
                     return function(value)
                         if value ~= previousValue then
-                            print(value, previousValue)
+                            --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
                             items[value] = table.clone(items[previousValue])
                             items[value]["id"] = value
                             items[previousValue] = nil
-                            -- print(items)
+
                             local machines = props.CurrentMap["machines"]
                             for i,machine in machines do
                                 if machine["outputs"] then
@@ -75,12 +73,11 @@ local function EditItemsListUI(props: Props)
                                         if output == previousValue then
                                             machines[i]["outputs"][j] = value
                                         end
-                                    end    
+                                    end
                                 end
                             end
                         end
                         
-
                         setModalEnabled(false)
                         Studio.setSelectionTool()
                     end
@@ -91,12 +88,12 @@ local function EditItemsListUI(props: Props)
 
     local map = props.CurrentMap
 
-
     local children = {}
     local items = map["items"]
     local itemKeys = Dash.keys(items)
-    table.sort(itemKeys, function(a,b) return a < b end) --Do this to make sure buttons show in alphabetical order
-
+    table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
+        return a < b
+    end)
     for _,itemKey in itemKeys do
         add(children, createTextChangingButton(itemKey, items))
     end
@@ -111,8 +108,6 @@ local function EditItemsListUI(props: Props)
             Key = currentFieldKey,
             OnConfirm = function(value)
                 currentFieldCallback(value)
-                --Make sure to change the name of the machine.
-    
                 props.UpdateDataset(props.Dataset)
             end,
             OnClosePanel = function()
