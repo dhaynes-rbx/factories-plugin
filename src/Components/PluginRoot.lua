@@ -22,6 +22,7 @@ local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditItemsListUI = require(script.Parent.EditItemsListUI)
+local EditItemUI = require(script.Parent.EditItemUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
@@ -282,6 +283,17 @@ function PluginRoot:render()
             }, {}),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
+                CurrentMap = self.state.currentMap,
+                Dataset = self.state.dataset,
+                OnClosePanel = function()
+                    self:showPreviousPanel()
+                end,
+                UpdateDataset = function(dataset)
+                    self:updateDataset(dataset)
+                end,
+            }),
+
+            EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 OnClosePanel = function()
