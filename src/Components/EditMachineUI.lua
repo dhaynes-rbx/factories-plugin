@@ -54,7 +54,7 @@ return function(props:Props)
     end
 
     local createTextChangingButton = function(key:string | number, machineObject:table, isNumber:boolean, filled:boolean)
-        
+
         local textInputFunction = function()
             if isNumber then
                 setValueType("number")
@@ -111,15 +111,25 @@ return function(props:Props)
         })
     end
 
-    local createListModalButton = function(key:string | number, machineObject:table)
+    local createListModalButton = function(key:string | number, list:table)
 
         local listModalFunction = function()
+            --set modal enabled
+            setListModalEnabled(true)
+            setCurrentFieldKey(key)
+            setCurrentFieldValue(list[key])
+            setCurrentFieldCallback(function()
+                return function(newValue)
+                    list[key] = newValue
 
+                    Studio.setSelectionTool()
+                end
+            end)
         end
 
         return SmallButtonWithLabel({
             Appearance = "Filled",
-            ButtonLabel = tostring(machineObject[key]),
+            ButtonLabel = tostring(list[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = listModalFunction
@@ -141,7 +151,7 @@ return function(props:Props)
 
         add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         for i,_ in machine["outputs"] do
-            add(children, createTextChangingButton(i, machine["outputs"], false, true))
+            add(children, createListModalButton(i, machine["outputs"]))
         end
 
         if machine["sources"] then
@@ -197,7 +207,8 @@ return function(props:Props)
         }),
 
         SelectFromListModal = listModalEnabled and SelectFromListModal({
-            Choices = map["items"]
+            Choices = map["items"],
+            Value = currentFieldValue,
         })
     })
 end

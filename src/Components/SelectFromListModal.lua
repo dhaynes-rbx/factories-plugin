@@ -1,5 +1,7 @@
 local Packages = script.Parent.Parent.Packages
 local React = require(Packages.React)
+local Dash = require(Packages.Dash)
+
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Column = FishBloxComponents.Column
@@ -24,10 +26,24 @@ local function SelectFromListModal(props: Props)
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
     
-    -- return Overlay({
-    --     Size = UDim2.new(1, 40,1, 40),
-    --     Position = UDim2.new(0, -20, 0, -20),
-    -- }, {
+    local choiceKeys = Dash.keys(props.Choices)
+    table.sort(choiceKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
+        return a:lower() < b:lower()
+    end)
+    local radioButtons = {}
+    for i,choiceKey in choiceKeys do
+        local on = false
+        if props.Key == choiceKey then
+            on = true
+        end
+        table.insert(radioButtons, {
+            Choice = props.Choices[choiceKey],
+            Label = props.Choices[choiceKey]["id"],
+            Value = choiceKey,
+        })
+        
+    end
+
     return Panel({
             AnchorPoint = Vector2.new(0.5, 0.5),
             Title = "Edit Field",
@@ -48,9 +64,10 @@ local function SelectFromListModal(props: Props)
                 -- ZIndex = 200,
             }, {
                 RadioButtonGroup = RadioButtonGroup({
-                    
+                    Choices = radioButtons,
+                    CurrentValue = value,
                 }),
-                }),
+                
                 Error = showError and Text({
                     Text = "Error! Only numbers allowed.",
                     Color = Color3.new(1, 0, 0),
@@ -70,7 +87,7 @@ local function SelectFromListModal(props: Props)
                     Width = UDim.new(1, 0),
                     -- ZIndex = 300,
                 }),
-            })
+            })})
 end
 
 return function(props)
