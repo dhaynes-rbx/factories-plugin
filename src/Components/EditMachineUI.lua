@@ -18,6 +18,7 @@ local Modal = require(script.Parent.Modal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
+local SelectFromListModal = require(script.Parent.SelectFromListModal)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -34,6 +35,7 @@ type Props = {
 return function(props:Props)
 
     local modalEnabled, setModalEnabled = React.useState(false)
+    local listModalEnabled, setListModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
@@ -52,57 +54,75 @@ return function(props:Props)
     end
 
     local createTextChangingButton = function(key:string | number, machineObject:table, isNumber:boolean, filled:boolean)
+        
+        local textInputFunction = function()
+            if isNumber then
+                setValueType("number")
+            else
+                setValueType("string")
+            end
+            --set modal enabled
+            setModalEnabled(true)
+            setCurrentFieldKey(key)
+            setCurrentFieldValue(machineObject[key])
+            setCurrentFieldCallback(function()
+                return function(newValue)
+                    local previousValue = machineObject[key]
+                    machineObject[key] = newValue
+                    
+                    --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
+                    --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
+                    if key == "X" or key == "Y" then
+                        local prevX = machineObject["X"]
+                        local prevY = machineObject["Y"]
+                        if key == "X" and machineObject["X"] ~= previousValue then
+                            prevX = previousValue
+                        elseif key == "Y" and machineObject["Y"] ~= previousValue then
+                            prevY = previousValue
+                        end
+                        
+                        --Get the anchor based on the previous coordinates
+                        local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
+                        machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
+                    elseif key == "id" then
+                        --if we're changing the ID, we must also change it wherever it appears as a machine's source
+                        for i,machine in machines do
+                            if machine["sources"] then
+                                for j,source in machine["sources"] do
+                                    if source == previousValue then
+                                        machines[i]["sources"][j] = newValue
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    Studio.setSelectionTool()
+                end
+            end)
+        end
+
         return SmallButtonWithLabel({
             Appearance = filled and "Filled",
             ButtonLabel = tostring(machineObject[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                if isNumber then
-                    setValueType("number")
-                else
-                    setValueType("string")
-                end
-                --set modal enabled
-                setModalEnabled(true)
-                setCurrentFieldKey(key)
-                setCurrentFieldValue(machineObject[key])
-                setCurrentFieldCallback(function()
-                    return function(newValue)
-                        local previousValue = machineObject[key]
-                        machineObject[key] = newValue
-                        
-                        --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
-                        --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
-                        if key == "X" or key == "Y" then
-                            local prevX = machineObject["X"]
-                            local prevY = machineObject["Y"]
-                            if key == "X" and machineObject["X"] ~= previousValue then
-                                prevX = previousValue
-                            elseif key == "Y" and machineObject["Y"] ~= previousValue then
-                                prevY = previousValue
-                            end
-                            
-                            --Get the anchor based on the previous coordinates
-                            local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
-                            machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
-                        elseif key == "id" then
-                            --if we're changing the ID, we must also change it wherever it appears as a machine's source
-                            for i,machine in machines do
-                                if machine["sources"] then
-                                    for j,source in machine["sources"] do
-                                        if source == previousValue then
-                                            machines[i]["sources"][j] = newValue
-                                        end
-                                    end
-                                end
-                            end
-                        end
+            OnActivated = textInputFunction
+        })
+    end
 
-                        Studio.setSelectionTool()
-                    end
-                end)
-            end,
+    local createListModalButton = function(key:string | number, machineObject:table)
+
+        local listModalFunction = function()
+
+        end
+
+        return SmallButtonWithLabel({
+            Appearance = "Filled",
+            ButtonLabel = tostring(machineObject[key]),
+            Label = key..": ",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = listModalFunction
         })
     end
 
@@ -175,5 +195,9 @@ return function(props:Props)
             Value = currentFieldValue,
             ValueType = valueType,
         }),
+
+        SelectFromListModal = listModalEnabled and SelectFromListModal({
+            Choices = map["items"]
+        })
     })
 end

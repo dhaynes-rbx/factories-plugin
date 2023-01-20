@@ -6,12 +6,13 @@ local Column = FishBloxComponents.Column
 local TextInput = FishBloxComponents.TextInput
 local Text = FishBloxComponents.Text
 local Button = FishBloxComponents.Button
+local RadioButtonGroup = FishBloxComponents.RadioButtonGroup
 local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 
 type Props = {
-    Key: string,
+    Choices: table,
     OnClosePanel: any,
     OnConfirm: any,
     Value: string | number,
@@ -22,7 +23,6 @@ local function SelectFromListModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
-    local isNumber = props.ValueType == "number"
     
     -- return Overlay({
     --     Size = UDim2.new(1, 40,1, 40),
@@ -47,25 +47,9 @@ local function SelectFromListModal(props: Props)
                 PaddingVertical = 20,
                 -- ZIndex = 200,
             }, {
-                TextInput = TextInput({
-                    Label = props.Key,
-                    OnChanged = function(newValue)
-                        if isNumber then
-                            if tonumber(newValue) then
-                                setShowError(false)
-                                setValue(tonumber(newValue))
-                            else
-                                setShowError(true)
-                            end
-                        else
-                            setShowError(false)
-                            setValue(newValue)
-                        end
-                    end,
-                    Placeholder = "",
-                    Value = value,
-                    Size = UDim2.new(1, 0, 0, 100),
-                    -- ZIndex = 300,
+                RadioButtonGroup = RadioButtonGroup({
+                    
+                }),
                 }),
                 Error = showError and Text({
                     Text = "Error! Only numbers allowed.",
@@ -76,18 +60,17 @@ local function SelectFromListModal(props: Props)
                     Label = "Confirm",
                     LayoutOrder = 100,
                     OnActivated = function() 
-                        if isNumber and tonumber(value) then
-                            props.OnConfirm(tonumber(value))
-                        else
-                            props.OnConfirm(value)
-                        end
+                        -- if isNumber and tonumber(value) then
+                        --     props.OnConfirm(tonumber(value))
+                        -- else
+                        --     props.OnConfirm(value)
+                        -- end
                     end,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     Width = UDim.new(1, 0),
                     -- ZIndex = 300,
                 }),
             })
-        })
 end
 
 return function(props)

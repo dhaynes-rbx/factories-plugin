@@ -133,7 +133,6 @@ function PluginRoot:updateDataset(dataset)
 end
 
 function PluginRoot:render()
-    print("Selected Item at beginning of render...", self.state.selectedItem)
     
     Studio.setSelectionTool()
 
