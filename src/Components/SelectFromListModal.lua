@@ -31,11 +31,7 @@ local function SelectFromListModal(props: Props)
         return a:lower() < b:lower()
     end)
     local radioButtons = {}
-    for i,choiceKey in choiceKeys do
-        local on = false
-        if props.Key == choiceKey then
-            on = true
-        end
+    for _,choiceKey in choiceKeys do
         table.insert(radioButtons, {
             Choice = props.Choices[choiceKey],
             Label = props.Choices[choiceKey]["id"],
@@ -46,7 +42,7 @@ local function SelectFromListModal(props: Props)
 
     return Panel({
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Title = "Edit Field",
+        Title = "Choose Item",
         Size = UDim2.new(0, 500, 0, 500),
         ShowClose = true,
         Position = UDim2.fromScale(0.5, 0.5),
@@ -56,15 +52,15 @@ local function SelectFromListModal(props: Props)
         -- ZIndex = 100
     }, {
         ScrollingFrame = React.createElement("ScrollingFrame", {
-        AutomaticSize = Enum.AutomaticSize.Y,
+        -- AutomaticSize = Enum.AutomaticSize.Y,
         CanvasSize = UDim2.new(0, 0, 5, 0),
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollingDirection = Enum.ScrollingDirection.Y,
         }, {
-            Content = Column({ --This overrides the built-in panel Column
-                AutomaticSize = Enum.AutomaticSize.Y,
+            Content = Column({
+                -- AutomaticSize = Enum.AutomaticSize.Y,
                 Gaps = 8,
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 PaddingHorizontal = 20,
@@ -79,24 +75,24 @@ local function SelectFromListModal(props: Props)
                 Error = showError and Text({
                     Text = "Error! Only numbers allowed.",
                     Color = Color3.new(1, 0, 0),
-                }),
-                Button1 = Button({
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                    Label = "Confirm",
-                    LayoutOrder = 100,
-                    OnActivated = function() 
-                        -- if isNumber and tonumber(value) then
-                        --     props.OnConfirm(tonumber(value))
-                        -- else
-                        --     props.OnConfirm(value)
-                        -- end
-                    end,
-                    TextXAlignment = Enum.TextXAlignment.Center,
-                    Width = UDim.new(1, 0),
-                    -- ZIndex = 300,
-                }),
+                })
             })
-        })
+        }),
+        Button1 = Button({
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            Label = "Confirm",
+            LayoutOrder = 100,
+            OnActivated = function() 
+                -- if isNumber and tonumber(value) then
+                --     props.OnConfirm(tonumber(value))
+                -- else
+                --     props.OnConfirm(value)
+                -- end
+            end,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            Width = UDim.new(1, 0),
+            -- ZIndex = 300,
+        }),
     })
 end
 
