@@ -16,7 +16,6 @@ local Block = FishBloxComponents.Block
 local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 
-local DebugUI = require(script.Parent.DebugUI)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
