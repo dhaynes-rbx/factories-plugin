@@ -70,6 +70,9 @@ local function SelectFromListModal(props: Props)
                 RadioButtonGroup = RadioButtonGroup({
                     Choices = radioButtons,
                     CurrentValue = value,
+                    OnChanged = function(num, val) 
+                        setValue(val)
+                    end
                 }),
                 
                 Error = showError and Text({
@@ -83,11 +86,7 @@ local function SelectFromListModal(props: Props)
             Label = "Confirm",
             LayoutOrder = 100,
             OnActivated = function() 
-                -- if isNumber and tonumber(value) then
-                --     props.OnConfirm(tonumber(value))
-                -- else
-                --     props.OnConfirm(value)
-                -- end
+                props.OnConfirm(value)
             end,
             TextXAlignment = Enum.TextXAlignment.Center,
             Width = UDim.new(1, 0),

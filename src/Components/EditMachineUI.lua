@@ -113,26 +113,26 @@ return function(props:Props)
 
     local createListModalButton = function(key:string | number, list:table)
 
-        local listModalFunction = function()
-            --set modal enabled
-            setListModalEnabled(true)
-            setCurrentFieldKey(key)
-            setCurrentFieldValue(list[key])
-            setCurrentFieldCallback(function()
-                return function(newValue)
-                    list[key] = newValue
-
-                    Studio.setSelectionTool()
-                end
-            end)
-        end
-
         return SmallButtonWithLabel({
             Appearance = "Filled",
             ButtonLabel = tostring(list[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
-            OnActivated = listModalFunction
+            OnActivated = function()
+                --set modal enabled
+                setListModalEnabled(true)
+                setCurrentFieldKey(key)
+                setCurrentFieldValue(list[key])
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        list[key] = newValue
+                        print(newValue)
+                        --Also change the value in the items dictionary
+
+                        Studio.setSelectionTool()
+                    end
+                end)
+            end
         })
     end
 
@@ -209,6 +209,20 @@ return function(props:Props)
         SelectFromListModal = listModalEnabled and SelectFromListModal({
             Choices = map["items"],
             Value = currentFieldValue,
+            OnConfirm = function(value)
+                currentFieldCallback(value)
+                setListModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                --Make sure to change the name of the machine.
+                props.UpdateDataset(dataset)
+            end,
+            OnClosePanel = function()
+                setCurrentFieldCallback(nil)
+                setListModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+            end,
         })
     })
 end
