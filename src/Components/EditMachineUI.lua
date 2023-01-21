@@ -140,6 +140,10 @@ return function(props:Props)
     end
 
     local machine = props.Machine
+    local machineIds = {}
+    for _,machineObj in machines do
+        machineIds[machineObj["id"]] = machineObj["id"]
+    end
     local coordinateName = machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]
     local children = {}
 
@@ -164,7 +168,9 @@ return function(props:Props)
             add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
             for i,_ in machine["sources"] do
                 -- add(children, createTextChangingButton(i, machine["sources"], false, true))
-                add(children, createListModalButton(i, machine["sources"], items, Dash.noop))
+                add(children, createListModalButton(i, machine["sources"], machineIds, function(machineId)
+                    print("Callback: ", machineId)
+                end))
             end    
         end
         add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
