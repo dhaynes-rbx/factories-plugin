@@ -31,12 +31,6 @@ type Props = {
 }
 
 local function EditItemsListUI(props: Props)
-
-    local modalEnabled, setModalEnabled = React.useState(false)
-    local currentFieldKey, setCurrentFieldKey = React.useState(nil)
-    local currentFieldValue, setCurrentFieldValue = React.useState(nil)
-    local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
-
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
     local getLayoutOrderIndex = function()
@@ -68,19 +62,6 @@ local function EditItemsListUI(props: Props)
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
-        -- Modal = modalEnabled and Modal({
-        --     Key = currentFieldKey,
-        --     OnConfirm = function(value)
-        --         currentFieldCallback(value)
-        --         props.UpdateDataset(props.Dataset)
-        --     end,
-        --     OnClosePanel = function()
-                -- setModalEnabled(false)
-                -- setCurrentFieldKey(nil)
-                -- setCurrentFieldValue(nil)
-                -- setCurrentFieldCallback(nil)
-            -- end,
-            -- Value = currentFieldValue,
     })
 end
 

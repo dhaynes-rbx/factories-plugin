@@ -118,9 +118,8 @@ return function(props:Props)
             ButtonLabel = tostring(list[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
 
-                --set modal enabled
+            OnActivated = function()
                 setListModalEnabled(true)
                 setListChoices(choices)
                 setCurrentFieldKey(key)

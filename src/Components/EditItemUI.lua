@@ -30,12 +30,12 @@ type Props = {
 
 }
 
-local function EditItemsListUI(props: Props)
-    print("EditItemsListUI: ", props)
+local function EditItemUI(props: Props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    local valueType, setValueType = React.useState(nil)
     
     local dataset = props.Dataset
     local map = props.CurrentMap
@@ -44,35 +44,37 @@ local function EditItemsListUI(props: Props)
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
-    local getLayoutOrderIndex = function()
+    local incrementLayoutOrder = function()
         index = index + 1
         return index
     end
 
-    local createTextChangingButton = function(key:string, itemObject:table)
+    local createTextChangingButton = function(key:string, itemObject:table, isNumber:boolean)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(itemObject[key]),
             Label = key,
-            LayoutOrder = getLayoutOrderIndex(),
+            LayoutOrder = incrementLayoutOrder(),
+
             OnActivated = function()
-                --set modal enabled
+                if isNumber then
+                    setValueType("number")
+                else
+                    setValueType("string")
+                end
                 setModalEnabled(true)
                 setCurrentFieldKey(key)
                 setCurrentFieldValue(itemObject[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
                         local previousValue = itemObject[key]
-                        print(previousValue, newValue)
                         if newValue ~= previousValue then
                             --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
                             items[newValue] = table.clone(items[previousValue])
                             items[newValue]["id"] = newValue
                             items[previousValue] = nil
-                            print("Items: ", items)
 
                             for i,machine in machines do
                                 if machine["outputs"] then
-                                    
                                     for j,output in machine["outputs"] do
                                         if output == previousValue then
                                             machines[i]["outputs"][j] = newValue
@@ -81,8 +83,6 @@ local function EditItemsListUI(props: Props)
                                 end
                             end
                         end
-                        
-                        Studio.setSelectionTool()
                     end
                 end)
             end,
@@ -93,6 +93,21 @@ local function EditItemsListUI(props: Props)
     local children = {}
     local item = props.Item
     add(children, createTextChangingButton("id", item))
+    add(children, createTextChangingButton("locName", item))
+    add(children, createTextChangingButton("thumb", item))
+    add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
+    if item["requirements"] then
+        for _,requirement in item["requirements"] do
+            add(children, createTextChangingButton("itemId", requirement))
+            add(children, createTextChangingButton("count", requirement, true))
+        end
+    end
+    if item["value"] then
+        add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
+        add(children, createTextChangingButton("itemId", item["value"]))
+        add(children, createTextChangingButton("count", item["value"]))
+    end
+
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
@@ -102,6 +117,9 @@ local function EditItemsListUI(props: Props)
         }, children),
         Modal = modalEnabled and Modal({
             Key = currentFieldKey,
+            Value = currentFieldValue,
+            ValueType = valueType,
+
             OnConfirm = function(value)
                 currentFieldCallback(value)
                 setModalEnabled(false)
@@ -109,18 +127,19 @@ local function EditItemsListUI(props: Props)
                 setCurrentFieldValue(nil)
                 props.UpdateItem(value)
                 props.UpdateDataset(dataset)
+                Studio.setSelectionTool()
             end,
             OnClosePanel = function()
                 setCurrentFieldCallback(nil)
                 setModalEnabled(false)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
+                Studio.setSelectionTool()
             end,
-            Value = currentFieldValue,
     })})
 
 end
 
 return function(props)
-    return React.createElement(EditItemsListUI, props)
+    return React.createElement(EditItemUI, props)
 end

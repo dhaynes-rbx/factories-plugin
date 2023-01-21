@@ -328,16 +328,16 @@ function PluginRoot:render()
                 end,
             }),
             
-            EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
-                CurrentMap = self.state.currentMap,
-                Dataset = self.state.dataset,
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset) 
-                end,
-            }),
+            -- EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
+            --     CurrentMap = self.state.currentMap,
+            --     Dataset = self.state.dataset,
+            --     OnClosePanel = function()
+            --         self:showPreviousPanel()
+            --     end,
+            --     UpdateDataset = function(dataset)
+            --         self:updateDataset(dataset) 
+            --     end,
+            -- }),
 
             
             EditPowerupUI = nil,
