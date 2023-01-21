@@ -11,8 +11,8 @@ return {
         EditPowerupUI = "Edit Powerup",
     },
     MachineTypes = {
-        Maker = "maker",
-        MakerSeller = "makerSeller",
-        Purchaser = "purchaser",
+        maker = "maker",
+        makerSeller = "makerSeller",
+        purchaser = "purchaser",
     }
 }

@@ -15,11 +15,12 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local Modal = require(script.Parent.Modal)
+local SelectFromListModal = require(script.Parent.SelectFromListModal)
+local SidePanel = require(script.Parent.SidePanel)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
-local SidePanel = require(script.Parent.SidePanel)
-local SelectFromListModal = require(script.Parent.SelectFromListModal)
 
+local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
@@ -36,6 +37,7 @@ return function(props:Props)
 
     local modalEnabled, setModalEnabled = React.useState(false)
     local listModalEnabled, setListModalEnabled = React.useState(false)
+    local listChoices, setListChoices = React.useState({})
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
@@ -45,6 +47,7 @@ return function(props:Props)
     local dataset = props.Dataset
     local map = props.CurrentMap
     local machines = map["machines"]
+    local items = map["items"]
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -111,7 +114,7 @@ return function(props:Props)
         })
     end
 
-    local createListModalButton = function(key:string | number, list:table)
+    local createListModalButton = function(key:string | number, list:table, choices:table)
 
         return SmallButtonWithLabel({
             Appearance = "Filled",
@@ -119,8 +122,10 @@ return function(props:Props)
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
+
                 --set modal enabled
                 setListModalEnabled(true)
+                setListChoices(choices)
                 setCurrentFieldKey(key)
                 setCurrentFieldValue(list[key])
                 setCurrentFieldCallback(function()
@@ -143,7 +148,9 @@ return function(props:Props)
 
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
-        add(children, createTextChangingButton("type", machine, false, true))
+
+        add(children, createListModalButton("type", machine, Constants.MachineTypes)) --
+
         add(children, createTextChangingButton("locName", machine))
         add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
@@ -151,7 +158,7 @@ return function(props:Props)
 
         add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         for i,_ in machine["outputs"] do
-            add(children, createListModalButton(i, machine["outputs"]))
+            add(children, createListModalButton(i, machine["outputs"], items)) --
         end
 
         if machine["sources"] then
@@ -207,7 +214,8 @@ return function(props:Props)
         }),
 
         SelectFromListModal = listModalEnabled and SelectFromListModal({
-            Choices = map["items"],
+            Choices = listChoices,
+            Key = currentFieldKey,
             Value = currentFieldValue,
             OnConfirm = function(value)
                 currentFieldCallback(value)

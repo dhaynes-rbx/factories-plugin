@@ -25,19 +25,20 @@ local function SelectFromListModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
+    print(props.Key, props.Value, props.Choices)
     
     local choiceKeys = Dash.keys(props.Choices)
     table.sort(choiceKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
     local radioButtons = {}
+    
     for _,choiceKey in choiceKeys do
         table.insert(radioButtons, {
             Choice = props.Choices[choiceKey],
-            Label = props.Choices[choiceKey]["id"],
-            Value = choiceKey,
+            Label = props.Choices[choiceKey],
+            Value = props.Choices[choiceKey],
         })
-        
     end
 
     return Panel({
@@ -70,7 +71,7 @@ local function SelectFromListModal(props: Props)
                 RadioButtonGroup = RadioButtonGroup({
                     Choices = radioButtons,
                     CurrentValue = value,
-                    OnChanged = function(num, val) 
+                    OnChanged = function(num, val)
                         setValue(val)
                     end
                 }),
