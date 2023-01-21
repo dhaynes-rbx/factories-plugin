@@ -24,7 +24,6 @@ type Props = {
 local function SelectFromListModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
-    local showError, setShowError = React.useState(false)
     print(props.Key, props.Value, props.Choices)
     
     local choiceKeys = Dash.keys(props.Choices)
@@ -34,16 +33,17 @@ local function SelectFromListModal(props: Props)
     local radioButtons = {}
     
     for _,choiceKey in choiceKeys do
+        print(choiceKey)
         table.insert(radioButtons, {
-            Choice = props.Choices[choiceKey],
-            Label = props.Choices[choiceKey],
-            Value = props.Choices[choiceKey],
+            -- Choice = props.Choices[choiceKey],
+            Label = choiceKey,
+            Value = choiceKey,
         })
     end
 
     return Panel({
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Title = "Choose Item",
+        Title = "Choose",
         Size = UDim2.new(0, 500, 0, 500),
         ShowClose = true,
         Position = UDim2.fromScale(0.5, 0.5),
@@ -75,11 +75,6 @@ local function SelectFromListModal(props: Props)
                         setValue(val)
                     end
                 }),
-                
-                Error = showError and Text({
-                    Text = "Error! Only numbers allowed.",
-                    Color = Color3.new(1, 0, 0),
-                })
             })
         }),
         Button1 = Button({

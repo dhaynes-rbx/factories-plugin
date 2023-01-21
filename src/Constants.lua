@@ -14,5 +14,10 @@ return {
         maker = "maker",
         makerSeller = "makerSeller",
         purchaser = "purchaser",
+    },
+    MachineAssetPaths = {
+        maker = "Assets.Machines.Machine-Default",
+        makerSeller = "Assets.Machines.Seller",
+        purchaser = "Assets.Machines.Purchaser",
     }
 }
