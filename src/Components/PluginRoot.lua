@@ -99,6 +99,7 @@ function PluginRoot:init()
         powerups = powerups,
         selectedItem = nil,
         selectedMachine = nil,
+        selectedMachineAnchor = nil,
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
@@ -109,12 +110,15 @@ function PluginRoot:init()
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(selectedObj) then
                 local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
                 local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
-                if machine then
-                    self:setState({selectedMachine = machine})
-                    self:changePanel(Panels.EditMachineUI)
-                else
-                    print("ERROR! No machine for selected anchor "..selectedObj.Name.."!")
+                --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
+                if not machine then 
+                    machine = React.None 
                 end
+                self:setState({
+                    selectedMachine = machine,
+                    selectedMachineAnchor = selectedObj
+                })
+                self:changePanel(Panels.EditMachineUI)
             end
         end
     end
@@ -152,25 +156,30 @@ function PluginRoot:render()
                 add(billboardGuis, React.createElement("BillboardGui", {
                     Adornee = machineAnchor,
                     AlwaysOnTop = true,
-                    Size = UDim2.new(0, 100, 0, 20),
+                    Size = UDim2.new(0, 150, 0, 100),
                 }, {
                     Column = Column({
                         AutomaticSize = Enum.AutomaticSize.Y,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center
                     }, {
-                        Text = Text({
+                        Text1 = Text({
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
                             LayoutOrder = 1,
-                            Text = "("..x..","..y..")"
+                            Text = machine["id"]
                         }),
                         Text2 = Text({
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
                             LayoutOrder = 2,
-                            Size = UDim2.fromOffset(0, 35),
-                            Text = outputsString,
-                        })
+                            Text = "Makes: "..outputsString,
+                        }),
+                        Text3 = Text({
+                            Color = Color3.new(1,1,1),
+                            FontSize = 16,
+                            LayoutOrder = 3,
+                            Text = "("..x..","..y..")"
+                        }),
                     })
                 }))
             end
@@ -276,6 +285,7 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 Machine = self.state.selectedMachine,
+                MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
                     self:showPreviousPanel()

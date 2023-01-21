@@ -140,14 +140,16 @@ return function(props:Props)
     end
 
     local machine = props.Machine
-    local machineIds = {}
-    for _,machineObj in machines do
-        machineIds[machineObj["id"]] = machineObj["id"]
-    end
-    local coordinateName = machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]
+    local coordinateName = machine and machine["coordinates"]["X"]..","..machine["coordinates"]["Y"] or props.MachineAnchor.Name
     local children = {}
 
+    print(props.MachineAnchor, machine)
+    
     if datasetIsLoaded and machine then
+        local machineIds = {}
+        for _,machineObj in machines do
+            machineIds[machineObj["id"]] = machineObj["id"]
+        end
         add(children, createTextChangingButton("id", machine))
 
         add(children, createListModalButton("type", machine, Constants.MachineTypes, function(assetKey) 
