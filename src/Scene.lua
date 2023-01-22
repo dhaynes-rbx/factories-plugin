@@ -144,12 +144,13 @@ function Scene.loadMachines(dataset:table)
 end
 
 function Scene.populateMapWithMachines(dataset:table, mapIndex:number)
-    Scene.getMachinesFolder():Destroy()
 
     local map = dataset["maps"][mapIndex]
-    local folder = Scene.getOrCreateFolder(map["id"], Scene.getMachineStorageFolder())
-    local parent = Scene.getMachinesFolder().Parent
-    Scene.getMachinesFolder():Destroy()
+    local folder = Scene.getOrCreateFolder(map["id"], Scene.getMachineStorageFolder()):Clone()
+    local parent = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout")
+    if Scene.getMachinesFolder() then
+        Scene.getMachinesFolder():Destroy()
+    end
     folder.Name = "Machines"
     folder.Parent = parent
 end
