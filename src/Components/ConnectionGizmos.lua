@@ -123,16 +123,17 @@ local function ConnectionGizmos(props: Props)
 
     --Loop through again and draw connections between the machines.
     for _,machine in machines do
-        -- print("Machine: "..machine["id"], machine)
         if machine["sources"] then
             local x = machine["coordinates"]["X"]
             local y = machine["coordinates"]["Y"]
             local machineAnchor = Scene.getMachineAnchor(x, y)
 
-            local info = connectionInfo[machine]
-
             for i,source in machine["sources"] do
                 local lineTarget = getMachineFromId(source, props.CurrentMap)
+                if not lineTarget then
+                    print("No machine that matches ID: "..source)
+                    continue
+                end
                 local sourceCFrameRelativeToAnchor = connectionInfo[machine].sources[i].cframe                
                 local outputWorldCFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
                 local outputCFrameRelativeToSource = CFrame.new(outputWorldCFrame.Position - machineAnchor:GetPivot().Position)

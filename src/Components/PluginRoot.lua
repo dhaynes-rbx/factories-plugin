@@ -16,12 +16,12 @@ local Block = FishBloxComponents.Block
 local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 
-local DebugUI = require(script.Parent.DebugUI)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditItemsListUI = require(script.Parent.EditItemsListUI)
+local EditItemUI = require(script.Parent.EditItemUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
@@ -70,6 +70,7 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
+    local currentMapIndex = 2
     local machines = nil
     local items = nil
     local powerups = nil
@@ -79,7 +80,7 @@ function PluginRoot:init()
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
-            currentMap = dataset["maps"][2] --TODO: Make functionality to toggle between maps.
+            currentMap = dataset["maps"][currentMapIndex] --TODO: Make functionality to toggle between maps.
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
@@ -87,7 +88,8 @@ function PluginRoot:init()
     end
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
-        currentMap = currentMap,
+        currentMap = currentMap, --TODO: remove this, use index instead
+        currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
@@ -95,7 +97,9 @@ function PluginRoot:init()
         machines = machines,
         panelStack = {currentPanel},
         powerups = powerups,
+        selectedItem = nil,
         selectedMachine = nil,
+        selectedMachineAnchor = nil,
     })
     
     --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
@@ -106,12 +110,15 @@ function PluginRoot:init()
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(selectedObj) then
                 local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
                 local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
-                if machine then
-                    self:setState({selectedMachine = machine})
-                    self:changePanel(Panels.EditMachineUI)
-                else
-                    print("ERROR! No machine for selected anchor "..selectedObj.Name.."!")
+                --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
+                if not machine then 
+                    machine = React.None 
                 end
+                self:setState({
+                    selectedMachine = machine,
+                    selectedMachineAnchor = selectedObj
+                })
+                self:changePanel(Panels.EditMachineUI)
             end
         end
     end
@@ -122,11 +129,13 @@ end
 
 function PluginRoot:updateDataset(dataset)
     SceneConfig.updateDataset(dataset)
-    self:setState({dataset = dataset})
+    self:setState({
+        dataset = dataset,
+        
+    })
 end
 
 function PluginRoot:render()
-    -- print("Dataset at beginning of render...", self.state.dataset)
     
     Studio.setSelectionTool()
 
@@ -147,25 +156,30 @@ function PluginRoot:render()
                 add(billboardGuis, React.createElement("BillboardGui", {
                     Adornee = machineAnchor,
                     AlwaysOnTop = true,
-                    Size = UDim2.new(0, 100, 0, 20),
+                    Size = UDim2.new(0, 150, 0, 100),
                 }, {
                     Column = Column({
                         AutomaticSize = Enum.AutomaticSize.Y,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center
                     }, {
-                        Text = Text({
+                        Text1 = Text({
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
                             LayoutOrder = 1,
-                            Text = "("..x..","..y..")"
+                            Text = machine["id"]
                         }),
                         Text2 = Text({
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
                             LayoutOrder = 2,
-                            Size = UDim2.fromOffset(0, 35),
-                            Text = outputsString,
-                        })
+                            Text = "Makes: "..outputsString,
+                        }),
+                        Text3 = Text({
+                            Color = Color3.new(1,1,1),
+                            FontSize = 16,
+                            LayoutOrder = 3,
+                            Text = "("..x..","..y..")"
+                        }),
                     })
                 }))
             end
@@ -210,24 +224,9 @@ function PluginRoot:render()
                 end,
 
                 ShowEditPowerupsListUI = function()
-                    self:changePanel(Panels.EditPowerupsListUI)
+                    -- self:changePanel(Panels.EditPowerupsListUI)
                 end,
-
-                ImportDataset = function()
-                    local dataset, newDatasetInstance = SceneConfig.importNewDataset()
-
-                    if not newDatasetInstance then
-                        return
-                    end
-                    --if for some reason the dataset is deleted, then make sure that the app state reflects that.
-                    newDatasetInstance.AncestryChanged:Connect(function(_,_)
-                        self:setState({dataset = "NONE", datasetIsLoaded = false})
-                    end)
-
-                    local currentMap = dataset["maps"][2]
-                    self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
-                end,
-
+                
                 ExportDataset = function()
                     SceneConfig.updateDataset(self.state.dataset)
                     local datasetInstance = SceneConfig.getDatasetInstance()
@@ -241,6 +240,27 @@ function PluginRoot:render()
                         print("File saved")
                     end
                     saveFile:Destroy()
+                end,
+
+                ImportDataset = function()
+                    local dataset, newDatasetInstance = SceneConfig.importNewDataset()
+                    
+                    if not newDatasetInstance then
+                        return
+                    end
+                    --if for some reason the dataset is deleted, then make sure that the app state reflects that.
+                    newDatasetInstance.AncestryChanged:Connect(function(_,_)
+                        self:setState({dataset = "NONE", datasetIsLoaded = false})
+                    end)
+                    
+                    local currentMap = dataset["maps"][self.state.currentMapIndex]
+                    self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
+                    Scene.loadMachines(dataset)
+                    Scene.populateMapWithMachines(dataset, self.state.currentMapIndex)
+                end,
+
+                UpdateDataset = function(dataset) 
+                    self:updateDataset(dataset) 
                 end,
             }),
 
@@ -270,8 +290,8 @@ function PluginRoot:render()
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-                --TODO: Change this to take the machine data object as an input, not the anchor
                 Machine = self.state.selectedMachine,
+                MachineAnchor = self.state.selectedMachineAnchor,
                 OnClosePanel = function()
                     Selection:Set({})
                     self:showPreviousPanel()
@@ -284,6 +304,11 @@ function PluginRoot:render()
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
+
+                ShowEditItemPanel = function(itemKey)
+                    self:changePanel(Panels.EditItemUI)
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
+                end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
@@ -291,17 +316,34 @@ function PluginRoot:render()
                     self:updateDataset(dataset)
                 end,
             }),
-            
-            EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
+
+            EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
+                Item = self.state.selectedItem,
+                
                 OnClosePanel = function()
                     self:showPreviousPanel()
+                    self:setState({selectedItem = nil})
+                end,
+                UpdateItem = function(itemKey)
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
                 UpdateDataset = function(dataset)
-                    self:updateDataset(dataset) 
+                    self:updateDataset(dataset)
                 end,
             }),
+            
+            -- EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
+            --     CurrentMap = self.state.currentMap,
+            --     Dataset = self.state.dataset,
+            --     OnClosePanel = function()
+            --         self:showPreviousPanel()
+            --     end,
+            --     UpdateDataset = function(dataset)
+            --         self:updateDataset(dataset) 
+            --     end,
+            -- }),
 
             
             EditPowerupUI = nil,
