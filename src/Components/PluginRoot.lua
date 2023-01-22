@@ -226,6 +226,21 @@ function PluginRoot:render()
                 ShowEditPowerupsListUI = function()
                     self:changePanel(Panels.EditPowerupsListUI)
                 end,
+                
+                ExportDataset = function()
+                    SceneConfig.updateDataset(self.state.dataset)
+                    local datasetInstance = SceneConfig.getDatasetInstance()
+                    local saveFile = datasetInstance:Clone()
+                    saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
+                    saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
+                    saveFile.Parent = datasetInstance.Parent
+                    Selection:Set({saveFile})
+                    local fileSaved = getfenv(0).plugin:PromptSaveSelection()
+                    if fileSaved then
+                        print("File saved")
+                    end
+                    saveFile:Destroy()
+                end,
 
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
@@ -242,19 +257,8 @@ function PluginRoot:render()
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                 end,
 
-                ExportDataset = function()
-                    SceneConfig.updateDataset(self.state.dataset)
-                    local datasetInstance = SceneConfig.getDatasetInstance()
-                    local saveFile = datasetInstance:Clone()
-                    saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
-                    saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
-                    saveFile.Parent = datasetInstance.Parent
-                    Selection:Set({saveFile})
-                    local fileSaved = getfenv(0).plugin:PromptSaveSelection()
-                    if fileSaved then
-                        print("File saved")
-                    end
-                    saveFile:Destroy()
+                UpdateDataset = function(dataset) 
+                    self:updateDataset(dataset) 
                 end,
             }),
 
