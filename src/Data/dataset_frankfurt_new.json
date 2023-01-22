@@ -1,0 +1,1528 @@
+{
+    "maps": [
+        {
+            "powerups": [
+                {
+                    "locDesc": "",
+                    "type": "scaleMaxStorage",
+                    "cost": {
+                        "count": 1,
+                        "itemId": "currency"
+                    },
+                    "thumb": "powerup-storage-max",
+                    "id": "doubleStorage",
+                    "maxUsage": -1,
+                    "value": 2,
+                    "locName": "2x Storage Max"
+                }
+            ],
+            "defaultInventory": {
+                "currency": 3000
+            },
+            "scene": "TutorialMap",
+            "currentStep": 0,
+            "id": "tutorialMap",
+            "locName": "Factory",
+            "locDesc": "",
+            "machines": [
+                {
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 1000,
+                    "id": "peanutButterPurchaser",
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Peanut Butter Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "peanutButter"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 15,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    }
+                },
+                {
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 1000,
+                    "id": "doughPurchaser",
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Dough Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "dough"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 24,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    }
+                },
+                {
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 1000,
+                    "id": "sugarPurchaser",
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Sugar Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "sugar"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 30,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    }
+                },
+                {
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 1000,
+                    "id": "grapePurchaser",
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 0
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Grape Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "grapes"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 20,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    }
+                },
+                {
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 2
+                    },
+                    "type": "maker",
+                    "supportsPowerup": true,
+                    "defaultMaxStorage": 100,
+                    "id": "breadMaker",
+                    "storage": [],
+                    "asset": "Assets.Machines.Machine-Default",
+                    "locName": "Bread Maker",
+                    "state": "ready",
+                    "sources": [
+                        "doughPurchaser"
+                    ],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "crustyBread",
+                        "crustlessBread"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 10,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    }
+                },
+                {
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 2
+                    },
+                    "type": "maker",
+                    "supportsPowerup": true,
+                    "defaultMaxStorage": 100,
+                    "id": "jellyMaker",
+                    "storage": [],
+                    "asset": "Assets.Machines.Machine-Default",
+                    "locName": "Jelly Maker",
+                    "state": "ready",
+                    "sources": [
+                        "sugarPurchaser",
+                        "grapePurchaser"
+                    ],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "jelly"
+                    ],
+                    "defaultProductionDelay": 1,
+                    "currentOutputCount": 20,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    }
+                },
+                {
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    },
+                    "type": "makerSeller",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 100,
+                    "id": "sandwichMaker",
+                    "storage": [],
+                    "asset": "Assets.Machines.Seller",
+                    "locName": "Sandwich Maker",
+                    "state": "ready",
+                    "sources": [
+                        "peanutButterPurchaser",
+                        "breadMaker",
+                        "jellyMaker"
+                    ],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "crustySandwich",
+                        "crustlessSandwich"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 12,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    }
+                }
+            ],
+            "thumb": "",
+            "items": {
+                "sugar": {
+                    "thumb": "icon-sugar",
+                    "id": "sugar",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Sugar"
+                },
+                "creamyPeanutButter": {
+                    "thumb": "icon-printedSheet",
+                    "id": "creamyPeanutButter",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "peanuts"
+                        },
+                        {
+                            "count": 3,
+                            "itemId": "sugar"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Creamy Peanut Butter"
+                },
+                "peanutButterSandwich": {
+                    "value": {
+                        "count": 5,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-giftCard",
+                    "id": "peanutButterSandwich",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "bread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Peanut Butter Sandwiches",
+                        "singular": "Peanut Butter Sandwich"
+                    }
+                },
+                "currency": {
+                    "id": "currency",
+                    "thumb": "",
+                    "asset": "",
+                    "locName": "Money"
+                },
+                "crustyBread": {
+                    "thumb": "icon-doubleBread",
+                    "id": "crustyBread",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crusty Bread"
+                },
+                "crustySandwich": {
+                    "value": {
+                        "count": 10,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-PBJ",
+                    "id": "crustySandwich",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "crustyBread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Crusty PB&J Sandwiches",
+                        "singular": "Crusty PB&J Sandwich"
+                    }
+                },
+                "bread": {
+                    "thumb": "icon-ink",
+                    "id": "bread",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Bread"
+                },
+                "crustlessSandwich": {
+                    "value": {
+                        "count": 20,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-PBJNoCrust",
+                    "id": "crustlessSandwich",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "crustlessBread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Crustless Sandwiches",
+                        "singular": "Crustless Sandwich"
+                    }
+                },
+                "grapes": {
+                    "thumb": "icon-grapes",
+                    "id": "grapes",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Grapes",
+                        "singular": "Grape"
+                    }
+                },
+                "jelly": {
+                    "thumb": "icon-jelly",
+                    "id": "jelly",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "sugar"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "grapes"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Jelly",
+                        "singular": "Jelly"
+                    }
+                },
+                "peanutButterAndJellySandwich": {
+                    "value": {
+                        "count": 35,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-giftCard",
+                    "id": "peanutButterAndJellySandwich",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "bread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "PB&J Sandwich"
+                },
+                "crunchyPeanutButter": {
+                    "thumb": "icon-printedSheet",
+                    "id": "crunchyPeanutButter",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "peanuts"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "sugar"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crunchy Peanut Butter"
+                },
+                "peanutButter": {
+                    "thumb": "icon-peanutbutter",
+                    "id": "peanutButter",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Peanut Butter"
+                },
+                "crustlessBread": {
+                    "thumb": "icon-doubleBreadNoCrust",
+                    "id": "crustlessBread",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crustless Bread"
+                },
+                "peanuts": {
+                    "thumb": "icon-paper",
+                    "id": "peanuts",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Peanuts",
+                        "singular": "Peanut"
+                    }
+                },
+                "dough": {
+                    "thumb": "icon-dough",
+                    "id": "dough",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Dough"
+                },
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
+                    "asset": "",
+                    "locName": "None"
+                }
+            },
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
+            "totalStepsRun": 0,
+            "stepsPerRun": 24
+        },
+        {
+            "powerups": [
+                {
+                    "locDesc": "",
+                    "type": "scaleMaxOutput",
+                    "cost": {
+                        "count": 3,
+                        "itemId": "currency"
+                    },
+                    "thumb": "powerup-production-max",
+                    "id": "doubleMaxOutput",
+                    "maxUsage": -1,
+                    "value": 2,
+                    "locName": "2x Output Max"
+                },
+                {
+                    "locDesc": "",
+                    "type": "scaleRequirements",
+                    "cost": {
+                        "count": 5,
+                        "itemId": "currency"
+                    },
+                    "thumb": "powerup-half-input-costs",
+                    "id": "halfInputs",
+                    "maxUsage": -1,
+                    "value": 0.5,
+                    "locName": "1/2 Materials Needed"
+                },
+                {
+                    "locDesc": "",
+                    "type": "scaleProductionSteps",
+                    "cost": {
+                        "count": 20,
+                        "itemId": "currency"
+                    },
+                    "thumb": "powerup-production-speed",
+                    "id": "zeroProductionSteps",
+                    "maxUsage": -1,
+                    "value": 0,
+                    "locName": "1 Hour Production Time"
+                }
+            ],
+            "defaultInventory": {
+                "currency": 25000
+            },
+            "scene": "Map04",
+            "currentStep": 0,
+            "id": "mapA",
+            "locName": "Factory",
+            "locDesc": "",
+            "machines": [
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 38.75835418701172,
+                        "Z": -39.55328369140625
+                    },
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 2000,
+                    "id": "rubberPurchaser",
+                    "coordinates": {
+                        "Y": 1,
+                        "X": -2
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Rubber Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "rubber"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 125,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
+                    }
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 19.096397399902345,
+                        "Z": -39.55328369140625
+                    },
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 2000,
+                    "id": "gluePurchaser",
+                    "coordinates": {
+                        "Y": 3,
+                        "X": -2
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Glue Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "glue"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 125,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
+                    }
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 0.6063532829284668,
+                        "Z": -39.55328369140625
+                    },
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 2000,
+                    "id": "woodPurchaser",
+                    "coordinates": {
+                        "Y": 5,
+                        "X": -2
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Wood Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "wood"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 200,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
+                    }
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.9294999837875367,
+                        "X": -18.0590763092041,
+                        "Z": -39.55328369140625
+                    },
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 2000,
+                    "id": "chipsPurchaser",
+                    "coordinates": {
+                        "Y": 7,
+                        "X": -2
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Chips Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "computerChips"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 150,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
+                    }
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -35.38935470581055,
+                        "Z": -39.55328369140625
+                    },
+                    "type": "purchaser",
+                    "supportsPowerup": false,
+                    "defaultMaxStorage": 2000,
+                    "id": "metalPurchaser",
+                    "coordinates": {
+                        "Y": 9,
+                        "X": -2
+                    },
+                    "asset": "Assets.Machines.Purchaser",
+                    "locName": "Metal Purchaser",
+                    "state": "ready",
+                    "storage": [],
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "metal"
+                    ],
+                    "defaultProductionDelay": 0,
+                    "currentOutputCount": 250,
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
+                    }
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.066499948501587,
+                        "X": 28.945789337158204,
+                        "Z": -18.135873794555665
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "rubberPurchaser",
+                        "gluePurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 28,
+                    "id": "rubberPowderMaker",
+                    "locName": "Rubber Powder Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 1,
+                        "X": 1
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "rubberPowder"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.066499948501587,
+                        "X": 8.195788383483887,
+                        "Z": -16.635873794555665
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "gluePurchaser",
+                        "woodPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 40,
+                    "id": "laminatedWoodMaker",
+                    "locName": "Laminated Wood Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 1
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "laminatedWood"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.066499948501587,
+                        "X": -16.753135681152345,
+                        "Z": -15.348855972290039
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "chipsPurchaser",
+                        "metalPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 10,
+                    "id": "computerMaker",
+                    "locName": "Computer Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 8,
+                        "X": 1
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "computer"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.066499948501587,
+                        "X": -33.50313186645508,
+                        "Z": -11.098867416381836
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "metalPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 5,
+                    "id": "metalBarMaker",
+                    "locName": "Metal Bar Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 10,
+                        "X": 1
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "metalBars"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 28.654205322265626,
+                        "Z": 5.900604248046875
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "rubberPowderMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 5,
+                    "id": "liquidLatexMaker",
+                    "locName": "Liquid Latex Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 1,
+                        "X": 4
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "liquidLatex"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 9.439741134643555,
+                        "Z": 5.494696617126465
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "laminatedWoodMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 12,
+                    "id": "woodenPinMaker",
+                    "locName": "Wooden Pin Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 3,
+                        "X": 4
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "woodenPins"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 21.453887939453126,
+                        "Z": 27.99713897705078
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "liquidLatexMaker",
+                        "laminatedWoodMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 12,
+                    "id": "accessoryMaker",
+                    "locName": "Accessory Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "woodenPlanks",
+                        "balloon"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -5.762531280517578,
+                        "Z": 6.00752067565918
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "woodPurchaser",
+                        "chipsPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 10,
+                    "id": "arcadeCabinetMaker",
+                    "locName": "Arcade Cabinet Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 4
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "arcadeCabinet"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -18.92603302001953,
+                        "Z": 27.57375717163086
+                    },
+                    "defaultProductionDelay": 1,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "computerMaker",
+                        "metalPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 10,
+                    "id": "controlPanelMaker",
+                    "locName": "Control Panel Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 7,
+                        "X": 6
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "controlPanel"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -33.0316162109375,
+                        "Z": 27.697818756103517
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "metalBarMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "currentOutputCount": 7,
+                    "id": "metalPistonMaker",
+                    "locName": "Metal Piston Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 9,
+                        "X": 6
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "metalPiston"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 28.654205322265626,
+                        "Z": 45.83399200439453
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "accessoryMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "makerSeller",
+                    "currentOutputCount": 10,
+                    "id": "arcadeFeature01",
+                    "locName": "Arcade Feature 01 Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 1,
+                        "X": 8
+                    },
+                    "defaultMaxStorage": 100,
+                    "outputs": [
+                        "skeeball",
+                        "clown"
+                    ]
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": 10.404205322265625,
+                        "Z": 48.90445327758789
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "accessoryMaker",
+                        "woodenPinMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "makerSeller",
+                    "defaultMaxStorage": 100,
+                    "id": "arcadeFeature02",
+                    "locName": "Arcade Feature 02 Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "autoSelectOutput": true,
+                    "coordinates": {
+                        "Y": 3,
+                        "X": 8
+                    },
+                    "outputs": [
+                        "bowling",
+                        "balloonRide"
+                    ],
+                    "currentOutputCount": 8
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -5.978787422180176,
+                        "Z": 47.16891860961914
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "arcadeCabinetMaker",
+                        "controlPanelMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "makerSeller",
+                    "defaultMaxStorage": 100,
+                    "id": "arcadeMachineMaker",
+                    "locName": "Arcade Machine Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "autoSelectOutput": true,
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 8
+                    },
+                    "outputs": [
+                        "arcadeMachine"
+                    ],
+                    "currentOutputCount": 5
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.1681060791015626,
+                        "X": -24.8168888092041,
+                        "Z": 48.628143310546878
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "metalPistonMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "makerSeller",
+                    "defaultMaxStorage": 100,
+                    "id": "carouselMaker",
+                    "locName": "Carousel Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "autoSelectOutput": true,
+                    "coordinates": {
+                        "Y": 9,
+                        "X": 8
+                    },
+                    "outputs": [
+                        "carousel"
+                    ],
+                    "currentOutputCount": 15
+                }
+            ],
+            "thumb": "",
+            "items": {
+                "wood": {
+                    "thumb": "icon-wood",
+                    "id": "wood",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Wood"
+                },
+                "bowling": {
+                    "value": {
+                        "count": 90,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-bowling",
+                    "id": "bowling",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "woodenPlanks"
+                        },
+                        {
+                            "count": 4,
+                            "itemId": "woodenPins"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Bowling"
+                },
+                "carousel": {
+                    "value": {
+                        "count": 75,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-carousel",
+                    "id": "carousel",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "metalPiston"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "carousel"
+                },
+                "woodenPins": {
+                    "thumb": "icon-woodenPins",
+                    "id": "woodenPins",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "laminatedWood"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Wooden Pins"
+                },
+                "computerChips": {
+                    "thumb": "icon-computerChip",
+                    "id": "computerChips",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Computer Chips"
+                },
+                "currency": {
+                    "id": "currency",
+                    "thumb": "",
+                    "asset": "",
+                    "locName": "Money"
+                },
+                "skeeball": {
+                    "value": {
+                        "count": 75,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-skeeball",
+                    "id": "skeeball",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "woodenPlanks"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Skeeball"
+                },
+                "rubberPowder": {
+                    "thumb": "icon-rubberPowder",
+                    "id": "rubberPowder",
+                    "requirements": [
+                        {
+                            "count": 4,
+                            "itemId": "rubber"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "glue"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Rubber Powder"
+                },
+                "metalBars": {
+                    "thumb": "icon-metalBars",
+                    "id": "metalBars",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "metal"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Metal Bars"
+                },
+                "liquidLatex": {
+                    "thumb": "icon-liquidLatex",
+                    "id": "liquidLatex",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "rubberPowder"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Liquid Latex"
+                },
+                "balloonRide": {
+                    "value": {
+                        "count": 98,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-hotAirBalloon",
+                    "id": "balloonRide",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "balloon"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "woodenPins"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Hot Air Balloon"
+                },
+                "clown": {
+                    "value": {
+                        "count": 72,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-clown",
+                    "id": "clown",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "balloon"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Clown"
+                },
+                "balloon": {
+                    "thumb": "icon-balloon",
+                    "id": "balloon",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "liquidLatex"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "laminatedWood"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Balloon"
+                },
+                "woodenPlanks": {
+                    "thumb": "icon-woodBoard",
+                    "id": "woodenPlanks",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "liquidLatex"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "laminatedWood"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Wooden Planks"
+                },
+                "laminatedWood": {
+                    "thumb": "icon-lamPlanks",
+                    "id": "laminatedWood",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "glue"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "wood"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Laminated Wood"
+                },
+                "glue": {
+                    "thumb": "icon-glue",
+                    "id": "glue",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Glue"
+                },
+                "metalPiston": {
+                    "thumb": "icon-carSuspension",
+                    "id": "metalPiston",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "metalBars"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Metal Pistons"
+                },
+                "controlPanel": {
+                    "thumb": "icon-controlPanel",
+                    "id": "controlPanel",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "computer"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "metal"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Control Panel"
+                },
+                "arcadeCabinet": {
+                    "thumb": "icon-arcadeCabinet",
+                    "id": "arcadeCabinet",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "wood"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "computerChips"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Arcade Cabinet"
+                },
+                "rubber": {
+                    "thumb": "icon-rubber",
+                    "id": "rubber",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Rubber"
+                },
+                "arcadeMachine": {
+                    "value": {
+                        "count": 125,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-arcadeGame",
+                    "id": "arcadeMachine",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "arcadeCabinet"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "controlPanel"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Arcade Machine"
+                },
+                "computer": {
+                    "thumb": "icon-computerScreen",
+                    "id": "computer",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "computerChips"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "metal"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Computer"
+                },
+                "metal": {
+                    "thumb": "icon-metal",
+                    "id": "metal",
+                    "requirements": [
+                        {
+                            "count": 1.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Metal"
+                },
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
+                    "asset": "",
+                    "locName": "None"
+                }
+            },
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
+            "totalStepsRun": 0,
+            "stepsPerRun": 24
+        }
+    ],
+    "taskConfig": {
+        "timerSegmentsExpire": false
+    }
+}
