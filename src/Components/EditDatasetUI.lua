@@ -58,12 +58,12 @@ local function EditDatasetUI(props:Props)
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
-        add(children, Button({
-            Label = "Edit Powerups List",
-            OnActivated = props.ShowEditPowerupsListUI,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
+        -- add(children, Button({
+        --     Label = "Edit Powerups List",
+        --     OnActivated = props.ShowEditPowerupsListUI,
+        --     Size = buttonSize,
+        --     TextXAlignment = Enum.TextXAlignment.Center,
+        -- }))
         
         add(children, Block({
             Size = UDim2.fromOffset(0, 40)

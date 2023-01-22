@@ -224,7 +224,7 @@ function PluginRoot:render()
                 end,
 
                 ShowEditPowerupsListUI = function()
-                    self:changePanel(Panels.EditPowerupsListUI)
+                    -- self:changePanel(Panels.EditPowerupsListUI)
                 end,
                 
                 ExportDataset = function()
@@ -244,7 +244,7 @@ function PluginRoot:render()
 
                 ImportDataset = function()
                     local dataset, newDatasetInstance = SceneConfig.importNewDataset()
-
+                    
                     if not newDatasetInstance then
                         return
                     end
@@ -252,9 +252,11 @@ function PluginRoot:render()
                     newDatasetInstance.AncestryChanged:Connect(function(_,_)
                         self:setState({dataset = "NONE", datasetIsLoaded = false})
                     end)
-
-                    local currentMap = dataset["maps"][2]
+                    
+                    local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
+                    Scene.loadMachines(dataset)
+                    Scene.populateMapWithMachines(dataset, self.state.currentMapIndex)
                 end,
 
                 UpdateDataset = function(dataset) 
