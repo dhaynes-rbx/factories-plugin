@@ -208,8 +208,13 @@ function PluginRoot:render()
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
+                CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
                 Title = self.state.currentPanel..": "..mapName,
+
+                SetCurrentMap = function(val)
+                    self:setState({currentMapIndex = val})
+                end,
                 
                 ShowEditFactoryPanel = function()
                     self:changePanel(Panels.EditFactoryUI)

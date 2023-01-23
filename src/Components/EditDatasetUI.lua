@@ -11,6 +11,8 @@ local Button = FishBloxComponents.Button
 local Column = FishBloxComponents.Column
 local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
+local RadioButtonGroup = FishBloxComponents.RadioButtonGroup
+local Row = FishBloxComponents.Row
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
@@ -31,6 +33,8 @@ type Props = {
 }
 
 local function EditDatasetUI(props:Props)
+    local currentMapIndex, setCurrentMapIndex = React.useState(props.CurrentMapIndex)
+
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
     local map = props.CurrentMap
@@ -38,8 +42,26 @@ local function EditDatasetUI(props:Props)
     local buttonSize = UDim2.new(1,0,0,0)
 
     local children = {}
+    local maps = dataset["maps"]
+    local radioButtons = {}
+    for i,choiceKey in maps do
+        table.insert(radioButtons, {
+            -- Choice = props.Choices[choiceKey],
+            Label = maps[i]["id"],
+            Value = i,
+        })
+    end
 
     if datasetIsLoaded then
+        add(children, RadioButtonGroup({
+            AsRow = true,
+            Choices = radioButtons,
+            CurrentValue = currentMapIndex,
+            OnChanged = function(num, val)
+                setCurrentMapIndex(val)
+                props.SetCurrentMap(currentMapIndex)
+            end
+        }))
         add(children, Button({
             Label = "Edit Factory",
             OnActivated = props.ShowEditFactoryPanel,
