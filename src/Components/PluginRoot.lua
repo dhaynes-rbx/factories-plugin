@@ -70,7 +70,7 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
-    local currentMapIndex = 1
+    local currentMapIndex = game.Workspace:GetAttribute("CurrentMapIndex") or 1 --Stash the index in an attribute for when you load/unload the plugin.
     local machines = nil
     local items = nil
     local powerups = nil
@@ -131,7 +131,6 @@ function PluginRoot:updateDataset(dataset)
     SceneConfig.updateDataset(dataset)
     self:setState({
         dataset = dataset,
-        
     })
 end
 
@@ -213,9 +212,10 @@ function PluginRoot:render()
                 Title = self.state.currentPanel..": "..mapName,
 
                 SetCurrentMap = function(val)
-                    print(val)
-                    self:setState({currentMapIndex = val, currentMap = self.state.dataset["maps"][val]})
-                    Scene.populateMapWithMachines(self.state.dataset, val)
+                    local currentMap = self.state.dataset["maps"][val]
+                    self:setState({currentMapIndex = val, currentMap = currentMap})
+                    Scene.instantiateMachineAnchors(currentMap)
+                    game.Workspace:SetAttribute("CurrentMapIndex", val)
                 end,
                 
                 ShowEditFactoryPanel = function()
@@ -262,8 +262,7 @@ function PluginRoot:render()
                     
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
-                    Scene.loadMachines(dataset)
-                    Scene.populateMapWithMachines(dataset, self.state.currentMapIndex)
+                    Scene.instantiateMachineAnchors(currentMap)
                 end,
 
                 UpdateDataset = function(dataset) 

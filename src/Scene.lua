@@ -6,17 +6,9 @@ local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.ge
 
 local Scene = {}
 
-local function createScene()
+local function instantiateEnvironmentArt()
     local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
     scene.Parent = game.Workspace
-
-    -- for _,v in scene:GetDescendants() do
-    --     if v:IsA("BasePart") and v.Parent.Name ~= "Machines" then
-    --         v.Locked = true
-    --     end
-    -- end
-    
-    game.Workspace:SetAttribute("Factories", true)
 end
 
 function Scene.isLoaded()
@@ -76,7 +68,7 @@ function Scene.loadScene()
     end
 
     if not game.Workspace:FindFirstChild("Scene") then
-        createScene()
+        instantiateEnvironmentArt()
     end
 
     if game.Workspace:FindFirstChild("Baseplate") then
@@ -119,44 +111,35 @@ function Scene.getMachineStorageFolder()
     return Scene.getOrCreateFolder("FactoriesPlugin-Machines", ServerStorage)
 end
 
-function Scene.loadMachines(dataset:table)
-    Scene.getMachineStorageFolder():Destroy()
+function Scene.instantiateMachineAnchors(map:table)
+    local folder = Scene.getMachinesFolder()
+    if not folder then
+        folder = Instance.new("Folder")
+        folder.Name = "Machines"
+        folder.Parent = game.Workspace.Scene.FactoryLayout
+    end
+    folder:ClearAllChildren()
 
-    for _,map in dataset["maps"] do
-        local mapFolder = Scene.getOrCreateFolder(map["id"], Scene.getMachineStorageFolder())
-        for _,machine in map["machines"] do
-            local assetPath = string.split(machine["asset"], ".")[3]
-            local position = Vector3.new()
-            if machine["worldPosition"] then
-                position = Vector3.new(
-                    machine["worldPosition"]["X"],
-                    machine["worldPosition"]["Y"],
-                    machine["worldPosition"]["Z"]
-                )
-            end
-            -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
-            --TODO: Figure out why mesh machines are not importing correctly
-            local asset = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
-            asset.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
-            asset.PrimaryPart.Transparency = 0.1
-            local cframe = CFrame.new(position)
-            asset:PivotTo(cframe)
-            asset.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
-            asset.Parent = mapFolder
+    for _,machine in map["machines"] do
+        local assetPath = string.split(machine["asset"], ".")[3]
+        local position = Vector3.new()
+        if machine["worldPosition"] then
+            position = Vector3.new(
+                machine["worldPosition"]["X"],
+                machine["worldPosition"]["Y"],
+                machine["worldPosition"]["Z"]
+            )
         end
+        -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
+        --TODO: Figure out why mesh machines are not importing correctly
+        local asset = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
+        asset.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
+        asset.PrimaryPart.Transparency = 0.1
+        local cframe = CFrame.new(position)
+        asset:PivotTo(cframe)
+        asset.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
+        asset.Parent = folder
     end
-end
-
-function Scene.populateMapWithMachines(dataset:table, mapIndex:number)
-    print("Populating...", mapIndex)
-    local map = dataset["maps"][mapIndex]
-    local folder = Scene.getMachineStorageFolder()[map["id"]]:Clone()
-    local parent = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout")
-    if Scene.getMachinesFolder() then
-        Scene.getMachinesFolder():Destroy()
-    end
-    folder.Name = "Machines"
-    folder.Parent = parent
 end
 
 return Scene

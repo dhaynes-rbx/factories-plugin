@@ -60,7 +60,6 @@ local function EditDatasetUI(props:Props)
             Choices = radioButtons,
             CurrentValue = currentMapIndex,
             OnChanged = function(num, val)
-                print("Radio button changed...", val)
                 setCurrentMapIndex(val)
                 props.SetCurrentMap(val)
             end
