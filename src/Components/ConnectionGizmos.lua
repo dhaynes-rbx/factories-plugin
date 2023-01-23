@@ -86,8 +86,8 @@ local function ConnectionGizmos(props: Props)
             
             for i,output in machine["outputs"] do
                 local index = i - 1
-                local xOffset = (xSpacing * index) - (((numOutputs - 1) * xSpacing) / 2)
-                -- local xOffset = 0
+                -- local xOffset = (xSpacing * index) - (((numOutputs - 1) * xSpacing) / 2)
+                local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, zOffset))
                 add(boxes, boxGizmo(machineAnchor, cframe))
 
@@ -106,8 +106,8 @@ local function ConnectionGizmos(props: Props)
 
             for i,source in machine["sources"] do
                 local index = i - 1
-                local xOffset = (xSpacing * index) - (((numSources - 1) * xSpacing) / 2)
-                -- local xOffset = 0
+                -- local xOffset = (xSpacing * index) - (((numSources - 1) * xSpacing) / 2)
+                local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, -zOffset))
                 add(boxes, boxGizmo(machineAnchor, cframe))
 

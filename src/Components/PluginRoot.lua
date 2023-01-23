@@ -70,7 +70,7 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
-    local currentMapIndex = 2
+    local currentMapIndex = 1
     local machines = nil
     local items = nil
     local powerups = nil
@@ -213,8 +213,9 @@ function PluginRoot:render()
                 Title = self.state.currentPanel..": "..mapName,
 
                 SetCurrentMap = function(val)
+                    print(val)
                     self:setState({currentMapIndex = val, currentMap = self.state.dataset["maps"][val]})
-                    Scene.populateMapWithMachines(self.state.dataset, self.state.currentMapIndex)
+                    Scene.populateMapWithMachines(self.state.dataset, val)
                 end,
                 
                 ShowEditFactoryPanel = function()

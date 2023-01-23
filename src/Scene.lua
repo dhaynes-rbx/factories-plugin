@@ -72,7 +72,7 @@ end
 function Scene.loadScene()
     if Scene.isLoaded() then
         print("Scene is already loaded!")
-        return 
+        return
     end
 
     if not game.Workspace:FindFirstChild("Scene") then
@@ -148,7 +148,7 @@ function Scene.loadMachines(dataset:table)
 end
 
 function Scene.populateMapWithMachines(dataset:table, mapIndex:number)
-
+    print("Populating...", mapIndex)
     local map = dataset["maps"][mapIndex]
     local folder = Scene.getMachineStorageFolder()[map["id"]]:Clone()
     local parent = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout")

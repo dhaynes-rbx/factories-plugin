@@ -5,14 +5,14 @@
                 {
                     "locDesc": "",
                     "type": "scaleMaxStorage",
+                    "thumb": "powerup-storage-max",
                     "cost": {
                         "count": 1,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-storage-max",
                     "id": "doubleStorage",
-                    "maxUsage": -1,
                     "value": 2,
+                    "maxUsage": -1,
                     "locName": "2x Storage Max"
                 }
             ],
@@ -24,198 +24,238 @@
             "id": "tutorialMap",
             "locName": "Factory",
             "locDesc": "",
+            "thumb": "",
             "machines": [
                 {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 25.1812744140625,
+                        "Z": -22.713777542114259
+                    },
                     "type": "purchaser",
                     "supportsPowerup": false,
                     "defaultMaxStorage": 1000,
                     "id": "peanutButterPurchaser",
-                    "coordinates": {
-                        "Y": 0,
-                        "X": 0
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Peanut Butter Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 15,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "peanutButter"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 15,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    }
+                    ]
                 },
                 {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -23.117555618286134
+                    },
                     "type": "purchaser",
                     "supportsPowerup": false,
                     "defaultMaxStorage": 1000,
                     "id": "doughPurchaser",
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 0
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Dough Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 24,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "dough"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 24,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    }
+                    ]
                 },
                 {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.454659461975098,
+                        "Z": -23.117555618286134
+                    },
                     "type": "purchaser",
                     "supportsPowerup": false,
                     "defaultMaxStorage": 1000,
                     "id": "sugarPurchaser",
-                    "coordinates": {
-                        "Y": 4,
-                        "X": 0
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Sugar Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 30,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "sugar"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 30,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    }
+                    ]
                 },
                 {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -34.185176849365237,
+                        "Z": -23.117555618286134
+                    },
                     "type": "purchaser",
                     "supportsPowerup": false,
                     "defaultMaxStorage": 1000,
                     "id": "grapePurchaser",
-                    "coordinates": {
-                        "Y": 6,
-                        "X": 0
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Grape Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 20,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 0
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "grapes"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 20,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    }
+                    ]
                 },
                 {
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 2
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -3.7738914489746095
                     },
-                    "type": "maker",
+                    "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "defaultMaxStorage": 100,
-                    "id": "breadMaker",
-                    "storage": [],
                     "asset": "Assets.Machines.Machine-Default",
-                    "locName": "Bread Maker",
-                    "state": "ready",
                     "sources": [
                         "doughPurchaser"
                     ],
-                    "currentOutputIndex": 1,
-                    "thumb": "",
+                    "storage": [],
                     "outputs": [
                         "crustyBread",
                         "crustlessBread"
                     ],
-                    "defaultProductionDelay": 0,
+                    "type": "maker",
                     "currentOutputCount": 10,
+                    "id": "breadMaker",
+                    "locName": "Bread Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
                     "outputRange": {
                         "min": 0,
                         "max": 50
-                    }
-                },
-                {
+                    },
                     "coordinates": {
-                        "Y": 4,
+                        "Y": 2,
                         "X": 2
                     },
-                    "type": "maker",
+                    "defaultMaxStorage": 100
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.479378700256348,
+                        "Z": -3.7738914489746095
+                    },
+                    "defaultProductionDelay": 1,
                     "supportsPowerup": true,
-                    "defaultMaxStorage": 100,
-                    "id": "jellyMaker",
-                    "storage": [],
                     "asset": "Assets.Machines.Machine-Default",
-                    "locName": "Jelly Maker",
-                    "state": "ready",
                     "sources": [
                         "sugarPurchaser",
                         "grapePurchaser"
                     ],
-                    "currentOutputIndex": 1,
-                    "thumb": "",
+                    "storage": [],
                     "outputs": [
                         "jelly"
                     ],
-                    "defaultProductionDelay": 1,
+                    "type": "maker",
                     "currentOutputCount": 20,
+                    "id": "jellyMaker",
+                    "locName": "Jelly Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
                     "outputRange": {
                         "min": 0,
                         "max": 50
-                    }
+                    },
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 2
+                    },
+                    "defaultMaxStorage": 100
                 },
                 {
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 6
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": 22.206966400146486
                     },
-                    "type": "makerSeller",
+                    "defaultProductionDelay": 0,
                     "supportsPowerup": false,
-                    "defaultMaxStorage": 100,
-                    "id": "sandwichMaker",
-                    "storage": [],
                     "asset": "Assets.Machines.Seller",
-                    "locName": "Sandwich Maker",
-                    "state": "ready",
                     "sources": [
                         "peanutButterPurchaser",
                         "breadMaker",
                         "jellyMaker"
                     ],
-                    "currentOutputIndex": 1,
-                    "thumb": "",
+                    "storage": [],
                     "outputs": [
                         "crustySandwich",
                         "crustlessSandwich"
                     ],
-                    "defaultProductionDelay": 0,
+                    "type": "makerSeller",
                     "currentOutputCount": 12,
+                    "id": "sandwichMaker",
+                    "locName": "Sandwich Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
                     "outputRange": {
                         "min": 0,
                         "max": 50
-                    }
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    },
+                    "defaultMaxStorage": 100
                 }
             ],
-            "thumb": "",
+            "totalStepsRun": 0,
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
             "items": {
                 "sugar": {
                     "thumb": "icon-sugar",
@@ -246,12 +286,12 @@
                     "locName": "Creamy Peanut Butter"
                 },
                 "peanutButterSandwich": {
+                    "id": "peanutButterSandwich",
+                    "thumb": "icon-giftCard",
                     "value": {
                         "count": 5,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-giftCard",
-                    "id": "peanutButterSandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -270,9 +310,9 @@
                 },
                 "currency": {
                     "id": "currency",
-                    "thumb": "",
+                    "locName": "Money",
                     "asset": "",
-                    "locName": "Money"
+                    "thumb": ""
                 },
                 "crustyBread": {
                     "thumb": "icon-doubleBread",
@@ -287,12 +327,12 @@
                     "locName": "Crusty Bread"
                 },
                 "crustySandwich": {
+                    "id": "crustySandwich",
+                    "thumb": "icon-PBJ",
                     "value": {
                         "count": 10,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-PBJ",
-                    "id": "crustySandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -326,12 +366,12 @@
                     "locName": "Bread"
                 },
                 "crustlessSandwich": {
+                    "id": "crustlessSandwich",
+                    "thumb": "icon-PBJNoCrust",
                     "value": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-PBJNoCrust",
-                    "id": "crustlessSandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -367,32 +407,20 @@
                         "singular": "Grape"
                     }
                 },
-                "jelly": {
-                    "thumb": "icon-jelly",
-                    "id": "jelly",
-                    "requirements": [
-                        {
-                            "count": 3,
-                            "itemId": "sugar"
-                        },
-                        {
-                            "count": 2,
-                            "itemId": "grapes"
-                        }
-                    ],
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
                     "asset": "",
-                    "locName": {
-                        "plural": "Jelly",
-                        "singular": "Jelly"
-                    }
+                    "locName": "None"
                 },
                 "peanutButterAndJellySandwich": {
+                    "id": "peanutButterAndJellySandwich",
+                    "thumb": "icon-giftCard",
                     "value": {
                         "count": 35,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-giftCard",
-                    "id": "peanutButterAndJellySandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -426,29 +454,24 @@
                     "asset": "",
                     "locName": "Crunchy Peanut Butter"
                 },
-                "peanutButter": {
-                    "thumb": "icon-peanutbutter",
-                    "id": "peanutButter",
+                "jelly": {
+                    "thumb": "icon-jelly",
+                    "id": "jelly",
                     "requirements": [
                         {
-                            "count": 0.5,
-                            "itemId": "currency"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Peanut Butter"
-                },
-                "crustlessBread": {
-                    "thumb": "icon-doubleBreadNoCrust",
-                    "id": "crustlessBread",
-                    "requirements": [
+                            "count": 3,
+                            "itemId": "sugar"
+                        },
                         {
                             "count": 2,
-                            "itemId": "dough"
+                            "itemId": "grapes"
                         }
                     ],
                     "asset": "",
-                    "locName": "Crustless Bread"
+                    "locName": {
+                        "plural": "Jelly",
+                        "singular": "Jelly"
+                    }
                 },
                 "peanuts": {
                     "thumb": "icon-paper",
@@ -465,6 +488,18 @@
                         "singular": "Peanut"
                     }
                 },
+                "crustlessBread": {
+                    "thumb": "icon-doubleBreadNoCrust",
+                    "id": "crustlessBread",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crustless Bread"
+                },
                 "dough": {
                     "thumb": "icon-dough",
                     "id": "dough",
@@ -477,19 +512,19 @@
                     "asset": "",
                     "locName": "Dough"
                 },
-                "none": {
-                    "thumb": "",
-                    "id": "none",
-                    "requirements": [],
+                "peanutButter": {
+                    "thumb": "icon-peanutbutter",
+                    "id": "peanutButter",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
                     "asset": "",
-                    "locName": "None"
+                    "locName": "Peanut Butter"
                 }
             },
-            "stepUnit": {
-                "plural": "hours",
-                "singular": "hour"
-            },
-            "totalStepsRun": 0,
             "stepsPerRun": 24
         },
         {
@@ -497,40 +532,40 @@
                 {
                     "locDesc": "",
                     "type": "scaleMaxOutput",
+                    "thumb": "powerup-production-max",
                     "cost": {
                         "count": 3,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-production-max",
                     "id": "doubleMaxOutput",
-                    "maxUsage": -1,
                     "value": 2,
+                    "maxUsage": -1,
                     "locName": "2x Output Max"
                 },
                 {
                     "locDesc": "",
                     "type": "scaleRequirements",
+                    "thumb": "powerup-half-input-costs",
                     "cost": {
                         "count": 5,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-half-input-costs",
                     "id": "halfInputs",
-                    "maxUsage": -1,
                     "value": 0.5,
+                    "maxUsage": -1,
                     "locName": "1/2 Materials Needed"
                 },
                 {
                     "locDesc": "",
                     "type": "scaleProductionSteps",
+                    "thumb": "powerup-production-speed",
                     "cost": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-production-speed",
                     "id": "zeroProductionSteps",
-                    "maxUsage": -1,
                     "value": 0,
+                    "maxUsage": -1,
                     "locName": "1 Hour Production Time"
                 }
             ],
@@ -542,6 +577,7 @@
             "id": "mapA",
             "locName": "Factory",
             "locDesc": "",
+            "thumb": "",
             "machines": [
                 {
                     "worldPosition": {
@@ -553,25 +589,25 @@
                     "supportsPowerup": false,
                     "defaultMaxStorage": 2000,
                     "id": "rubberPurchaser",
-                    "coordinates": {
-                        "Y": 1,
-                        "X": -2
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Rubber Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 125,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 1,
+                        "X": -2
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "rubber"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 125,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 1000
-                    }
+                    ]
                 },
                 {
                     "worldPosition": {
@@ -583,25 +619,25 @@
                     "supportsPowerup": false,
                     "defaultMaxStorage": 2000,
                     "id": "gluePurchaser",
-                    "coordinates": {
-                        "Y": 3,
-                        "X": -2
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Glue Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 125,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 3,
+                        "X": -2
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "glue"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 125,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 1000
-                    }
+                    ]
                 },
                 {
                     "worldPosition": {
@@ -613,25 +649,25 @@
                     "supportsPowerup": false,
                     "defaultMaxStorage": 2000,
                     "id": "woodPurchaser",
-                    "coordinates": {
-                        "Y": 5,
-                        "X": -2
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Wood Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 200,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 5,
+                        "X": -2
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "wood"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 200,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 1000
-                    }
+                    ]
                 },
                 {
                     "worldPosition": {
@@ -643,25 +679,25 @@
                     "supportsPowerup": false,
                     "defaultMaxStorage": 2000,
                     "id": "chipsPurchaser",
-                    "coordinates": {
-                        "Y": 7,
-                        "X": -2
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Chips Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 150,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 7,
+                        "X": -2
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "computerChips"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 150,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 1000
-                    }
+                    ]
                 },
                 {
                     "worldPosition": {
@@ -673,25 +709,25 @@
                     "supportsPowerup": false,
                     "defaultMaxStorage": 2000,
                     "id": "metalPurchaser",
-                    "coordinates": {
-                        "Y": 9,
-                        "X": -2
+                    "outputRange": {
+                        "min": 0,
+                        "max": 1000
                     },
                     "asset": "Assets.Machines.Purchaser",
                     "locName": "Metal Purchaser",
                     "state": "ready",
+                    "currentOutputCount": 250,
                     "storage": [],
-                    "currentOutputIndex": 1,
                     "thumb": "",
+                    "defaultProductionDelay": 0,
+                    "coordinates": {
+                        "Y": 9,
+                        "X": -2
+                    },
+                    "currentOutputIndex": 1,
                     "outputs": [
                         "metal"
-                    ],
-                    "defaultProductionDelay": 0,
-                    "currentOutputCount": 250,
-                    "outputRange": {
-                        "min": 0,
-                        "max": 1000
-                    }
+                    ]
                 },
                 {
                     "worldPosition": {
@@ -718,14 +754,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "rubberPowder"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 1,
                         "X": 1
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "rubberPowder"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -752,14 +788,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "laminatedWood"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 4,
                         "X": 1
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "laminatedWood"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -786,14 +822,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "computer"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 8,
                         "X": 1
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "computer"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -819,14 +855,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "metalBars"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 10,
                         "X": 1
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "metalBars"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -852,14 +888,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "liquidLatex"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 1,
                         "X": 4
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "liquidLatex"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -885,14 +921,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "woodenPins"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 3,
                         "X": 4
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "woodenPins"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -919,15 +955,15 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 6
-                    },
-                    "defaultMaxStorage": 100,
                     "outputs": [
                         "woodenPlanks",
                         "balloon"
-                    ]
+                    ],
+                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    }
                 },
                 {
                     "worldPosition": {
@@ -954,14 +990,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "arcadeCabinet"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 6,
                         "X": 4
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "arcadeCabinet"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -988,14 +1024,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "controlPanel"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 7,
                         "X": 6
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "controlPanel"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -1021,14 +1057,14 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
+                    "outputs": [
+                        "metalPiston"
+                    ],
+                    "defaultMaxStorage": 100,
                     "coordinates": {
                         "Y": 9,
                         "X": 6
-                    },
-                    "defaultMaxStorage": 100,
-                    "outputs": [
-                        "metalPiston"
-                    ]
+                    }
                 },
                 {
                     "worldPosition": {
@@ -1054,15 +1090,15 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 1,
-                        "X": 8
-                    },
-                    "defaultMaxStorage": 100,
                     "outputs": [
                         "skeeball",
                         "clown"
-                    ]
+                    ],
+                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 1,
+                        "X": 8
+                    }
                 },
                 {
                     "worldPosition": {
@@ -1090,15 +1126,15 @@
                     "currentOutputIndex": 1,
                     "thumb": "",
                     "autoSelectOutput": true,
-                    "coordinates": {
-                        "Y": 3,
-                        "X": 8
-                    },
+                    "currentOutputCount": 8,
                     "outputs": [
                         "bowling",
                         "balloonRide"
                     ],
-                    "currentOutputCount": 8
+                    "coordinates": {
+                        "Y": 3,
+                        "X": 8
+                    }
                 },
                 {
                     "worldPosition": {
@@ -1126,14 +1162,14 @@
                     "currentOutputIndex": 1,
                     "thumb": "",
                     "autoSelectOutput": true,
-                    "coordinates": {
-                        "Y": 6,
-                        "X": 8
-                    },
+                    "currentOutputCount": 5,
                     "outputs": [
                         "arcadeMachine"
                     ],
-                    "currentOutputCount": 5
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 8
+                    }
                 },
                 {
                     "worldPosition": {
@@ -1160,17 +1196,21 @@
                     "currentOutputIndex": 1,
                     "thumb": "",
                     "autoSelectOutput": true,
-                    "coordinates": {
-                        "Y": 9,
-                        "X": 8
-                    },
+                    "currentOutputCount": 15,
                     "outputs": [
                         "carousel"
                     ],
-                    "currentOutputCount": 15
+                    "coordinates": {
+                        "Y": 9,
+                        "X": 8
+                    }
                 }
             ],
-            "thumb": "",
+            "totalStepsRun": 0,
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
             "items": {
                 "wood": {
                     "thumb": "icon-wood",
@@ -1185,12 +1225,12 @@
                     "locName": "Wood"
                 },
                 "bowling": {
+                    "id": "bowling",
+                    "thumb": "icon-bowling",
                     "value": {
                         "count": 90,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-bowling",
-                    "id": "bowling",
                     "requirements": [
                         {
                             "count": 2,
@@ -1205,12 +1245,12 @@
                     "locName": "Bowling"
                 },
                 "carousel": {
+                    "id": "carousel",
+                    "thumb": "icon-carousel",
                     "value": {
                         "count": 75,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-carousel",
-                    "id": "carousel",
                     "requirements": [
                         {
                             "count": 1,
@@ -1246,17 +1286,17 @@
                 },
                 "currency": {
                     "id": "currency",
-                    "thumb": "",
+                    "locName": "Money",
                     "asset": "",
-                    "locName": "Money"
+                    "thumb": ""
                 },
                 "skeeball": {
+                    "id": "skeeball",
+                    "thumb": "icon-skeeball",
                     "value": {
                         "count": 75,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-skeeball",
-                    "id": "skeeball",
                     "requirements": [
                         {
                             "count": 1,
@@ -1294,6 +1334,13 @@
                     "asset": "",
                     "locName": "Metal Bars"
                 },
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
+                    "asset": "",
+                    "locName": "None"
+                },
                 "liquidLatex": {
                     "thumb": "icon-liquidLatex",
                     "id": "liquidLatex",
@@ -1306,41 +1353,21 @@
                     "asset": "",
                     "locName": "Liquid Latex"
                 },
-                "balloonRide": {
-                    "value": {
-                        "count": 98,
-                        "itemId": "currency"
-                    },
-                    "thumb": "icon-hotAirBalloon",
-                    "id": "balloonRide",
+                "woodenPlanks": {
+                    "thumb": "icon-woodBoard",
+                    "id": "woodenPlanks",
                     "requirements": [
                         {
-                            "count": 1,
-                            "itemId": "balloon"
+                            "count": 2,
+                            "itemId": "liquidLatex"
                         },
                         {
                             "count": 2,
-                            "itemId": "woodenPins"
+                            "itemId": "laminatedWood"
                         }
                     ],
                     "asset": "",
-                    "locName": "Hot Air Balloon"
-                },
-                "clown": {
-                    "value": {
-                        "count": 72,
-                        "itemId": "currency"
-                    },
-                    "thumb": "icon-clown",
-                    "id": "clown",
-                    "requirements": [
-                        {
-                            "count": 1,
-                            "itemId": "balloon"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Clown"
+                    "locName": "Wooden Planks"
                 },
                 "balloon": {
                     "thumb": "icon-balloon",
@@ -1358,21 +1385,21 @@
                     "asset": "",
                     "locName": "Balloon"
                 },
-                "woodenPlanks": {
-                    "thumb": "icon-woodBoard",
-                    "id": "woodenPlanks",
+                "clown": {
+                    "id": "clown",
+                    "thumb": "icon-clown",
+                    "value": {
+                        "count": 72,
+                        "itemId": "currency"
+                    },
                     "requirements": [
                         {
-                            "count": 2,
-                            "itemId": "liquidLatex"
-                        },
-                        {
-                            "count": 2,
-                            "itemId": "laminatedWood"
+                            "count": 1,
+                            "itemId": "balloon"
                         }
                     ],
                     "asset": "",
-                    "locName": "Wooden Planks"
+                    "locName": "Clown"
                 },
                 "laminatedWood": {
                     "thumb": "icon-lamPlanks",
@@ -1430,6 +1457,18 @@
                     "asset": "",
                     "locName": "Control Panel"
                 },
+                "rubber": {
+                    "thumb": "icon-rubber",
+                    "id": "rubber",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Rubber"
+                },
                 "arcadeCabinet": {
                     "thumb": "icon-arcadeCabinet",
                     "id": "arcadeCabinet",
@@ -1446,25 +1485,13 @@
                     "asset": "",
                     "locName": "Arcade Cabinet"
                 },
-                "rubber": {
-                    "thumb": "icon-rubber",
-                    "id": "rubber",
-                    "requirements": [
-                        {
-                            "count": 2,
-                            "itemId": "currency"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Rubber"
-                },
                 "arcadeMachine": {
+                    "id": "arcadeMachine",
+                    "thumb": "icon-arcadeGame",
                     "value": {
                         "count": 125,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-arcadeGame",
-                    "id": "arcadeMachine",
                     "requirements": [
                         {
                             "count": 3,
@@ -1494,6 +1521,26 @@
                     "asset": "",
                     "locName": "Computer"
                 },
+                "balloonRide": {
+                    "id": "balloonRide",
+                    "thumb": "icon-hotAirBalloon",
+                    "value": {
+                        "count": 98,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "balloon"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "woodenPins"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Hot Air Balloon"
+                },
                 "metal": {
                     "thumb": "icon-metal",
                     "id": "metal",
@@ -1505,20 +1552,8 @@
                     ],
                     "asset": "",
                     "locName": "Metal"
-                },
-                "none": {
-                    "thumb": "",
-                    "id": "none",
-                    "requirements": [],
-                    "asset": "",
-                    "locName": "None"
                 }
             },
-            "stepUnit": {
-                "plural": "hours",
-                "singular": "hour"
-            },
-            "totalStepsRun": 0,
             "stepsPerRun": 24
         }
     ],
