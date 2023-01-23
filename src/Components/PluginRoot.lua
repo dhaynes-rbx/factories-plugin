@@ -213,7 +213,8 @@ function PluginRoot:render()
                 Title = self.state.currentPanel..": "..mapName,
 
                 SetCurrentMap = function(val)
-                    self:setState({currentMapIndex = val})
+                    self:setState({currentMapIndex = val, currentMap = self.state.dataset["maps"][val]})
+                    Scene.populateMapWithMachines(self.state.dataset, self.state.currentMapIndex)
                 end,
                 
                 ShowEditFactoryPanel = function()

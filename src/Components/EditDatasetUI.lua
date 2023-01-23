@@ -44,12 +44,14 @@ local function EditDatasetUI(props:Props)
     local children = {}
     local maps = dataset["maps"]
     local radioButtons = {}
-    for i,choiceKey in maps do
-        table.insert(radioButtons, {
-            -- Choice = props.Choices[choiceKey],
-            Label = maps[i]["id"],
-            Value = i,
-        })
+    if datasetIsLoaded then
+        for i,choiceKey in maps do
+            table.insert(radioButtons, {
+                -- Choice = props.Choices[choiceKey],
+                Label = maps[i]["id"],
+                Value = i,
+            })
+        end
     end
 
     if datasetIsLoaded then
