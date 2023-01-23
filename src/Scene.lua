@@ -134,7 +134,11 @@ function Scene.loadMachines(dataset:table)
                     machine["worldPosition"]["Z"]
                 )
             end
-            local asset = script.Parent.Assets.Machines[assetPath]:Clone()
+            -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
+            --TODO: Figure out why mesh machines are not importing correctly
+            local asset = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
+            asset.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
+            asset.PrimaryPart.Transparency = 0.1
             local cframe = CFrame.new(position)
             asset:PivotTo(cframe)
             asset.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
@@ -146,7 +150,7 @@ end
 function Scene.populateMapWithMachines(dataset:table, mapIndex:number)
 
     local map = dataset["maps"][mapIndex]
-    local folder = Scene.getOrCreateFolder(map["id"], Scene.getMachineStorageFolder()):Clone()
+    local folder = Scene.getMachineStorageFolder()[map["id"]]:Clone()
     local parent = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout")
     if Scene.getMachinesFolder() then
         Scene.getMachinesFolder():Destroy()
