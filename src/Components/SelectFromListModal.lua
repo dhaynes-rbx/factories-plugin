@@ -33,7 +33,6 @@ local function SelectFromListModal(props: Props)
     local radioButtons = {}
     
     for _,choiceKey in choiceKeys do
-        print(choiceKey)
         table.insert(radioButtons, {
             -- Choice = props.Choices[choiceKey],
             Label = choiceKey,
@@ -50,10 +49,8 @@ local function SelectFromListModal(props: Props)
         
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         OnClosePanel = props.OnClosePanel,
-        -- ZIndex = 100
     }, {
         ScrollingFrame = React.createElement("ScrollingFrame", {
-        -- AutomaticSize = Enum.AutomaticSize.Y,
         CanvasSize = UDim2.new(0, 0, 5, 0),
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1,
@@ -61,12 +58,10 @@ local function SelectFromListModal(props: Props)
         ScrollingDirection = Enum.ScrollingDirection.Y,
         }, {
             Content = Column({
-                -- AutomaticSize = Enum.AutomaticSize.Y,
                 Gaps = 8,
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 PaddingHorizontal = 20,
                 PaddingVertical = 20,
-                -- ZIndex = 200,
             }, {
                 RadioButtonGroup = RadioButtonGroup({
                     Choices = radioButtons,

@@ -24,11 +24,11 @@ local function Modal(props: Props)
     local showError, setShowError = React.useState(false)
     local isNumber = props.ValueType == "number"
     
-    -- return Overlay({
-    --     Size = UDim2.new(1, 40,1, 40),
-    --     Position = UDim2.new(0, -20, 0, -20),
-    -- }, {
-    return Panel({
+    return Overlay({
+        Size = UDim2.new(1, 40,1, 40),
+        Position = UDim2.new(0, -20, 0, -20),
+    }, { 
+        Panel({
             AnchorPoint = Vector2.new(0.5, 0.5),
             Title = "Edit Field",
             Size = UDim2.new(0, 500, 0, 0),
@@ -37,7 +37,7 @@ local function Modal(props: Props)
             AutomaticSize = Enum.AutomaticSize.Y,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             OnClosePanel = props.OnClosePanel,
-            -- ZIndex = 100
+            ZIndex = 2,
         }, {
             Content = Column({ --This overrides the built-in panel Column
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -45,7 +45,7 @@ local function Modal(props: Props)
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 PaddingHorizontal = 20,
                 PaddingVertical = 20,
-                -- ZIndex = 200,
+                ZIndex = 2,
             }, {
                 TextInput = TextInput({
                     Label = props.Key,
@@ -65,11 +65,12 @@ local function Modal(props: Props)
                     Placeholder = "",
                     Value = value,
                     Size = UDim2.new(1, 0, 0, 100),
-                    -- ZIndex = 300,
+                    ZIndex = 2,
                 }),
                 Error = showError and Text({
                     Text = "Error! Only numbers allowed.",
                     Color = Color3.new(1, 0, 0),
+                    ZIndex = 2,
                 }),
                 Button1 = Button({
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -84,10 +85,11 @@ local function Modal(props: Props)
                     end,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     Width = UDim.new(1, 0),
-                    -- ZIndex = 300,
+                    ZIndex = 2,
                 }),
             })
         })
+    })
 end
 
 return function(props)
