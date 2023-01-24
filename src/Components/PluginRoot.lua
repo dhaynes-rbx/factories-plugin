@@ -292,7 +292,7 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
 
-                AddMachineAnchor = function(machine)
+                AddMissingMachineAnchor = function(machine)
                     local anchor = Scene.instantiateMachineAnchor(machine)
                     Selection:Set({anchor})
                 end,

@@ -43,9 +43,10 @@ local function EditMachinesListUI(props: Props)
 			Label = "Add Machine",
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
-				table.insert(map["machines"], getTemplateMachine)
+				local newMachine = getTemplateMachine()
+				table.insert(map["machines"], newMachine)
 				props.UpdateDataset(dataset)
-				-- Scene.addNewMachineAnchor()
+				props.AddMissingMachineAnchor(newMachine)
 			end,
 			Size = UDim2.fromScale(1, 0),
 		})
@@ -57,8 +58,8 @@ local function EditMachinesListUI(props: Props)
 			Label = machine["id"],
 			Machine = machine,
 
-			AddMachineAnchor = function(machine)
-				props.AddMachineAnchor(machine)
+			AddMissingMachineAnchor = function(machineObj)
+				props.AddMissingMachineAnchor(machineObj)
 			end,
 			OnMachineEditClicked = function(machineObj, machineAnchor)
 				props.OnMachineEditClicked(machineObj, machineAnchor)

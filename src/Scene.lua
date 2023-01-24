@@ -106,6 +106,7 @@ function Scene.getMachineStorageFolder()
 end
 
 function Scene.instantiateMachineAnchor(machine:table)
+    print(machine)
     local x = machine["coordinates"]["X"]
     local y = machine["coordinates"]["Y"]
     local folder = Scene.getMachinesFolder()

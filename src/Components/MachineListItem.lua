@@ -134,7 +134,7 @@ return function(props: Props)
             TextSize = 20,
             TextXAlignment = Enum.TextXAlignment.Center,
             [Roact.Event.MouseButton1Click] = function()
-                props.AddMachineAnchor(machine)
+                props.FixMissingMachineAnchor(machine)
             end,
         })
     })
