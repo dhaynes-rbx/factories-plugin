@@ -214,7 +214,7 @@ function PluginRoot:render()
                 SetCurrentMap = function(val)
                     local currentMap = self.state.dataset["maps"][val]
                     self:setState({currentMapIndex = val, currentMap = currentMap})
-                    Scene.instantiateMachineAnchors(currentMap)
+                    Scene.instantiateAllMachineAnchors(currentMap)
                     game.Workspace:SetAttribute("CurrentMapIndex", val)
                 end,
                 
@@ -262,7 +262,7 @@ function PluginRoot:render()
                     
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
-                    Scene.instantiateMachineAnchors(currentMap)
+                    Scene.instantiateAllMachineAnchors(currentMap)
                 end,
 
                 UpdateDataset = function(dataset) 
@@ -282,14 +282,21 @@ function PluginRoot:render()
             EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
+
+                AddMachineAnchor = function(machine)
+                    local anchor = Scene.instantiateMachineAnchor(machine)
+                    Selection:Set({anchor})
+                end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
                 UpdateDataset = function(dataset) 
                     self:updateDataset(dataset) 
                 end,
-                OnMachineEditClicked = function(machineAnchor)
-                    Selection:Set({machineAnchor}) --Todo: Don't use the anchor because the machine might not have an anchor.
+                OnMachineEditClicked = function(machine, machineAnchor)
+                    self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
+                    self:changePanel(Panels.EditMachineUI)
+                    Selection:Set({machineAnchor})
                 end
             }),
             
@@ -298,6 +305,10 @@ function PluginRoot:render()
                 Dataset = self.state.dataset,
                 Machine = self.state.selectedMachine,
                 MachineAnchor = self.state.selectedMachineAnchor,
+
+                AddMachineAnchor = function(machineObj)
+                    Scene.addMachineAnchor(machineObj)
+                end,
                 OnClosePanel = function()
                     Selection:Set({})
                     self:showPreviousPanel()

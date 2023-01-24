@@ -30,7 +30,7 @@ local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCo
 local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
 
 type Props = {
-
+    
 }
 
 return function(props:Props)
@@ -141,8 +141,6 @@ return function(props:Props)
     local machine = props.Machine
     local coordinateName = machine and machine["coordinates"]["X"]..","..machine["coordinates"]["Y"] or props.MachineAnchor.Name
     local children = {}
-
-    print(props.MachineAnchor, machine)
     
     if datasetIsLoaded and machine then
         local machineIds = {}

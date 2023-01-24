@@ -19,7 +19,7 @@ local Modal = require(script.Parent.Modal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
-local ListItemRow = require(script.Parent.ListItemRow)
+local MachineListItem = require(script.Parent.MachineListItem)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
@@ -27,11 +27,12 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
 local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
+local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
 
 type Props = {}
 
 local function EditMachinesListUI(props: Props)
-	local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
+	-- local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
 	local dataset = props.Dataset
 	local map = props.CurrentMap
 
@@ -42,38 +43,40 @@ local function EditMachinesListUI(props: Props)
 			Label = "Add Machine",
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
-				print("Add Machine")
+				table.insert(map["machines"], getTemplateMachine)
+				props.UpdateDataset(dataset)
+				-- Scene.addNewMachineAnchor()
 			end,
 			Size = UDim2.fromScale(1, 0),
 		})
 	)
-	for i, v in map["machines"] do
-        local x = tonumber(v["coordinates"]["X"])
-        local y = tonumber(v["coordinates"]["Y"])
-        assert((x or y), "Machine coordinate error in data!")
-        local machineAnchor = Scene.getMachineAnchor(x,y)
-        local showError: boolean = not Scene.isMachine(machineAnchor)
-        local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
+	for _, machine in map["machines"] do
+        -- local x = tonumber(machine["coordinates"]["X"])
+        -- local y = tonumber(machine["coordinates"]["Y"])
+        -- assert((x or y), "Machine coordinate error in data!")
+        -- local machineAnchor = Scene.getMachineAnchor(x,y)
+        -- local showError: boolean = not Scene.isMachine(machineAnchor)
+        -- local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
-		add(children, ListItemRow({
+		add(children, MachineListItem({
 			ButtonLabel = "Edit",
-			ErrorText = errorText,
-			Label = v.id,
-			Machine = v,
-			MachineAnchor = machineAnchor,
-			OnMachineEditClicked = props.OnMachineEditClicked
+			Label = machine["id"],
+			Machine = machine,
+
+			AddMachineAnchor = function(machine)
+				props.AddMachineAnchor(machine)
+			end,
+			OnMachineEditClicked = function(machineObj, machineAnchor)
+				props.OnMachineEditClicked(machineObj, machineAnchor)
+			end
 		}))
 
-		local outputStr = "outputs: "
-		for j,output in v["outputs"] do
-			local separator = j > 1 and ", " or ""
-			outputStr = outputStr..separator..output
-		end
-		add(children, SmallLabel({
-			Bold = false,
-			FontSize = 16,
-			Label = outputStr
-		}))
+		-- local outputStr = "outputs: "
+		-- for j,output in machine["outputs"] do
+		-- 	local separator = j > 1 and ", " or ""
+		-- 	outputStr = outputStr..separator..output
+		-- end
+
 		
 	end
 

@@ -15,7 +15,10 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
+local Scene = require(script.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
+
+local add = require(script.Parent.Helpers.add)
 
 type Props = {
     Appearance : string,
@@ -23,13 +26,23 @@ type Props = {
     IndentAmount : number,
     Label : string,
     LayoutOrder : number,
+    Machine : table,
     OnActivated : any,
 }
 
 return function(props: Props)
+    local children = {}
+    
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
-    local showError = props.ErrorText or false
+
+    local machine = props.Machine
+    local x = tonumber(machine["coordinates"]["X"])
+    local y = tonumber(machine["coordinates"]["Y"])
+    assert((x or y), "Machine coordinate error in data!")
+    local machineAnchor = Scene.getMachineAnchor(x,y)
+    local showError: boolean = not Scene.isMachine(machineAnchor)
+    local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),
@@ -45,6 +58,18 @@ return function(props: Props)
             PaddingTop = UDim.new(0, 5),
         })
     }
+
+    local outputStr = "outputs: "
+    for j,output in machine["outputs"] do
+        local separator = j > 1 and ", " or ""
+        outputStr = outputStr..separator..output
+    end
+
+    add(children, SmallLabel({
+        Bold = false,
+        FontSize = 16,
+        Label = outputStr
+    }))
 
     return Column({
     }, {
@@ -73,7 +98,7 @@ return function(props: Props)
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 [Roact.Event.MouseButton1Click] = function()
-                    props.OnMachineEditClicked(props.MachineAnchor)
+                    props.OnMachineEditClicked(machine, machineAnchor)
                 end,
             }, buttonStyle),
             DeleteButton = React.createElement("TextButton", {
@@ -93,8 +118,24 @@ return function(props: Props)
             
         }),
         Error = showError and Text({
-            Text = props.ErrorText,
+            Text = errorText,
             Color = Color3.new(1, 0, 0),
         }),
+        FixButton = showError and React.createElement("TextButton",{
+            AutomaticSize = Enum.AutomaticSize.X,
+            BackgroundColor3 = Color3.fromRGB(32, 117, 233),
+            BackgroundTransparency = filled and 0 or 0.85,
+            FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
+            LayoutOrder = 3,
+            RichText = true,
+            Size = UDim2.new(0, 30, 0, 30),
+            Text = "Fix",
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = 20,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            [Roact.Event.MouseButton1Click] = function()
+                props.AddMachineAnchor(machine)
+            end,
+        })
     })
 end

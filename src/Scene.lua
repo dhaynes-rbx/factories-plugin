@@ -54,13 +54,6 @@ function Scene.getMachineAnchor(x:number, y:number)
     return nil
 end
 
--- function Scene.createMachine()
---     if Scene.isLoaded() then
---         local machine = script.Parent.Assets.Machines.Maker:Clone()
---         machine.Parent = Scene.machinesFolder
---     end
--- end
-
 function Scene.loadScene()
     if Scene.isLoaded() then
         print("Scene is already loaded!")
@@ -90,7 +83,7 @@ function Scene.loadScene()
     -- Lighting.Technology = Enum.Technology.ShadowMap --Not scriptable
     Lighting.ClockTime = 14.5
     Lighting.GeographicLatitude = 0
-    
+
     Scene.setCamera()
 
     ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
@@ -106,12 +99,38 @@ function Scene.isMachine(obj)
     return false
 end
 
-
 function Scene.getMachineStorageFolder()
     return Scene.getOrCreateFolder("FactoriesPlugin-Machines", ServerStorage)
 end
 
-function Scene.instantiateMachineAnchors(map:table)
+function Scene.instantiateMachineAnchor(machine:table)
+    local x = machine["coordinates"]["X"]
+    local y = machine["coordinates"]["Y"]
+    local folder = Scene.getMachinesFolder()
+
+    local assetPath = string.split(machine["asset"], ".")[3]
+    local position = Vector3.new()
+    if machine["worldPosition"] then
+        position = Vector3.new(
+            machine["worldPosition"]["X"],
+            machine["worldPosition"]["Y"],
+            machine["worldPosition"]["Z"]
+        )
+    end
+    -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
+    --TODO: Figure out why mesh machines are not importing correctly
+    local anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
+    anchor.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
+    anchor.PrimaryPart.Transparency = 0.1
+    local cframe = CFrame.new(position)
+    anchor:PivotTo(cframe)
+    anchor.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
+    anchor.Parent = folder
+
+    return anchor
+end
+
+function Scene.instantiateAllMachineAnchors(map:table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
@@ -121,24 +140,7 @@ function Scene.instantiateMachineAnchors(map:table)
     folder:ClearAllChildren()
 
     for _,machine in map["machines"] do
-        local assetPath = string.split(machine["asset"], ".")[3]
-        local position = Vector3.new()
-        if machine["worldPosition"] then
-            position = Vector3.new(
-                machine["worldPosition"]["X"],
-                machine["worldPosition"]["Y"],
-                machine["worldPosition"]["Z"]
-            )
-        end
-        -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
-        --TODO: Figure out why mesh machines are not importing correctly
-        local asset = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
-        asset.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
-        asset.PrimaryPart.Transparency = 0.1
-        local cframe = CFrame.new(position)
-        asset:PivotTo(cframe)
-        asset.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
-        asset.Parent = folder
+        Scene.instantiateMachineAnchor(machine)
     end
 end
 
