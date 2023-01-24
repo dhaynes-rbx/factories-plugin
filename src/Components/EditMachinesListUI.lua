@@ -51,12 +51,6 @@ local function EditMachinesListUI(props: Props)
 		})
 	)
 	for _, machine in map["machines"] do
-        -- local x = tonumber(machine["coordinates"]["X"])
-        -- local y = tonumber(machine["coordinates"]["Y"])
-        -- assert((x or y), "Machine coordinate error in data!")
-        -- local machineAnchor = Scene.getMachineAnchor(x,y)
-        -- local showError: boolean = not Scene.isMachine(machineAnchor)
-        -- local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
 		add(children, MachineListItem({
 			ButtonLabel = "Edit",
@@ -70,13 +64,6 @@ local function EditMachinesListUI(props: Props)
 				props.OnMachineEditClicked(machineObj, machineAnchor)
 			end
 		}))
-
-		-- local outputStr = "outputs: "
-		-- for j,output in machine["outputs"] do
-		-- 	local separator = j > 1 and ", " or ""
-		-- 	outputStr = outputStr..separator..output
-		-- end
-
 		
 	end
 

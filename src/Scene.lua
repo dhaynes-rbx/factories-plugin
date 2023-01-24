@@ -1,8 +1,10 @@
 local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
+
 local Utilities = require(script.Parent.Packages.Utilities)
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
+local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
 
 local Scene = {}
 
@@ -89,7 +91,7 @@ function Scene.loadScene()
     ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
 end
 
-function Scene.isMachine(obj)
+function Scene.isMachineAnchor(obj)
     if not obj then
         return false
     end
@@ -127,6 +129,18 @@ function Scene.instantiateMachineAnchor(machine:table)
     anchor.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
     anchor.Parent = folder
 
+    local clickDetector = Instance.new("ClickDetector")
+    clickDetector.Parent = anchor
+    clickDetector.MouseClick:Connect(function()
+        print("Click")
+        
+    end)
+    -- clickDetector.
+
+    anchor.Changed:Connect(function(property:string)
+        -- print(property)
+    end)
+
     return anchor
 end
 
@@ -143,5 +157,7 @@ function Scene.instantiateAllMachineAnchors(map:table)
         Scene.instantiateMachineAnchor(machine)
     end
 end
+
+
 
 return Scene

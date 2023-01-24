@@ -41,7 +41,7 @@ return function(props: Props)
     local y = tonumber(machine["coordinates"]["Y"])
     assert((x or y), "Machine coordinate error in data!")
     local machineAnchor = Scene.getMachineAnchor(x,y)
-    local showError: boolean = not Scene.isMachine(machineAnchor)
+    local showError: boolean = not Scene.isMachineAnchor(machineAnchor)
     local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
 
     local buttonStyle = {

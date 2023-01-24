@@ -16,21 +16,22 @@ local Block = FishBloxComponents.Block
 local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 
+local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
-local EditMachineUI = require(script.Parent.EditMachineUI)
-local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditItemUI = require(script.Parent.EditItemUI)
+local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
+local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
-local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 
+local Constants = require(script.Parent.Parent.Constants)
+local Input = require(script.Parent.Parent.Input)
+local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
-local Constants = require(script.Parent.Parent.Constants)
-local Panels = Constants.Panels
 local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
@@ -107,7 +108,7 @@ function PluginRoot:init()
     local onSelectionChanged = function()
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
-            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachine(selectedObj) then
+            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
                 local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
                 local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
                 --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
@@ -124,7 +125,7 @@ function PluginRoot:init()
     end
     
     self.connections = {}
-    table.insert(self.connections, Selection.SelectionChanged:Connect(onSelectionChanged))
+    self.connections["Selection"] = Selection.SelectionChanged:Connect(onSelectionChanged)
 end
 
 function PluginRoot:updateDataset(dataset)
@@ -135,8 +136,16 @@ function PluginRoot:updateDataset(dataset)
 end
 
 function PluginRoot:render()
-    
     Studio.setSelectionTool()
+
+    if self.connections["MachineInput"] then
+        self.connections["MachineInput"]:Disconnect()
+    end
+    self.connections["MachineInput"] = Input.listenForMachineMouseInput(
+        self.state.currentMap,
+        function()
+            self:updateDataset(self.state.dataset)
+        end)
 
     local billboardGuis = {}
     local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"

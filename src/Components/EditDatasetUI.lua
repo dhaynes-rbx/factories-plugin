@@ -108,14 +108,14 @@ local function EditDatasetUI(props:Props)
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
         add(children, Button({
-            Label = "Register Machine Positions",
+            Label = "Save Machine Positions",
             OnActivated = function()
                 local machines = map["machines"]
                 local machineAnchors = Scene.getMachineAnchors()
                 for _,machineAnchor in machineAnchors do
                     local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
                     local machine = getMachineFromCoordinates(x, y, map)
-                    local worldPosition = machineAnchor.CFrame.Position
+                    local worldPosition = machineAnchor.PrimaryPart.CFrame.Position
                     machine["worldPosition"] = {
                         X = worldPosition.X,
                         Y = worldPosition.Y,

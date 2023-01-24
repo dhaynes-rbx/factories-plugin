@@ -101,7 +101,6 @@ local function ConnectionGizmos(props: Props)
         end
 
         if machine["sources"] then
-
             local numSources = #machine["sources"]
 
             for i,source in machine["sources"] do
