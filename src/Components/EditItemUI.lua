@@ -15,6 +15,7 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local Modal = require(script.Parent.Modal)
+local SelectFromListModal = require(script.Parent.SelectFromListModal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
@@ -32,6 +33,8 @@ type Props = {
 
 local function EditItemUI(props: Props)
     local modalEnabled, setModalEnabled = React.useState(false)
+    local listModalEnabled, setListModalEnabled = React.useState(false)
+    local listChoices, setListChoices = React.useState({})
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
@@ -89,6 +92,33 @@ local function EditItemUI(props: Props)
         })
     end
 
+    local createListModalButton = function(key:string | number, list:table, choices:table, callback:any)
+
+        return SmallButtonWithLabel({
+            Appearance = "Filled",
+            ButtonLabel = tostring(list[key]),
+            Label = key..": ",
+            LayoutOrder = incrementLayoutOrder(),
+
+            OnActivated = function()
+                setListModalEnabled(true)
+                setListChoices(choices)
+                setCurrentFieldKey(key)
+                setCurrentFieldValue(list[key])
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        list[key] = newValue
+
+                        --Callback for additional special case functionality
+                        if callback then
+                            callback(newValue)
+                        end
+                    end
+                end)
+            end
+        })
+    end
+
 
     local children = {}
     local item = props.Item
@@ -97,8 +127,8 @@ local function EditItemUI(props: Props)
     add(children, createTextChangingButton("thumb", item))
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
-        for _,requirement in item["requirements"] do
-            add(children, createTextChangingButton("itemId", requirement))
+        for i,requirement in item["requirements"] do
+            add(children, createListModalButton("itemId", requirement, items, Dash.noop))
             add(children, createTextChangingButton("count", requirement, true))
         end
     end
@@ -136,7 +166,29 @@ local function EditItemUI(props: Props)
                 setCurrentFieldValue(nil)
                 Studio.setSelectionTool()
             end,
-    })})
+        }),
+        SelectFromListModal = listModalEnabled and SelectFromListModal({
+            Choices = listChoices,
+            Key = currentFieldKey,
+            Value = currentFieldValue,
+
+            OnConfirm = function(value)
+                currentFieldCallback(value)
+                setListModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                Studio.setSelectionTool()
+                props.UpdateDataset(dataset)
+            end,
+            OnClosePanel = function()
+                setCurrentFieldCallback(nil)
+                setListModalEnabled(false)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                Studio.setSelectionTool()
+            end,
+        })
+})
 
 end
 

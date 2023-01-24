@@ -24,7 +24,6 @@ type Props = {
 local function SelectFromListModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
-    print(props.Key, props.Value, props.Choices)
     
     local choiceKeys = Dash.keys(props.Choices)
     table.sort(choiceKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
@@ -40,49 +39,58 @@ local function SelectFromListModal(props: Props)
         })
     end
 
-    return Panel({
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Title = "Choose",
-        Size = UDim2.new(0, 500, 0, 500),
-        ShowClose = true,
-        Position = UDim2.fromScale(0.5, 0.5),
-        
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        OnClosePanel = props.OnClosePanel,
+    return Overlay({
+        Size = UDim2.new(1, 40,1, 40),
+        Position = UDim2.new(0, -20, 0, -20),
     }, {
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-        CanvasSize = UDim2.new(0, 0, 5, 0),
-        Size = UDim2.fromScale(1, 1),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ScrollingDirection = Enum.ScrollingDirection.Y,
-        }, {
-            Content = Column({
-                Gaps = 8,
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                PaddingHorizontal = 20,
-                PaddingVertical = 20,
-            }, {
-                RadioButtonGroup = RadioButtonGroup({
-                    Choices = radioButtons,
-                    CurrentValue = value,
-                    OnChanged = function(num, val)
-                        setValue(val)
-                    end
-                }),
-            })
-        }),
-        Button1 = Button({
+        Panel({
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Title = "Choose",
+            Size = UDim2.new(0, 500, 0, 500),
+            ShowClose = true,
+            Position = UDim2.fromScale(0.5, 0.5),
+            
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            Label = "Confirm",
-            LayoutOrder = 100,
-            OnActivated = function() 
-                props.OnConfirm(value)
-            end,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            Width = UDim.new(1, 0),
-            -- ZIndex = 300,
-        }),
+            OnClosePanel = props.OnClosePanel,
+            ZIndex = 2,
+        }, {
+            ScrollingFrame = React.createElement("ScrollingFrame", {
+            CanvasSize = UDim2.new(0, 0, 5, 0),
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+            ZIndex = 2,
+            }, {
+                Content = Column({
+                    Gaps = 8,
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                    PaddingHorizontal = 20,
+                    PaddingVertical = 20,
+                    ZIndex = 2,
+                }, {
+                    RadioButtonGroup = RadioButtonGroup({
+                        Choices = radioButtons,
+                        CurrentValue = value,
+                        OnChanged = function(num, val)
+                            setValue(val)
+                        end,
+                        ZIndex = 2,
+                    }),
+                })
+            }),
+            Button1 = Button({
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                Label = "Confirm",
+                LayoutOrder = 100,
+                OnActivated = function() 
+                    props.OnConfirm(value)
+                end,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                Width = UDim.new(1, 0),
+                ZIndex = 2,
+            }),
+        })
     })
 end
 
