@@ -51,7 +51,7 @@ local function EditMachinesListUI(props: Props)
 			Size = UDim2.fromScale(1, 0),
 		})
 	)
-	for _, machine in map["machines"] do
+	for i, machine in map["machines"] do
 
 		add(children, MachineListItem({
 			ButtonLabel = "Edit",
@@ -60,6 +60,11 @@ local function EditMachinesListUI(props: Props)
 
 			AddMissingMachineAnchor = function(machineObj)
 				props.AddMissingMachineAnchor(machineObj)
+			end,
+			OnDeleteMachineClicked = function(machineObj)
+				Scene.removeMachineAnchor(machineObj)
+				table.remove(map["machines"], i)
+				props.UpdateDataset(dataset)
 			end,
 			OnMachineEditClicked = function(machineObj, machineAnchor)
 				props.OnMachineEditClicked(machineObj, machineAnchor)

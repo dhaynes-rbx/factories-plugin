@@ -113,7 +113,9 @@ return function(props: Props)
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
-                [Roact.Event.MouseButton1Click] = function() print("Delete Clicked") end,
+                [Roact.Event.MouseButton1Click] = function() 
+                    props.OnDeleteMachineClicked(machine)
+                end,
             }, buttonStyle),
             
         }),

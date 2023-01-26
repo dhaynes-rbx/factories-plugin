@@ -18,8 +18,8 @@ return function()
         sources = {},
         storage = {},
         coordinates = {
-            X = -1,
-            Y = -1
+            X = -999,
+            Y = -999
         },
         supportsPowerup = true,
         worldPosition = {

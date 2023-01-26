@@ -41,13 +41,13 @@ local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinate
 local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 function PluginRoot:setPanel()
-    self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})
     Studio.setSelectionTool()
+    self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})
 end
 
 function PluginRoot:changePanel(panelId)
+    Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
-        Studio.setSelectionTool()
         return
     end
     if panelId == Panels.EditDatasetUI then
@@ -296,11 +296,14 @@ function PluginRoot:render()
                     local anchor = Scene.instantiateMachineAnchor(machine)
                     Selection:Set({anchor})
                 end,
+                OnDeleteMachineClicked = function(machine)
+                    
+                end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,
-                UpdateDataset = function(dataset) 
-                    self:updateDataset(dataset) 
+                UpdateDataset = function(dataset)
+                    self:updateDataset(dataset)
                 end,
                 OnMachineEditClicked = function(machine, machineAnchor)
                     self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})

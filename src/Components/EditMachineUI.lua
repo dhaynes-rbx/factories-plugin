@@ -34,6 +34,7 @@ type Props = {
 }
 
 return function(props:Props)
+    Studio.setSelectionTool()
 
     local modalEnabled, setModalEnabled = React.useState(false)
     local listModalEnabled, setListModalEnabled = React.useState(false)

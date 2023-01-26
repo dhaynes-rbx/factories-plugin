@@ -106,7 +106,6 @@ function Scene.getMachineStorageFolder()
 end
 
 function Scene.instantiateMachineAnchor(machine:table)
-    print(machine)
     local x = machine["coordinates"]["X"]
     local y = machine["coordinates"]["Y"]
     local folder = Scene.getMachinesFolder()
@@ -156,6 +155,13 @@ function Scene.instantiateAllMachineAnchors(map:table)
 
     for _,machine in map["machines"] do
         Scene.instantiateMachineAnchor(machine)
+    end
+end
+
+function Scene.removeMachineAnchor(machine:table)
+    local anchor = Scene.getMachineAnchor(machine["coordinates"]["X"], machine["coordinates"]["Y"])
+    if anchor then
+        anchor:Destroy()
     end
 end
 
