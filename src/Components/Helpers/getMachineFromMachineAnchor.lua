@@ -1,4 +1,5 @@
 return function(map:table, anchor:Instance)
+    print(anchor)
     local debugId = anchor:GetAttribute("debugId")
     local counter = 0
     local machine = nil

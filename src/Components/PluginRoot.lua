@@ -301,13 +301,6 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
 
-                AddMissingMachineAnchor = function(machine)
-                    local anchor = Scene.instantiateMachineAnchor(machine)
-                    Selection:Set({anchor})
-                end,
-                OnDeleteMachineClicked = function(machine)
-                    
-                end,
                 OnClosePanel = function()
                     self:showPreviousPanel()
                 end,

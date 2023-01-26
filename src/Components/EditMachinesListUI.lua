@@ -1,5 +1,7 @@
 local HttpService = game:GetService("HttpService")
+local Selection = game:GetService("Selection")
 local StudioService = game:GetService("StudioService")
+
 local Packages = script.Parent.Parent.Packages
 local Dash = require(Packages.Dash)
 local React = require(Packages.React)
@@ -46,8 +48,10 @@ local function EditMachinesListUI(props: Props)
 				local newMachine = getTemplateMachine()
 				--check for duplicate id and coordinates
 				table.insert(map["machines"], newMachine)
+				
+				local anchor = Scene.instantiateMachineAnchor(newMachine)
+				props.OnMachineEditClicked(newMachine, anchor)
 				props.UpdateDataset(dataset)
-				props.AddMissingMachineAnchor(newMachine)
 			end,
 			Size = UDim2.fromScale(1, 0),
 		})
@@ -66,7 +70,8 @@ local function EditMachinesListUI(props: Props)
 			Machine = machine,
 
 			AddMissingMachineAnchor = function(machineObj)
-				props.AddMissingMachineAnchor(machineObj)
+				local anchor = Scene.instantiateMachineAnchor(machine)
+                Selection:Set({anchor})
 			end,
 			OnDeleteMachineClicked = function(machineObj)
 				Scene.removeMachineAnchor(machineObj)

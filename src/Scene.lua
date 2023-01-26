@@ -104,6 +104,19 @@ function Scene.getMachineStorageFolder()
     return Scene.getOrCreateFolder("FactoriesPlugin-Machines", ServerStorage)
 end
 
+function Scene.getAnchorFromMachine(machine:table)
+    local anchor = nil
+    if machine["machineAnchor"] then
+        for _,anchorInScene in Scene.getMachineAnchors() do
+            local debugId = anchorInScene:GetAttribute("debugId")
+            if debugId == machine["machineAnchor"] then
+                anchor = anchorInScene
+            end
+        end
+    end
+    return anchor
+end
+
 function Scene.instantiateMachineAnchor(machine:table)
     local x = machine["coordinates"]["X"]
     local y = machine["coordinates"]["Y"]
@@ -120,7 +133,7 @@ function Scene.instantiateMachineAnchor(machine:table)
     end
     -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
     --TODO: Figure out why mesh machines are not importing correctly
-    local anchor = Scene.getMachineAnchor(x, y)
+    local anchor = Scene.getAnchorFromMachine(machine)
     if not anchor then 
         anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
         anchor.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
@@ -143,6 +156,12 @@ function Scene.instantiateAllMachineAnchors(map:table)
     if not folder then
         folder = Instance.new("Folder")
         folder.Name = "Machines"
+        folder.ChildRemoved:Connect(function(child:Instance)
+            print("Child removed")
+        end)
+        folder.ChildAdded:Connect(function(child:Instance)
+            print("Child added")
+        end)
         folder.Parent = game.Workspace.Scene.FactoryLayout
     end
     folder:ClearAllChildren()
@@ -159,17 +178,5 @@ function Scene.removeMachineAnchor(machine:table)
     end
 end
 
-function Scene.getAnchorFromMachine(machine:table)
-    local anchor = nil
-    if machine["machineAnchor"] then
-        for _,anchorInScene in Scene.getMachineAnchors() do
-            local debugId = anchorInScene:GetAttribute("debugId")
-            if debugId == machine["machineAnchor"] then
-                anchor = anchorInScene
-            end
-        end
-    end
-    return anchor
-end
 
 return Scene
