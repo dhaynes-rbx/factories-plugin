@@ -44,6 +44,7 @@ local function EditMachinesListUI(props: Props)
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
 				local newMachine = getTemplateMachine()
+				--check for duplicate id and coordinates
 				table.insert(map["machines"], newMachine)
 				props.UpdateDataset(dataset)
 				props.AddMissingMachineAnchor(newMachine)
@@ -51,8 +52,14 @@ local function EditMachinesListUI(props: Props)
 			Size = UDim2.fromScale(1, 0),
 		})
 	)
-	for i, machine in map["machines"] do
 
+	local machines = map["machines"]
+	table.sort(machines, function(a,b)  --Do this to make sure buttons show in alphabetical order
+        return a["id"]:lower() < b["id"]:lower()
+    end)
+
+	for i, machine in machines do
+		
 		add(children, MachineListItem({
 			ButtonLabel = "Edit",
 			Label = machine["id"],

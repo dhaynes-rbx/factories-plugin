@@ -1,7 +1,6 @@
 local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
-
 local Utilities = require(script.Parent.Packages.Utilities)
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
 local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
@@ -121,25 +120,20 @@ function Scene.instantiateMachineAnchor(machine:table)
     end
     -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
     --TODO: Figure out why mesh machines are not importing correctly
-    local anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
-    anchor.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
-    anchor.PrimaryPart.Transparency = 0.1
-    local cframe = CFrame.new(position)
-    anchor:PivotTo(cframe)
-    anchor.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
-    anchor.Parent = folder
+    local anchor = Scene.getMachineAnchor(x, y)
+    if not anchor then 
+        anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
+        anchor.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
+        anchor.PrimaryPart.Transparency = 0.1
+        local cframe = CFrame.new(position)
+        anchor:PivotTo(cframe)
+        anchor.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
+        anchor.Parent = folder
+    end
 
-    local clickDetector = Instance.new("ClickDetector")
-    clickDetector.Parent = anchor
-    clickDetector.MouseClick:Connect(function()
-        print("Click")
-        
-    end)
-    -- clickDetector.
-
-    anchor.Changed:Connect(function(property:string)
-        -- print(property)
-    end)
+    local debugId = anchor:GetDebugId()
+    machine["machineAnchor"] = debugId
+    anchor:SetAttribute("debugId", debugId)
 
     return anchor
 end
@@ -165,6 +159,17 @@ function Scene.removeMachineAnchor(machine:table)
     end
 end
 
-
+function Scene.getAnchorFromMachine(machine:table)
+    local anchor = nil
+    if machine["machineAnchor"] then
+        for _,anchorInScene in Scene.getMachineAnchors() do
+            local debugId = anchorInScene:GetAttribute("debugId")
+            if debugId == machine["machineAnchor"] then
+                anchor = anchorInScene
+            end
+        end
+    end
+    return anchor
+end
 
 return Scene

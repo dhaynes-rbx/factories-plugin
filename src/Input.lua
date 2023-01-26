@@ -1,14 +1,36 @@
 local InputService = game:GetService("UserInputService")
 local Selection = game:GetService("Selection")
 
+local Root = script.Parent
+local Packages = Root.Packages
+local React = require(Packages.React)
+
 local Scene = require(script.Parent.Scene)
+local SceneConfig = require(script.Parent.SceneConfig)
 
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
 local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
+local getMachineFromMachineAnchor = require(script.Parent.Components.Helpers.getMachineFromMachineAnchor)
 
 local Input = {}
 
-function Input.listenForMachineMouseInput(map:table, callback:any)
+function Input.listenForMachineSelection(map:table, callback:any)
+    return Selection.SelectionChanged:Connect(function()
+        if #Selection:Get() >= 1 then
+            local selectedObj = Selection:Get()[1]
+            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
+                local machine = getMachineFromMachineAnchor(map, selectedObj)
+                --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
+                if not machine then 
+                    machine = React.None
+                end
+                callback(machine, selectedObj)
+            end
+        end
+    end)
+end
+
+function Input.listenForMachineDrag(map:table, callback:any)
     return InputService.InputEnded:Connect(function(input:InputObject)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
             return

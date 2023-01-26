@@ -103,29 +103,36 @@ function PluginRoot:init()
         selectedMachineAnchor = nil,
     })
     
-    --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
-    --Otherwise, revert to EditFactoryUI.
-    local onSelectionChanged = function()
-        if #Selection:Get() >= 1 then
-            local selectedObj = Selection:Get()[1]
-            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
-                local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
-                local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
-                --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
-                if not machine then 
-                    machine = React.None 
-                end
-                self:setState({
-                    selectedMachine = machine,
-                    selectedMachineAnchor = selectedObj
-                })
-                self:changePanel(Panels.EditMachineUI)
-            end
-        end
-    end
+    -- --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
+    -- --Otherwise, revert to EditFactoryUI.
+    -- local onSelectionChanged = function()
+    --     if #Selection:Get() >= 1 then
+    --         local selectedObj = Selection:Get()[1]
+    --         if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
+    --             local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
+    --             local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
+    --             --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
+    --             if not machine then 
+    --                 machine = React.None 
+    --             end
+    --             self:setState({
+    --                 selectedMachine = machine,
+    --                 selectedMachineAnchor = selectedObj
+    --             })
+    --             self:changePanel(Panels.EditMachineUI)
+    --         end
+    --     end
+    -- end
     
     self.connections = {}
-    self.connections["Selection"] = Selection.SelectionChanged:Connect(onSelectionChanged)
+    -- self.connections["Selection"] = Selection.SelectionChanged:Connect(onSelectionChanged)
+    self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
+        self:setState({
+            selectedMachine = machine,
+            selectedMachineAnchor = selectedObj
+        })
+        self:changePanel(Panels.EditMachineUI)
+    end)
 end
 
 function PluginRoot:updateDataset(dataset)
@@ -141,17 +148,18 @@ function PluginRoot:render()
     if self.connections["MachineInput"] then
         self.connections["MachineInput"]:Disconnect()
     end
-    self.connections["MachineInput"] = Input.listenForMachineMouseInput(
+    self.connections["MachineInput"] = Input.listenForMachineDrag(
         self.state.currentMap,
         function()
             self:updateDataset(self.state.dataset)
-        end)
+        end
+    )
 
     local billboardGuis = {}
     local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"
     if datasetIsLoaded then
-
         for _,machineAnchor in Scene.getMachineAnchors() do
+
             local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
             
             local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
@@ -225,6 +233,7 @@ function PluginRoot:render()
                     self:setState({currentMapIndex = val, currentMap = currentMap})
                     Scene.instantiateAllMachineAnchors(currentMap)
                     game.Workspace:SetAttribute("CurrentMapIndex", val)
+                    self:updateDataset(self.state.dataset)
                 end,
                 
                 ShowEditFactoryPanel = function()
@@ -232,7 +241,7 @@ function PluginRoot:render()
                 end,
 
                 ShowEditMachinesListUI = function()
-                   self:changePanel(Panels.EditMachinesListUI) 
+                   self:changePanel(Panels.EditMachinesListUI)
                 end,
 
                 ShowEditItemsListUI = function()
