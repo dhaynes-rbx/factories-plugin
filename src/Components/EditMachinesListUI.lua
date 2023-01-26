@@ -69,7 +69,7 @@ local function EditMachinesListUI(props: Props)
 			Label = machine["id"],
 			Machine = machine,
 
-			AddMissingMachineAnchor = function(machineObj)
+			FixMissingMachineAnchor = function(machineObj)
 				local anchor = Scene.instantiateMachineAnchor(machine)
                 Selection:Set({anchor})
 			end,

@@ -43,9 +43,12 @@ return function(props: Props)
     -- assert((x or y), "Machine coordinate error in data!")
     local machineAnchor = Scene.getAnchorFromMachine(machine)
     
-    local debugId = machineAnchor:GetAttribute("debugId")
+    local debugId = "NONE"
+    if machineAnchor then
+        debugId = machineAnchor:GetAttribute("debugId")
+    end
     local showError: boolean = not Scene.isMachineAnchor(machineAnchor)
-    local errorText: string = showError and "Cannot find corresponding Machine Anchor: "..machineAnchor:GetAttribute("debugId").."!"
+    local errorText: string = showError and "Cannot find corresponding Machine Anchor: "..debugId.."!"
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),
