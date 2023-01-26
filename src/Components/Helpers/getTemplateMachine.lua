@@ -26,7 +26,8 @@ return function()
             X = -52.049,
             Y = 0.802,
             Z = 47.449,
-        }
+        },
+        machineAnchor = -1
     }
     return template
 end

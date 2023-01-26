@@ -38,12 +38,14 @@ return function(props: Props)
     local filled = (props.Appearance == "Filled")
 
     local machine = props.Machine
-    local x = tonumber(machine["coordinates"]["X"])
-    local y = tonumber(machine["coordinates"]["Y"])
-    assert((x or y), "Machine coordinate error in data!")
+    -- local x = tonumber(machine["coordinates"]["X"])
+    -- local y = tonumber(machine["coordinates"]["Y"])
+    -- assert((x or y), "Machine coordinate error in data!")
     local machineAnchor = Scene.getAnchorFromMachine(machine)
+    
+    local debugId = machineAnchor:GetAttribute("debugId")
     local showError: boolean = not Scene.isMachineAnchor(machineAnchor)
-    local errorText: string = showError and "Cannot find corresponding Machine Anchor ("..x..","..y..")!"
+    local errorText: string = showError and "Cannot find corresponding Machine Anchor: "..machineAnchor:GetAttribute("debugId").."!"
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),

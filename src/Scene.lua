@@ -5,6 +5,10 @@ local Utilities = require(script.Parent.Packages.Utilities)
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
 local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
 
+local function registerDebugId(instance:Instance)
+    instance:SetAttribute("debugId", instance:GetDebugId())
+end
+
 local Scene = {}
 
 local function instantiateEnvironmentArt()
@@ -118,8 +122,6 @@ function Scene.getAnchorFromMachine(machine:table)
 end
 
 function Scene.instantiateMachineAnchor(machine:table)
-    local x = machine["coordinates"]["X"]
-    local y = machine["coordinates"]["Y"]
     local folder = Scene.getMachinesFolder()
 
     local assetPath = string.split(machine["asset"], ".")[3]
@@ -146,7 +148,7 @@ function Scene.instantiateMachineAnchor(machine:table)
 
     local debugId = anchor:GetDebugId()
     machine["machineAnchor"] = debugId
-    anchor:SetAttribute("debugId", debugId)
+    registerDebugId(anchor)
 
     return anchor
 end
@@ -157,10 +159,10 @@ function Scene.instantiateAllMachineAnchors(map:table)
         folder = Instance.new("Folder")
         folder.Name = "Machines"
         folder.ChildRemoved:Connect(function(child:Instance)
-            print("Child removed")
+            
         end)
         folder.ChildAdded:Connect(function(child:Instance)
-            print("Child added")
+            registerDebugId(child)
         end)
         folder.Parent = game.Workspace.Scene.FactoryLayout
     end
