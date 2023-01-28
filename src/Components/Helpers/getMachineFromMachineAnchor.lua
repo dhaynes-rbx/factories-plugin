@@ -3,6 +3,7 @@ return function(map:table, anchor:Instance)
     local counter = 0
     local machine = nil
     for _,machineObj in map["machines"] do
+        print(machineObj["coordinates"]["X"], machineObj["coordinates"]["Y"], machineObj)
         if machineObj["machineAnchor"] and machineObj["machineAnchor"] == debugId then
             machine = machineObj
             counter += 1

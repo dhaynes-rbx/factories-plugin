@@ -81,7 +81,7 @@ function PluginRoot:init()
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
-            currentMap = dataset["maps"][currentMapIndex] --TODO: Make functionality to toggle between maps.
+            currentMap = dataset["maps"][currentMapIndex]
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
@@ -126,13 +126,7 @@ function PluginRoot:init()
     
     self.connections = {}
     -- self.connections["Selection"] = Selection.SelectionChanged:Connect(onSelectionChanged)
-    self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
-        self:setState({
-            selectedMachine = machine,
-            selectedMachineAnchor = selectedObj
-        })
-        self:changePanel(Panels.EditMachineUI)
-    end)
+    
 end
 
 function PluginRoot:updateDataset(dataset)
@@ -142,8 +136,17 @@ function PluginRoot:updateDataset(dataset)
     })
 end
 
-function PluginRoot:render()
-    Studio.setSelectionTool()
+function PluginRoot:updateConnections()
+    if self.connections["Selection"] then
+        self.connections["Selection"]:Disconnect()
+    end
+    self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
+        self:setState({
+            selectedMachine = machine,
+            selectedMachineAnchor = selectedObj
+        })
+        self:changePanel(Panels.EditMachineUI)
+    end)
 
     if self.connections["MachineInput"] then
         self.connections["MachineInput"]:Disconnect()
@@ -154,6 +157,19 @@ function PluginRoot:render()
             self:updateDataset(self.state.dataset)
         end
     )
+end
+
+function PluginRoot:setCurrentMap(mapIndex)
+    local currentMap = self.state.dataset["maps"][mapIndex]
+    self:setState({currentMapIndex = mapIndex, currentMap = currentMap})
+    Scene.instantiateMapMachineAnchors(currentMap)
+    game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
+    self:updateDataset(self.state.dataset)
+end
+
+function PluginRoot:render()
+    Studio.setSelectionTool()
+    self:updateConnections()
 
     local billboardGuis = {}
     local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"
@@ -228,12 +244,8 @@ function PluginRoot:render()
                 Dataset = self.state.dataset,
                 Title = self.state.currentPanel..": "..mapName,
 
-                SetCurrentMap = function(val)
-                    local currentMap = self.state.dataset["maps"][val]
-                    self:setState({currentMapIndex = val, currentMap = currentMap})
-                    Scene.instantiateAllMachineAnchors(currentMap)
-                    game.Workspace:SetAttribute("CurrentMapIndex", val)
-                    self:updateDataset(self.state.dataset)
+                SetCurrentMap = function(mapIndex)
+                    self:setCurrentMap(mapIndex)
                 end,
                 
                 ShowEditFactoryPanel = function()
@@ -280,7 +292,7 @@ function PluginRoot:render()
                     
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
-                    Scene.instantiateAllMachineAnchors(currentMap)
+                    Scene.instantiateMapMachineAnchors(currentMap)
                 end,
 
                 UpdateDataset = function(dataset) 

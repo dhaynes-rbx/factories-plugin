@@ -153,17 +153,17 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.instantiateAllMachineAnchors(map:table)
+function Scene.instantiateMapMachineAnchors(map:table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
         folder.Name = "Machines"
-        folder.ChildRemoved:Connect(function(child:Instance)
+        -- folder.ChildRemoved:Connect(function(child:Instance)
             
-        end)
-        folder.ChildAdded:Connect(function(child:Instance)
-            registerDebugId(child)
-        end)
+        -- end)
+        -- folder.ChildAdded:Connect(function(child:Instance)
+        --     registerDebugId(child)
+        -- end)
         folder.Parent = game.Workspace.Scene.FactoryLayout
     end
     folder:ClearAllChildren()

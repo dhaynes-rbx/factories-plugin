@@ -15,6 +15,7 @@ local getMachineFromMachineAnchor = require(script.Parent.Components.Helpers.get
 local Input = {}
 
 function Input.listenForMachineSelection(map:table, callback:any)
+    print("map: ", map)
     return Selection.SelectionChanged:Connect(function()
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
