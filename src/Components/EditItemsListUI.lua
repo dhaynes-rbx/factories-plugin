@@ -32,6 +32,10 @@ type Props = {
 
 }
 
+local Errors = {
+    ItemIsNotRequiredByAnother = "Item is not required by another!"
+}
+
 local function EditItemsListUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -42,13 +46,14 @@ local function EditItemsListUI(props: Props)
 
     local dataset = props.Dataset
     local map = props.CurrentMap
+    local items = map["items"]
     local children = {}
 
     add(children, Button({
         Label = "Add Item",
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
-                local items = map["items"]
+                items = map["items"]
 				local newItem = getTemplateItem()
                 local newItemId = newItem["id"]
                 local duplicateIdCount = 0
@@ -59,24 +64,54 @@ local function EditItemsListUI(props: Props)
                 end
                 newItemId = newItemId..tostring(duplicateIdCount)
                 items[newItemId] = newItem
+                newItem["id"] = newItemId
 				props.UpdateDataset(dataset)
 				props.ShowEditItemPanel(newItem["id"])
 			end,
 			Size = UDim2.fromScale(1, 0),
     }))
 
-    local items = map["items"]
-    local itemKeys = Dash.keys(items)
+    local newItems = table.clone(items)
+    local templateItems = {}
+    for key,item in items do
+        if string.match(key, "templateItem") then
+            templateItems[key] = {}
+            table.insert(templateItems[key], newItems[key])
+            newItems[key] = nil
+        end
+    end
+    for key,templateItem in templateItems do
+        add(children, ItemListItem({
+            -- Error = errorText,
+            LabelColor = Color3.new(1,1,0),
+            Item = items[key],
+            Label = key,
+            LayoutOrder = getLayoutOrderIndex(),
+            
+            OnEditButtonClicked = function(val)
+                props.ShowEditItemPanel(val)
+            end,
+            OnDeleteButtonClicked = function()
+                print("Delete")
+            end,
+        }))
+    end
+
+    print("New items:", newItems)
+
+    local itemKeys = Dash.keys(newItems)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
     for i,itemKey in itemKeys do
         add(children, ItemListItem({
+            -- Error = errorText,
+            Item = items[itemKey],
             Label = i..": "..itemKey,
             LayoutOrder = getLayoutOrderIndex(),
             
-            OnEditButtonClicked = function()
-                props.ShowEditItemPanel(itemKey)
+            OnEditButtonClicked = function(val)
+                props.ShowEditItemPanel(val)
             end,
             OnDeleteButtonClicked = function()
                 print("Delete")

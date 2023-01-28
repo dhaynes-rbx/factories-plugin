@@ -16,6 +16,7 @@ local TextInput = FishBloxComponents.TextInput
 
 type Props = {
     Bold : boolean,
+    Color : Color3,
     FontSize : number,
     LayoutOrder : number,
     Label : string
@@ -25,7 +26,7 @@ return function(props: Props)
     local isBold = (props.Bold == nil) and true or props.Bold
     return Text({
         Bold = isBold,
-        Color = Color3.new(1,1,1),
+        Color = props.Color or Color3.new(1,1,1),
         FontSize = props.FontSize or 24,
         HorizontalAlignment = Enum.HorizontalAlignment.Left,
         LayoutOrder = props.LayoutOrder,

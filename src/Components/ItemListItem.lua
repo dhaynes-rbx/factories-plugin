@@ -23,6 +23,7 @@ local getMachineFromMachineAnchor = require(script.Parent.Helpers.getMachineFrom
 
 type Props = {
     Appearance : string,
+    LabelColor : Color3,
     Label : string,
     LayoutOrder : number,
     Item : table,
@@ -36,17 +37,9 @@ return function(props: Props)
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
 
-    -- local machine = props.Machine
-    -- -- local x = tonumber(machine["coordinates"]["X"])
-    -- -- local y = tonumber(machine["coordinates"]["Y"])
-    -- -- assert((x or y), "Machine coordinate error in data!")
-    -- local machineAnchor = Scene.getAnchorFromMachine(machine)
-    
-    -- local debugId = "NONE"
-    -- if machineAnchor then
-    --     debugId = machineAnchor:GetAttribute("debugId")
-    -- end
-    -- local showError: boolean = not Scene.isMachineAnchor(machineAnchor)
+    --check to make sure item is used
+    local showError = (props.Error ~= nil)
+
     -- local errorText: string = showError and "Cannot find corresponding Machine Anchor: "..debugId.."!"
 
     local buttonStyle = {
@@ -74,6 +67,7 @@ return function(props: Props)
             LayoutOrder = props.LayoutOrder
         }, {
             Label = hasLabel and SmallLabel({
+                Color = props.LabelColor,
                 FontSize = 18,
                 Label = props.Label,
                 LayoutOrder = 1,
@@ -91,6 +85,7 @@ return function(props: Props)
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 [Roact.Event.MouseButton1Click] = function()
+                    print(props.Item)
                     props.OnEditButtonClicked(props.Item["id"])
                 end,
             }, buttonStyle),
@@ -112,9 +107,10 @@ return function(props: Props)
             }, buttonStyle),
             
         }),
-        -- Error = showError and Text({
-        --     Text = errorText,
-        --     Color = Color3.new(1, 0, 0),
-        -- }),
+        Error = showError and Text({
+            Text = props.Error,
+            Color = Color3.new(1, 0, 0),
+            LayoutOrder = 100,
+        }),
     })
 end
