@@ -39,8 +39,10 @@ local function EditItemsListUI(props: Props)
     end
 
     local map = props.CurrentMap
-
     local children = {}
+
+    
+
     local items = map["items"]
     local itemKeys = Dash.keys(items)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
