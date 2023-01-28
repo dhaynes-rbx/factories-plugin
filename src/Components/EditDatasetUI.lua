@@ -102,7 +102,23 @@ local function EditDatasetUI(props:Props)
         add(children, Button({
             Label = "Print Dataset to Console",
             OnActivated = function()
-                print(dataset)
+                print(Dash.pretty(dataset, {multiline = true, indent = "\t"}))
+            end,
+            Size = buttonSize,
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, Button({
+            Label = "Print Machines to Console",
+            OnActivated = function()
+                print(Dash.pretty(map["machines"], {multiline = true, indent = "\t"}))
+            end,
+            Size = buttonSize,
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, Button({
+            Label = "Print Items to Console",
+            OnActivated = function()
+                print(Dash.pretty(map["items"], {multiline = true, indent = "\t"}))
             end,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
