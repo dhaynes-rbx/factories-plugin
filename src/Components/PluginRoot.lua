@@ -347,7 +347,7 @@ function PluginRoot:render()
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-
+                
                 ShowEditItemPanel = function(itemKey)
                     self:changePanel(Panels.EditItemUI)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})

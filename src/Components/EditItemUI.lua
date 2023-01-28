@@ -69,18 +69,24 @@ local function EditItemUI(props: Props)
                 setCurrentFieldValue(itemObject[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
+                        print(Dash.pretty(itemObject, {multiline = true, indent = "\t"}))
+                        print("Key: ", key)
                         local previousValue = itemObject[key]
+                        print("Prev value: ", previousValue)
                         if newValue ~= previousValue then
+                            itemObject[key] = newValue
                             --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
-                            items[newValue] = table.clone(items[previousValue])
-                            items[newValue]["id"] = newValue
-                            items[previousValue] = nil
-
-                            for i,machine in machines do
-                                if machine["outputs"] then
-                                    for j,output in machine["outputs"] do
-                                        if output == previousValue then
-                                            machines[i]["outputs"][j] = newValue
+                            if key == "id" then
+                                items[newValue] = table.clone(items[previousValue])
+                                items[newValue]["id"] = newValue
+                                items[previousValue] = nil
+    
+                                for i,machine in machines do
+                                    if machine["outputs"] then
+                                        for j,output in machine["outputs"] do
+                                            if output == previousValue then
+                                                machines[i]["outputs"][j] = newValue
+                                            end
                                         end
                                     end
                                 end
