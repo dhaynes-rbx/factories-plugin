@@ -66,7 +66,7 @@ local function EditMachinesListUI(props: Props)
 		
 		add(children, MachineListItem({
 			ButtonLabel = "Edit",
-			Label = machine["id"],
+			Label = i..": "..machine["id"],
 			Machine = machine,
 
 			FixMissingMachineAnchor = function(machineObj)
