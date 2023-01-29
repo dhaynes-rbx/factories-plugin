@@ -4,20 +4,34 @@ local Dataset = {}
 Dataset.dataset = {}
 Dataset.currentMap = {}
 Dataset.items = {}
+Dataset.machines = {}
 
 function Dataset:updateDataset(dataset, currentMapIndex)
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
+    self.machines = self.currentMap["machines"]
 end
 
-function Dataset:changeItemName(itemKey, newName)
+function Dataset:changeItemId(itemKey, newName)
+    print(itemKey, newName)
     local items = self.items
-    local oldName = items[itemKey]["id"]
+    local oldName = itemKey
     local newItem = table.clone(items[itemKey])
     newItem["id"] = newName
     items[newName] = newItem
     items[oldName] = nil
+
+    local machines = self.machines
+    for i,machine in machines do
+        if machine["outputs"] then
+            for j,output in machine["outputs"] do
+                if output == oldName then
+                    machines[i]["outputs"][j] = newName
+                end
+            end
+        end
+    end
 end
 
 function Dataset:addItem()

@@ -20,6 +20,7 @@ local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
 
+local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
@@ -74,19 +75,8 @@ local function EditItemUI(props: Props)
                             itemObject[key] = newValue
                             --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
                             if key == "id" then
-                                items[newValue] = table.clone(items[previousValue])
-                                items[newValue]["id"] = newValue
-                                items[previousValue] = nil
-    
-                                for i,machine in machines do
-                                    if machine["outputs"] then
-                                        for j,output in machine["outputs"] do
-                                            if output == previousValue then
-                                                machines[i]["outputs"][j] = newValue
-                                            end
-                                        end
-                                    end
-                                end
+                                Dataset:changeItemId(previousValue, newValue)
+                                props.UpdateDataset(dataset)
                             end
                         end
                     end
