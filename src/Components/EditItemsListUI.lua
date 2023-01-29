@@ -36,6 +36,7 @@ local Errors = {
     ItemIsNotRequiredByAnother = "Item is not required by another!"
 }
 
+
 local function EditItemsListUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -43,11 +44,28 @@ local function EditItemsListUI(props: Props)
         index = index + 1
         return index
     end
-
+    
     local dataset = props.Dataset
     local map = props.CurrentMap
     local items = map["items"]
     local children = {}
+    
+    local function createListItem(key:string, label:string, isTemplate:boolean)
+        return ItemListItem({
+            -- Error = errorText,
+            LabelColor = isTemplate and Color3.new(1,1,0) or Color3.new(1,1,1),
+            Item = items[key],
+            Label = label,
+            LayoutOrder = getLayoutOrderIndex(),
+            
+            OnEditButtonClicked = function(val)
+                props.ShowEditItemPanel(val)
+            end,
+            OnDeleteButtonClicked = function()
+                print("Delete")
+            end,
+        })
+    end
 
     add(children, Button({
         Label = "Add Item",
@@ -82,21 +100,8 @@ local function EditItemsListUI(props: Props)
             newItems[key] = nil
         end
     end
-    for key,templateItem in templateItems do
-        add(children, ItemListItem({
-            -- Error = errorText,
-            LabelColor = Color3.new(1,1,0),
-            Item = items[key],
-            Label = key,
-            LayoutOrder = getLayoutOrderIndex(),
-            
-            OnEditButtonClicked = function(val)
-                props.ShowEditItemPanel(val)
-            end,
-            OnDeleteButtonClicked = function()
-                print("Delete")
-            end,
-        }))
+    for key,_ in templateItems do
+        add(children, createListItem(key, key, true))
     end
 
     local itemKeys = Dash.keys(newItems)
@@ -104,19 +109,7 @@ local function EditItemsListUI(props: Props)
         return a:lower() < b:lower()
     end)
     for i,itemKey in itemKeys do
-        add(children, ItemListItem({
-            -- Error = errorText,
-            Item = items[itemKey],
-            Label = i..": "..itemKey,
-            LayoutOrder = getLayoutOrderIndex(),
-            
-            OnEditButtonClicked = function(val)
-                props.ShowEditItemPanel(val)
-            end,
-            OnDeleteButtonClicked = function()
-                print("Delete")
-            end,
-        }))
+        add(children, createListItem(itemKey, i..": "..itemKey))
     end
 
     return React.createElement(React.Fragment, nil, {
