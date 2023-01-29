@@ -22,10 +22,20 @@ end
 
 function Dataset:addItem()
     local items = self.items
-    print("Items:", items)
     local newItem = getTemplateItem()
-    items[newItem["id"]] = newItem
-    print("New Item: ", newItem)
+    local newItemId = newItem["id"]
+    
+    local duplicateIdCount = 0
+    for _,item in items do
+        if string.match(item["id"], "templateItem") then
+            duplicateIdCount += 1
+        end
+    end
+
+    newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
+    newItem["id"] = newItemId
+    items[newItemId] = newItem
+    
     return newItem
 end
 

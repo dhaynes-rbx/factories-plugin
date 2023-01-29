@@ -122,10 +122,8 @@ local function EditItemUI(props: Props)
         })
     end
 
-
     local children = {}
     local item = props.Item
-    print("Item:", item)
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
     add(children, createTextChangingButton("thumb", item))
