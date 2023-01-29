@@ -97,8 +97,9 @@ return function(props:Props)
                             --Get the anchor based on the previous coordinates
                             local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
                             machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
+
+                        --if we're changing the ID, we must also change it wherever it appears as another machine's source
                         elseif key == "id" then
-                            --if we're changing the ID, we must also change it wherever it appears as a machine's source
                             for i,machine in machines do
                                 if machine["sources"] then
                                     for j,source in machine["sources"] do
@@ -147,33 +148,60 @@ return function(props:Props)
     local children = {}
     
     if datasetIsLoaded and machine then
-        local machineIds = {}
-        for _,machineObj in machines do
-            machineIds[machineObj["id"]] = machineObj["id"]
-        end
         add(children, createTextChangingButton("id", machine))
-
+        
         add(children, createListModalButton("type", machine, Constants.MachineTypes, function(assetKey) 
             machine["asset"] = Constants.MachineAssetPaths[assetKey]
-        end)) --
-
+        end))
+        
         add(children, createTextChangingButton("locName", machine))
         add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
         add(children, createTextChangingButton("Y", machine["coordinates"], true))
-
+        
         --Outputs : Item
         add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
-        for i,_ in machine["outputs"] do
-            add(children, createListModalButton(i, machine["outputs"], items, Dash.noop)) --
+        --Remove any outputs from the list that already exist as a machine's output. We don't want to allow duplicate outputs.
+        local machineOutputChoices = table.clone(items)
+        for _,outputItem in machine["outputs"] do
+            machineOutputChoices[outputItem] = nil
         end
+        for i,_ in machine["outputs"] do
+            add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop)) --
+        end
+        add(children, SmallButton({
+            Appearance = "Filled",
+            Label = "Add Output",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                if not machine["sources"] then
+                    machine["sources"] = {}
+                end
+                setListModalEnabled(true)
+                setListChoices(machineOutputChoices)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        table.insert(machine["outputs"], newValue)
+                    end
+                end)
+            end
+        }))
 
         --Sources : Machine
         add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
-
-        if machine["sources"] then
-            for i,_ in machine["sources"] do
-                add(children, createListModalButton(i, machine["sources"], machineIds, function(machineId)
+        local machineSourceChoices = {}
+        for _,machineObj in machines do
+            machineSourceChoices[machineObj["id"]] = machineObj["id"]
+        end
+        machineSourceChoices[machine["id"]] = nil --Remove this machine. A machine shouldn't be able to choose itself as a source.
+        if machine["sources"] and #machine["sources"] > 0 then --Sometimes machine source tables don't exist, and sometimes they're empty.
+        for _,sourceMachine in machine["sources"] do
+            machineSourceChoices[sourceMachine] = nil
+        end
+        for i,_ in machine["sources"] do
+                add(children, createListModalButton(i, machine["sources"], machineSourceChoices, function(machineId)
                     print("Callback: ", machineId)
                 end))
                 add(children, SmallButton({
@@ -186,8 +214,6 @@ return function(props:Props)
                 }))
             end
         end 
-        
-
         add(children, SmallButton({
             Appearance = "Filled",
             Label = "Add Source",
@@ -197,7 +223,7 @@ return function(props:Props)
                     machine["sources"] = {}
                 end
                 setListModalEnabled(true)
-                setListChoices(machineIds)
+                setListChoices(machineSourceChoices)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
                 setCurrentFieldCallback(function()

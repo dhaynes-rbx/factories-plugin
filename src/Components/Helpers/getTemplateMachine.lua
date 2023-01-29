@@ -15,7 +15,7 @@ return function()
             max = 50
         },
         outputs = {},
-        sources = {},
+        -- sources = {}, --We should probably not have an empty table here, since it might confuse existing game logic. Not all machines have a source table.
         storage = {},
         coordinates = {
             X = -999,
