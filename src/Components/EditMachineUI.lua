@@ -19,6 +19,7 @@ local SelectFromListModal = require(script.Parent.SelectFromListModal)
 local SidePanel = require(script.Parent.SidePanel)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
+local SmallButton = require(script.Parent.SmallButton)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
@@ -159,13 +160,15 @@ return function(props:Props)
         add(children, createTextChangingButton("X", machine["coordinates"], true))
         add(children, createTextChangingButton("Y", machine["coordinates"], true))
 
+        --Outputs : Item
         add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         for i,_ in machine["outputs"] do
             add(children, createListModalButton(i, machine["outputs"], items, Dash.noop)) --
         end
 
+        --Sources : Machine
+        add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
         if machine["sources"] then
-            add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
             for i,_ in machine["sources"] do
                 -- add(children, createTextChangingButton(i, machine["sources"], false, true))
                 add(children, createListModalButton(i, machine["sources"], machineIds, function(machineId)
@@ -173,6 +176,26 @@ return function(props:Props)
                 end))
             end    
         end
+        add(children, SmallButton({
+            Appearance = "Filled",
+            Label = "Add Source",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                if not machine["sources"] then
+                    machine["sources"] = {}
+                end
+                setListModalEnabled(true)
+                setListChoices(machineIds)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        table.insert(machine["sources"], newValue)
+                    end
+                end)
+            end
+        }))
+
         add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))
         add(children, createTextChangingButton("defaultMaxStorage", machine, true))
