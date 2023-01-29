@@ -45,12 +45,12 @@ local function boxGizmo(adornee, cframe)
     })
 end
 
-local function lineGizmo(adornee, length, thickness, cframe)
+local function lineGizmo(adornee, length, thickness, cframe, showError)
     return React.createElement("LineHandleAdornment", {
         AdornCullingMode = Enum.AdornCullingMode.Never,
         Adornee = adornee,
         AlwaysOnTop = true,
-        Color3 = Color3.new(0, 1, 0),
+        Color3 = showError and Color3.new(1,0,0) or Color3.new(0, 1, 0),
         CFrame = cframe,
         Length = length,
         Thickness = thickness,
@@ -62,7 +62,7 @@ local function ConnectionGizmos(props: Props)
     local missingAnchor = false
 
     local connectionInfo = {}
-    local boxes = {}
+    local gizmos = {}
     local machines = props.CurrentMap["machines"]
     for _,machine in machines do
         local x = machine["coordinates"]["X"]
@@ -89,7 +89,7 @@ local function ConnectionGizmos(props: Props)
                 -- local xOffset = (xSpacing * index) - (((numOutputs - 1) * xSpacing) / 2)
                 local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, zOffset))
-                add(boxes, boxGizmo(machineAnchor, cframe))
+                add(gizmos, boxGizmo(machineAnchor, cframe))
 
                 local worldCFrame = machineAnchor:GetPivot() + cframe.Position
                 
@@ -108,7 +108,7 @@ local function ConnectionGizmos(props: Props)
                 -- local xOffset = (xSpacing * index) - (((numSources - 1) * xSpacing) / 2)
                 local xOffset = 0
                 local cframe = CFrame.new(Vector3.new(xOffset, 0, -zOffset))
-                add(boxes, boxGizmo(machineAnchor, cframe))
+                add(gizmos, boxGizmo(machineAnchor, cframe))
 
                 local worldCFrame = machineAnchor:GetPivot() + cframe.Position
                 
@@ -128,16 +128,24 @@ local function ConnectionGizmos(props: Props)
             local machineAnchor = Scene.getMachineAnchor(x, y)
 
             for i,source in machine["sources"] do
+                local showError = false
+
                 local lineTarget = getMachineFromId(source, props.CurrentMap)
                 if not lineTarget then
                     print("No machine that matches ID: "..source)
                     continue
                 end
-                local sourceCFrameRelativeToAnchor = connectionInfo[machine].sources[i].cframe                
-                local outputWorldCFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
+                local sourceCFrameRelativeToAnchor = connectionInfo[machine].sources[i].cframe
+                local outputWorldCFrame = Scene.getAnchorFromMachine(lineTarget):GetPivot()
+                if #connectionInfo[lineTarget]["outputs"] > 0 then
+                    --This machine has no source!
+                    outputWorldCFrame = connectionInfo[lineTarget]["outputs"][1].worldCFrame
+                else
+                    showError = true
+                end
                 local outputCFrameRelativeToSource = CFrame.new(outputWorldCFrame.Position - machineAnchor:GetPivot().Position)
                 local magnitude = (sourceCFrameRelativeToAnchor.Position - outputCFrameRelativeToSource.Position).Magnitude
-                add(boxes, lineGizmo(machineAnchor, magnitude, 5, CFrame.new(sourceCFrameRelativeToAnchor.Position, outputCFrameRelativeToSource.Position)))
+                add(gizmos, lineGizmo(machineAnchor, magnitude, 5, CFrame.new(sourceCFrameRelativeToAnchor.Position, outputCFrameRelativeToSource.Position), showError))
 
             end
         end
@@ -146,7 +154,7 @@ local function ConnectionGizmos(props: Props)
     
     return React.createElement("Folder", {
         Name = "Connection Gizmos",
-    }, boxes)
+    }, gizmos)
 end
 
 return function(props)

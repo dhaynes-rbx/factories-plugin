@@ -25,12 +25,15 @@ local function SelectFromListModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
     
-    local choiceKeys = Dash.keys(props.Choices)
-    table.sort(choiceKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
-        return a:lower() < b:lower()
-    end)
-    local radioButtons = {}
-    
+    local choiceKeys = props.Choices
+    if #props.Choices > 0 then 
+       choiceKeys = Dash.keys(props.Choices)
+        table.sort(choiceKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
+            return a:lower() < b:lower()
+        end)
+    end
+        local radioButtons = {}
+        
     for _,choiceKey in choiceKeys do
         table.insert(radioButtons, {
             -- Choice = props.Choices[choiceKey],

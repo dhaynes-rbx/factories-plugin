@@ -20,6 +20,8 @@ local SidePanel = require(script.Parent.SidePanel)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SmallButton = require(script.Parent.SmallButton)
+local MachineListItem = require(script.Parent.MachineListItem)
+local ItemListItem = require(script.Parent.ItemListItem)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
@@ -168,14 +170,25 @@ return function(props:Props)
 
         --Sources : Machine
         add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
+
         if machine["sources"] then
             for i,_ in machine["sources"] do
-                -- add(children, createTextChangingButton(i, machine["sources"], false, true))
                 add(children, createListModalButton(i, machine["sources"], machineIds, function(machineId)
                     print("Callback: ", machineId)
                 end))
-            end    
-        end
+                add(children, SmallButton({
+                    Label = "Delete",
+                    LayoutOrder = incrementLayoutOrder(),
+                    OnActivated = function()
+                        table.remove(machine["sources"], i)
+                        props.UpdateDataset(dataset)
+                    end
+                }))
+            end
+        end 
+        
+        local machineSourceChoices = table.clone(machine["sources"])
+        print(machineSourceChoices)
         add(children, SmallButton({
             Appearance = "Filled",
             Label = "Add Source",

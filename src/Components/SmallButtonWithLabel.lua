@@ -16,6 +16,7 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local SmallLabel = require(script.Parent.SmallLabel)
+local SmallButton = require(script.Parent.SmallButton)
 
 type Props = {
     Appearance : string,
@@ -24,6 +25,7 @@ type Props = {
     Label : string,
     LayoutOrder : number,
     OnActivated : any,
+    OnDeleteButtonPressed : any,
 }
 
 return function(props: Props)
@@ -77,6 +79,6 @@ return function(props: Props)
                 PaddingRight = UDim.new(0, 10),
                 PaddingTop = UDim.new(0, 5),
             })
-        })
+        }),
     })
 end
