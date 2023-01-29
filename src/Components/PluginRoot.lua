@@ -86,6 +86,7 @@ function PluginRoot:init()
             machines = currentMap["machines"]
             items = currentMap["items"]
             powerups = currentMap["powerups"]
+            Dataset:updateDataset(dataset, currentMapIndex)
         end
     end
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
@@ -135,7 +136,7 @@ function PluginRoot:updateDataset(dataset)
     self:setState({
         dataset = dataset,
     })
-    Dataset:updateDataset(dataset)
+    Dataset:updateDataset(dataset, self.state.currentMapIndex)
 end
 
 function PluginRoot:updateConnections()
@@ -163,6 +164,7 @@ end
 
 function PluginRoot:setCurrentMap(mapIndex)
     local currentMap = self.state.dataset["maps"][mapIndex]
+    self.state.currentMapIndex = mapIndex
     self:setState({currentMapIndex = mapIndex, currentMap = currentMap})
     Scene.instantiateMapMachineAnchors(currentMap)
     game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
@@ -295,6 +297,7 @@ function PluginRoot:render()
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                     Scene.instantiateMapMachineAnchors(currentMap)
+                    self:updateDataset(dataset)
                 end,
 
                 UpdateDataset = function(dataset) 

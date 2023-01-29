@@ -69,10 +69,7 @@ local function EditItemUI(props: Props)
                 setCurrentFieldValue(itemObject[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
-                        print(Dash.pretty(itemObject, {multiline = true, indent = "\t"}))
-                        print("Key: ", key)
                         local previousValue = itemObject[key]
-                        print("Prev value: ", previousValue)
                         if newValue ~= previousValue then
                             itemObject[key] = newValue
                             --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
@@ -128,6 +125,7 @@ local function EditItemUI(props: Props)
 
     local children = {}
     local item = props.Item
+    print("Item:", item)
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
     add(children, createTextChangingButton("thumb", item))

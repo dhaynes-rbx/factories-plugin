@@ -20,6 +20,7 @@ local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
 local ItemListItem = require(script.Parent.ItemListItem)
 
+local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
@@ -62,7 +63,7 @@ local function EditItemsListUI(props: Props)
                 props.ShowEditItemPanel(val)
             end,
             OnDeleteButtonClicked = function()
-                items[key] = nil
+                Dataset:removeItem(key)
 				props.UpdateDataset(dataset)
             end,
         })
@@ -72,21 +73,9 @@ local function EditItemsListUI(props: Props)
         Label = "Add Item",
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
-                items = map["items"]
-				local newItem = getTemplateItem()
-                local newItemId = newItem["id"]
-                local duplicateIdCount = 0
-                for _,item in items do
-                    if string.match(item["id"], "templateItem") then
-                        duplicateIdCount += 1
-                    end
-                end
-                newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
-                items[newItemId] = newItem
-                newItem["id"] = newItemId
-                print(newItemId)
+                local newItem = Dataset:addItem()
 				props.UpdateDataset(dataset)
-				props.ShowEditItemPanel(newItemId)
+				props.ShowEditItemPanel(newItem["id"])
 			end,
 			Size = UDim2.fromScale(1, 0),
     }))

@@ -66,6 +66,7 @@ function SceneConfig.instantiateNewDatasetInstance()
 end
 
 function SceneConfig.updateDatasetInstance(dataset:table)
+    print("Dataset as table: ", dataset)
     local datasetInstance = SceneConfig.getDatasetInstance()
     datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
 end
