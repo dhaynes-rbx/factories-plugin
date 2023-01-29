@@ -62,7 +62,8 @@ local function EditItemsListUI(props: Props)
                 props.ShowEditItemPanel(val)
             end,
             OnDeleteButtonClicked = function()
-                print("Delete")
+                items[key] = nil
+				props.UpdateDataset(dataset)
             end,
         })
     end

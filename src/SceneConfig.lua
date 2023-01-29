@@ -17,7 +17,7 @@ local function getOrCreateFolder(name:string, parent:Instance)
     return folder
 end
 
-function SceneConfig.replaceDataset(datasetInstance)
+function SceneConfig.replaceDatasetInstance(datasetInstance)
     local folder = getOrCreateFolder("SceneConfig", game.Workspace)
     local datasetFolder = getOrCreateFolder("Dataset", folder)
     if #datasetFolder:GetChildren() then
@@ -44,12 +44,12 @@ function SceneConfig.checkIfDatasetInstanceExists()
     end
 end
 
-function SceneConfig.getDatasetAsTable()
+function SceneConfig.getDatasetInstanceAsTable()
     local str = SceneConfig.getDatasetInstance().Source
     return HttpService:JSONDecode(string.sub(str, #"return [[" + 1, #str - 2))
 end
 
-function SceneConfig.importNewDataset()
+function SceneConfig.instantiateNewDatasetInstance()
     local file = StudioService:PromptImportFile()
     if not file then
         return nil
@@ -60,17 +60,17 @@ function SceneConfig.importNewDataset()
     
     newDatasetInstance.Name = file.Name:split(".")[1]
     newDatasetInstance.Parent = game.Workspace
-    SceneConfig.replaceDataset(newDatasetInstance)
+    SceneConfig.replaceDatasetInstance(newDatasetInstance)
 
-    return SceneConfig.getDatasetAsTable(), newDatasetInstance
+    return SceneConfig.getDatasetInstanceAsTable(), newDatasetInstance
 end
 
-function SceneConfig.updateDataset(dataset:table)
+function SceneConfig.updateDatasetInstance(dataset:table)
     local datasetInstance = SceneConfig.getDatasetInstance()
     datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
 end
 
-function SceneConfig.getDatasetName()
+function SceneConfig.getDatasetInstanceName()
     local dataset = SceneConfig.getDatasetInstance()
     if dataset then
         local str = dataset.Name:split("_")
@@ -79,7 +79,8 @@ function SceneConfig.getDatasetName()
     return nil
 end
 
-function SceneConfig.setDatasetName(name)
+--TODO: Make it so that you can change the name of the dataset
+function SceneConfig.setDatasetInstanceName(name)
     SceneConfig.getDatasetInstance().Name = name
 end
 

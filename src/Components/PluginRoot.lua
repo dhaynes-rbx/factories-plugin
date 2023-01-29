@@ -28,6 +28,7 @@ local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local Modal = require(script.Parent.Modal)
 
 local Constants = require(script.Parent.Parent.Constants)
+local Dataset = require(script.Parent.Parent.Dataset)
 local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
@@ -76,7 +77,7 @@ function PluginRoot:init()
     local items = nil
     local powerups = nil
     if SceneConfig.getDatasetInstance() then
-        dataset = SceneConfig.getDatasetAsTable()
+        dataset = SceneConfig.getDatasetInstanceAsTable()
         if not dataset then
             print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
@@ -130,10 +131,11 @@ function PluginRoot:init()
 end
 
 function PluginRoot:updateDataset(dataset)
-    SceneConfig.updateDataset(dataset)
+    SceneConfig.updateDatasetInstance(dataset)
     self:setState({
         dataset = dataset,
     })
+    Dataset:updateDataset(dataset)
 end
 
 function PluginRoot:updateConnections()
@@ -265,7 +267,7 @@ function PluginRoot:render()
                 end,
                 
                 ExportDataset = function()
-                    SceneConfig.updateDataset(self.state.dataset)
+                    SceneConfig.updateDatasetInstance(self.state.dataset)
                     local datasetInstance = SceneConfig.getDatasetInstance()
                     local saveFile = datasetInstance:Clone()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
@@ -280,7 +282,7 @@ function PluginRoot:render()
                 end,
 
                 ImportDataset = function()
-                    local dataset, newDatasetInstance = SceneConfig.importNewDataset()
+                    local dataset, newDatasetInstance = SceneConfig.instantiateNewDatasetInstance()
                     
                     if not newDatasetInstance then
                         return
