@@ -58,19 +58,21 @@ local function EditItemsListUI(props: Props)
                 local newItemId = newItem["id"]
                 local duplicateIdCount = 0
                 for _,item in items do
-                    if item["id"] == newItemId then
+                    if string.match(item["id"], "templateItem") then
                         duplicateIdCount += 1
                     end
                 end
-                newItemId = newItemId..tostring(duplicateIdCount)
+                newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
                 items[newItemId] = newItem
                 newItem["id"] = newItemId
+                print(newItemId)
 				props.UpdateDataset(dataset)
-				props.ShowEditItemPanel(newItem["id"])
+				props.ShowEditItemPanel(newItemId)
 			end,
 			Size = UDim2.fromScale(1, 0),
     }))
 
+    --Sort the template items and the non-template items, so that template items show up at the top of the list.
     local newItems = table.clone(items)
     local templateItems = {}
     for key,item in items do
@@ -96,8 +98,6 @@ local function EditItemsListUI(props: Props)
             end,
         }))
     end
-
-    print("New items:", newItems)
 
     local itemKeys = Dash.keys(newItems)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order

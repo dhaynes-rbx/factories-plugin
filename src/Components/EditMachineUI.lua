@@ -171,7 +171,7 @@ return function(props:Props)
         end
         add(children, SmallButton({
             Appearance = "Filled",
-            Label = "Add Output",
+            Label = "Add New Output Item",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
                 if not machine["sources"] then
@@ -216,7 +216,7 @@ return function(props:Props)
         end 
         add(children, SmallButton({
             Appearance = "Filled",
-            Label = "Add Source",
+            Label = "Add New Source Machine",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
                 if not machine["sources"] then

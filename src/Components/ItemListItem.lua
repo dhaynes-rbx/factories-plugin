@@ -85,7 +85,6 @@ return function(props: Props)
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 [Roact.Event.MouseButton1Click] = function()
-                    print(props.Item)
                     props.OnEditButtonClicked(props.Item["id"])
                 end,
             }, buttonStyle),
@@ -102,7 +101,7 @@ return function(props: Props)
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 [Roact.Event.MouseButton1Click] = function() 
-                    print("Click")
+                    props.OnDeleteButtonClicked(props.Item["id"])
                 end,
             }, buttonStyle),
             
