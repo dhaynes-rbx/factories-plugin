@@ -187,8 +187,7 @@ return function(props:Props)
             end
         end 
         
-        local machineSourceChoices = table.clone(machine["sources"])
-        print(machineSourceChoices)
+
         add(children, SmallButton({
             Appearance = "Filled",
             Label = "Add Source",
