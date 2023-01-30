@@ -67,7 +67,7 @@ local function ConnectionGizmos(props: Props)
     for _,machine in machines do
         local x = machine["coordinates"]["X"]
         local y = machine["coordinates"]["Y"]
-        local machineAnchor = Scene.getMachineAnchor(x, y)
+        local machineAnchor = Scene.getMachineAnchor(machine)
         if not machineAnchor then
             print("No machine anchor found for ("..x..","..y..")")
             return
@@ -123,9 +123,7 @@ local function ConnectionGizmos(props: Props)
     --Loop through again and draw connections between the machines.
     for _,machine in machines do
         if machine["sources"] then
-            local x = machine["coordinates"]["X"]
-            local y = machine["coordinates"]["Y"]
-            local machineAnchor = Scene.getMachineAnchor(x, y)
+            local machineAnchor = Scene.getMachineAnchor(machine)
 
             for i,source in machine["sources"] do
                 local showError = false

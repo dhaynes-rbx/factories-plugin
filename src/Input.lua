@@ -20,6 +20,7 @@ function Input.listenForMachineSelection(map:table, callback:any)
             local selectedObj = Selection:Get()[1]
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
                 local machine = getMachineFromMachineAnchor(map, selectedObj)
+                print(machine)
                 --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
                 if not machine then 
                     machine = React.None
@@ -41,8 +42,7 @@ function Input.listenForMachineDrag(map:table, callback:any)
             if Scene.isMachineAnchor(selection) then
                 --Register that the machine may have been moved.
                 local position = selection.PrimaryPart.CFrame.Position
-                local x,y = getCoordinatesFromAnchorName(selection.Name)
-                local machine = getMachineFromCoordinates(x,y, map)
+                local machine = getMachineFromMachineAnchor(map, selection)
                 local worldPosition = Vector3.new(
                     machine["worldPosition"]["X"],
                     machine["worldPosition"]["Y"],

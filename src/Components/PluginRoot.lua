@@ -144,9 +144,11 @@ function PluginRoot:updateConnections()
         self.connections["Selection"]:Disconnect()
     end
     self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
+        self.selectedMachine = machine
+        self.selectedMachineAnchor = selectedObj
         self:setState({
+            selectedMachineAnchor = selectedObj,
             selectedMachine = machine,
-            selectedMachineAnchor = selectedObj
         })
         self:changePanel(Panels.EditMachineUI)
     end)

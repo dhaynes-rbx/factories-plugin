@@ -94,8 +94,8 @@ return function(props:Props)
                                 prevY = previousValue
                             end
                             
-                            --Get the anchor based on the previous coordinates
-                            local machineAnchor = Scene.getMachineAnchor(prevX, prevY)
+                            --TODO: Check for, and prevent, duplicate coordinates
+                            local machineAnchor = Scene.getMachineAnchorFromCoordinates(prevX, prevY)
                             machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
 
                         --if we're changing the ID, we must also change it wherever it appears as another machine's source

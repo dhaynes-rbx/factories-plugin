@@ -48,7 +48,7 @@ function Scene.getMachineAnchors()
     return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
 end
 
-function Scene.getMachineAnchor(x:number, y:number)
+function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
     local machines = Scene.getMachineAnchors()
     for _,v in machines do
         local nameX, nameY = getCoordinatesFromAnchorName(v.Name)
@@ -57,6 +57,20 @@ function Scene.getMachineAnchor(x:number, y:number)
         end
     end
     return nil
+end
+
+function Scene.getMachineAnchor(machine:table)
+    local result = nil
+    local machineAnchors = Scene.getMachineAnchors()
+    local machineAnchorId = machine["machineAnchor"]
+    for _,machineAnchor in machineAnchors do
+        local debugId = machineAnchor:GetAttribute("debugId")
+        if debugId == machineAnchorId then
+            result = machineAnchor
+        end
+    end
+    print("id:", machineAnchorId)
+    return result
 end
 
 function Scene.loadScene()
