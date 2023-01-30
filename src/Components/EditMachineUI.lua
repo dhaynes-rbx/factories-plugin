@@ -167,7 +167,15 @@ return function(props:Props)
             machineOutputChoices[outputItem] = nil
         end
         for i,_ in machine["outputs"] do
-            add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop)) --
+            add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop))
+            add(children, SmallButton({
+                Label = "Delete",
+                LayoutOrder = incrementLayoutOrder(),
+                OnActivated = function()
+                    table.remove(machine["outputs"], i)
+                    props.UpdateDataset(dataset)
+                end
+            }))
         end
         add(children, SmallButton({
             Appearance = "Filled",
@@ -184,6 +192,7 @@ return function(props:Props)
                 setCurrentFieldCallback(function()
                     return function(newValue)
                         table.insert(machine["outputs"], newValue)
+                        props.UpdateDataset(dataset)
                     end
                 end)
             end
