@@ -58,4 +58,11 @@ function Input.listenForMachineDrag(map:table, callback:any)
     end)
 end
 
+function Input.listenForMachineAnchorDeletion(map:table, callback:any)
+    return Scene.getMachinesFolder().ChildRemoved:Connect(function(child) 
+        print("Child was removed.", map["id"])
+        callback()
+    end)
+end
+
 return Input

@@ -130,9 +130,17 @@ local function EditItemUI(props: Props)
 
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
-        for _,requirement in item["requirements"] do
+        for i,requirement in item["requirements"] do
             add(children, createListModalButton("itemId", requirement, items, Dash.noop))
             add(children, createTextChangingButton("count", requirement, true))
+            add(children, SmallButton({
+                Label = "Delete",
+                LayoutOrder = incrementLayoutOrder(),
+                OnActivated = function()
+                    table.remove(item["requirements"], i)
+                    props.UpdateDataset(dataset)
+                end
+            }))
         end
     end
     add(children, SmallButton({

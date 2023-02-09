@@ -105,30 +105,7 @@ function PluginRoot:init()
         selectedMachineAnchor = nil,
     })
     
-    -- --Setup the machine selection. If you select a machine in the world, then the EditMachineUI should be displayed.
-    -- --Otherwise, revert to EditFactoryUI.
-    -- local onSelectionChanged = function()
-    --     if #Selection:Get() >= 1 then
-    --         local selectedObj = Selection:Get()[1]
-    --         if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
-    --             local x,y = getCoordinatesFromAnchorName(selectedObj.Name)
-    --             local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
-    --             --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
-    --             if not machine then 
-    --                 machine = React.None 
-    --             end
-    --             self:setState({
-    --                 selectedMachine = machine,
-    --                 selectedMachineAnchor = selectedObj
-    --             })
-    --             self:changePanel(Panels.EditMachineUI)
-    --         end
-    --     end
-    -- end
-    
-    self.connections = {}
-    -- self.connections["Selection"] = Selection.SelectionChanged:Connect(onSelectionChanged)
-    
+    self.connections = {}    
 end
 
 function PluginRoot:updateDataset(dataset)
@@ -160,6 +137,16 @@ function PluginRoot:updateConnections()
         self.state.currentMap,
         function()
             self:updateDataset(self.state.dataset)
+        end
+    )
+
+    if self.connections["MachineAnchorDeletion"] then
+        self.connections["MachineAnchorDeletion"]:Disconnect()
+    end
+    self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
+        self.state.currentMap,
+        function()
+            print("Called back to machine deletion")
         end
     )
 end

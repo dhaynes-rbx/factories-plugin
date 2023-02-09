@@ -14,7 +14,6 @@ function Dataset:updateDataset(dataset, currentMapIndex)
 end
 
 function Dataset:changeItemId(itemKey, newName)
-    print(itemKey, newName)
     local items = self.items
     local oldName = itemKey
     local newItem = table.clone(items[itemKey])
@@ -84,6 +83,19 @@ function Dataset:removeItem(itemKey)
     end
 
     items[itemKey] = nil
+end
+
+function Dataset:removeMachine(machineKey)
+    local machines = self.machines
+    local indexToRemove = nil
+    for i,machine in machines do
+        if machine["id"] == machineKey then
+            indexToRemove = i
+        end
+    end
+    if indexToRemove then
+        table.remove(machines, indexToRemove)
+    end
 end
 
 return Dataset
