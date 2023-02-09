@@ -19,6 +19,7 @@ local SelectFromListModal = require(script.Parent.SelectFromListModal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
+local SmallButton = require(script.Parent.SmallButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
@@ -117,19 +118,70 @@ local function EditItemUI(props: Props)
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
     add(children, createTextChangingButton("thumb", item))
+
+    --REQUIREMENTS
+    --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
+    local itemRequirementChoices = table.clone(items)
+    for _,outputItem in item["requirements"] do
+        local id = outputItem["itemId"]
+        itemRequirementChoices[id] = nil
+    end
+    itemRequirementChoices[item["id"]] = nil
+
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
-        for i,requirement in item["requirements"] do
+        for _,requirement in item["requirements"] do
             add(children, createListModalButton("itemId", requirement, items, Dash.noop))
             add(children, createTextChangingButton("count", requirement, true))
         end
     end
-    if item["value"] then
-        add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
+    add(children, SmallButton({
+        Appearance = "Filled",
+        Label = "Add New Requirement Item",
+        LayoutOrder = incrementLayoutOrder(),
+        OnActivated = function()
+            if not item["requirements"] then
+                item["requirements"] = {}
+            end
+            setListModalEnabled(true)
+            setListChoices(itemRequirementChoices)
+            setCurrentFieldKey(nil)
+            setCurrentFieldValue(nil)
+            setCurrentFieldCallback(function()
+                return function(newValue)
+                    local newRequirementItem = {itemId = newValue, count = 0.2}
+                    table.insert(item["requirements"], newRequirementItem)
+                    props.UpdateDataset(dataset)
+                end
+            end)
+        end
+    }))
+
+    add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
+    if item["value"] and item["value"]["itemId"] then
         add(children, createTextChangingButton("itemId", item["value"]))
         add(children, createTextChangingButton("count", item["value"]))
+        add(children, SmallButton({
+            Appearance = "Filled",
+            Label = "Remove Value",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                item["value"] = nil
+                props.UpdateDataset(dataset)
+            end
+        }))
+    else
+        add(children, Text({Text = "None", Color = Color3.new(1,1,1), LayoutOrder = incrementLayoutOrder()}))
+        add(children, SmallButton({
+            Appearance = "Filled",
+            Label = "Add Value",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                item["value"] = {itemId = "currency", count = 0.2}
+                props.UpdateDataset(dataset)
+            end
+        }))
     end
-
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
@@ -180,8 +232,7 @@ local function EditItemUI(props: Props)
                 Studio.setSelectionTool()
             end,
         })
-})
-
+    })
 end
 
 return function(props)

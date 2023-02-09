@@ -1,0 +1,699 @@
+{
+    "maps": [
+        {
+            "powerups": [
+                {
+                    "locDesc": "",
+                    "type": "scaleMaxStorage",
+                    "thumb": "powerup-storage-max",
+                    "cost": {
+                        "count": 1,
+                        "itemId": "currency"
+                    },
+                    "id": "doubleStorage",
+                    "value": 2,
+                    "maxUsage": -1,
+                    "locName": "2x Storage Max"
+                }
+            ],
+            "defaultInventory": {
+                "currency": 3000
+            },
+            "scene": "TutorialMap",
+            "currentStep": 0,
+            "id": "tutorialMap",
+            "locName": "Factory",
+            "locDesc": "",
+            "thumb": "",
+            "machines": [
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 25.1812744140625,
+                        "Z": -22.713777542114259
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862677",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    },
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "currentOutputCount": 15,
+                    "id": "peanutButterPurchaser",
+                    "locName": "Peanut Butter Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "peanutButter"
+                    ],
+                    "defaultMaxStorage": 1000,
+                    "type": "purchaser"
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -23.117555618286134
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862679",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "currentOutputCount": 24,
+                    "id": "doughPurchaser",
+                    "locName": "Dough Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "dough"
+                    ],
+                    "defaultMaxStorage": 1000,
+                    "type": "purchaser"
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.454659461975098,
+                        "Z": -23.117555618286134
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862681",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    },
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "currentOutputCount": 30,
+                    "id": "sugarPurchaser",
+                    "locName": "Sugar Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "sugar"
+                    ],
+                    "defaultMaxStorage": 1000,
+                    "type": "purchaser"
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -34.185176849365237,
+                        "Z": -23.117555618286134
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862683",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 500
+                    },
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 0
+                    },
+                    "currentOutputCount": 20,
+                    "id": "grapePurchaser",
+                    "locName": "Grape Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputs": [
+                        "grapes"
+                    ],
+                    "defaultMaxStorage": 1000,
+                    "type": "purchaser"
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -3.7738914489746095
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_862685",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "doughPurchaser"
+                    ],
+                    "storage": [],
+                    "outputs": [
+                        "crustyBread",
+                        "crustlessBread"
+                    ],
+                    "type": "maker",
+                    "currentOutputCount": 10,
+                    "id": "breadMaker",
+                    "locName": "Bread Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 2
+                    },
+                    "defaultMaxStorage": 100
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.479378700256348,
+                        "Z": -3.7738914489746095
+                    },
+                    "defaultProductionDelay": 1,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_862687",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "sugarPurchaser",
+                        "grapePurchaser"
+                    ],
+                    "storage": [],
+                    "outputs": [
+                        "jelly"
+                    ],
+                    "type": "maker",
+                    "currentOutputCount": 20,
+                    "id": "jellyMaker",
+                    "locName": "Jelly Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 2
+                    },
+                    "defaultMaxStorage": 100
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": 22.206966400146486
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862689",
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "peanutButterPurchaser",
+                        "breadMaker",
+                        "jellyMaker"
+                    ],
+                    "storage": [],
+                    "outputs": [
+                        "crustySandwich",
+                        "crustlessSandwich"
+                    ],
+                    "type": "makerSeller",
+                    "currentOutputCount": 12,
+                    "id": "sandwichMaker",
+                    "locName": "Sandwich Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    },
+                    "defaultMaxStorage": 100
+                }
+            ],
+            "totalStepsRun": 0,
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
+            "items": {
+                "sugar": {
+                    "thumb": "icon-sugar",
+                    "id": "sugar",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Sugar"
+                },
+                "creamyPeanutButter": {
+                    "thumb": "icon-printedSheet",
+                    "id": "creamyPeanutButter",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "peanuts"
+                        },
+                        {
+                            "count": 3,
+                            "itemId": "sugar"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Creamy Peanut Butter"
+                },
+                "peanutButterSandwich": {
+                    "id": "peanutButterSandwich",
+                    "thumb": "icon-giftCard",
+                    "value": {
+                        "count": 5,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "bread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Peanut Butter Sandwiches",
+                        "singular": "Peanut Butter Sandwich"
+                    }
+                },
+                "currency": {
+                    "id": "currency",
+                    "locName": "Money",
+                    "asset": "",
+                    "thumb": ""
+                },
+                "crustyBread": {
+                    "thumb": "icon-doubleBread",
+                    "id": "crustyBread",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crusty Bread"
+                },
+                "crustySandwich": {
+                    "id": "crustySandwich",
+                    "thumb": "icon-PBJ",
+                    "value": {
+                        "count": 10,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "crustyBread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Crusty PB&J Sandwiches",
+                        "singular": "Crusty PB&J Sandwich"
+                    }
+                },
+                "bread": {
+                    "thumb": "icon-ink",
+                    "id": "bread",
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Bread"
+                },
+                "crustlessSandwich": {
+                    "id": "crustlessSandwich",
+                    "thumb": "icon-PBJNoCrust",
+                    "value": {
+                        "count": 20,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "crustlessBread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Crustless Sandwiches",
+                        "singular": "Crustless Sandwich"
+                    }
+                },
+                "grapes": {
+                    "thumb": "icon-grapes",
+                    "id": "grapes",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Grapes",
+                        "singular": "Grape"
+                    }
+                },
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
+                    "asset": "",
+                    "locName": "None"
+                },
+                "peanutButterAndJellySandwich": {
+                    "id": "peanutButterAndJellySandwich",
+                    "thumb": "icon-giftCard",
+                    "value": {
+                        "count": 35,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 1,
+                            "itemId": "peanutButter"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "jelly"
+                        },
+                        {
+                            "count": 1,
+                            "itemId": "bread"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "PB&J Sandwich"
+                },
+                "crunchyPeanutButter": {
+                    "thumb": "icon-printedSheet",
+                    "id": "crunchyPeanutButter",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "peanuts"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "sugar"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crunchy Peanut Butter"
+                },
+                "jelly": {
+                    "thumb": "icon-jelly",
+                    "id": "jelly",
+                    "requirements": [
+                        {
+                            "count": 3,
+                            "itemId": "sugar"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "grapes"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Jelly",
+                        "singular": "Jelly"
+                    }
+                },
+                "peanuts": {
+                    "thumb": "icon-paper",
+                    "id": "peanuts",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": {
+                        "plural": "Peanuts",
+                        "singular": "Peanut"
+                    }
+                },
+                "crustlessBread": {
+                    "thumb": "icon-doubleBreadNoCrust",
+                    "id": "crustlessBread",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crustless Bread"
+                },
+                "dough": {
+                    "thumb": "icon-dough",
+                    "id": "dough",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Dough"
+                },
+                "peanutButter": {
+                    "thumb": "icon-peanutbutter",
+                    "id": "peanutButter",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Peanut Butter"
+                }
+            },
+            "stepsPerRun": 24
+        },
+        {
+            "powerups": [
+                {
+                    "locDesc": "",
+                    "type": "scaleMaxOutput",
+                    "thumb": "powerup-production-max",
+                    "cost": {
+                        "count": 3,
+                        "itemId": "currency"
+                    },
+                    "id": "doubleMaxOutput",
+                    "value": 2,
+                    "maxUsage": -1,
+                    "locName": "2x Output Max"
+                },
+                {
+                    "locDesc": "",
+                    "type": "scaleRequirements",
+                    "thumb": "powerup-half-input-costs",
+                    "cost": {
+                        "count": 5,
+                        "itemId": "currency"
+                    },
+                    "id": "halfInputs",
+                    "value": 0.5,
+                    "maxUsage": -1,
+                    "locName": "1/2 Materials Needed"
+                },
+                {
+                    "locDesc": "",
+                    "type": "scaleProductionSteps",
+                    "thumb": "powerup-production-speed",
+                    "cost": {
+                        "count": 20,
+                        "itemId": "currency"
+                    },
+                    "id": "zeroProductionSteps",
+                    "value": 0,
+                    "maxUsage": -1,
+                    "locName": "1 Hour Production Time"
+                }
+            ],
+            "defaultInventory": {
+                "currency": 25000
+            },
+            "scene": "Map04",
+            "currentStep": 0,
+            "id": "mapA",
+            "locName": "Factory",
+            "locDesc": "",
+            "thumb": "",
+            "machines": [
+                {
+                    "worldPosition": {
+                        "Y": 1.0499999523162842,
+                        "X": -19.16426658630371,
+                        "Z": -33.327659606933597
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_959153",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "defaultMaxStorage": 100,
+                    "id": "buttsMaker",
+                    "locName": "None",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "outputs": [],
+                    "currentOutputCount": 40
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.0499999523162842,
+                        "X": 10.192218780517579,
+                        "Z": -33.26801681518555
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_959437",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [],
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "maker",
+                    "defaultMaxStorage": 100,
+                    "id": "fartMaker",
+                    "locName": "None",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "outputs": [],
+                    "currentOutputCount": 40
+                }
+            ],
+            "totalStepsRun": 0,
+            "stepUnit": {
+                "plural": "hours",
+                "singular": "hour"
+            },
+            "items": {
+                "butts": {
+                    "thumb": "icon-none",
+                    "id": "butts",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Butts"
+                },
+                "poop": {
+                    "thumb": "icon-none",
+                    "id": "poop",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "farts"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Poop"
+                },
+                "farts": {
+                    "thumb": "icon-none",
+                    "id": "farts",
+                    "requirements": [
+                        {
+                            "count": 0.2,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Farts"
+                }
+            },
+            "stepsPerRun": 24
+        }
+    ],
+    "taskConfig": {
+        "timerSegmentsExpire": false
+    }
+}
