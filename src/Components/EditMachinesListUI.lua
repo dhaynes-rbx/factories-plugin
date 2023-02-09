@@ -70,11 +70,11 @@ local function EditMachinesListUI(props: Props)
 			Machine = machine,
 
 			FixMissingMachineAnchor = function(machineObj)
-				local anchor = Scene.instantiateMachineAnchor(machine)
+				local anchor = Scene.instantiateMachineAnchor(machineObj)
+				props.UpdateDataset(dataset)
                 Selection:Set({anchor})
 			end,
 			OnDeleteMachineClicked = function(machineObj)
-				print(machineObj["machineAnchor"])
 				Scene.removeMachineAnchor(machineObj)
 				table.remove(map["machines"], i)
 				props.UpdateDataset(dataset)

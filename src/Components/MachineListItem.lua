@@ -43,7 +43,7 @@ return function(props: Props)
     -- assert((x or y), "Machine coordinate error in data!")
     local machineAnchor = Scene.getAnchorFromMachine(machine)
     
-    local debugId = "NONE"
+    local debugId = machine["machineAnchor"]
     if machineAnchor then
         debugId = machineAnchor:GetAttribute("debugId")
     end
