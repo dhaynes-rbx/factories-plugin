@@ -69,7 +69,6 @@ function Scene.getMachineAnchor(machine:table)
             result = machineAnchor
         end
     end
-    print("id:", machineAnchorId)
     return result
 end
 
@@ -188,7 +187,7 @@ function Scene.instantiateMapMachineAnchors(map:table)
 end
 
 function Scene.removeMachineAnchor(machine:table)
-    local anchor = Scene.getMachineAnchor(machine["coordinates"]["X"], machine["coordinates"]["Y"])
+    local anchor = Scene.getMachineAnchor(machine)
     if anchor then
         anchor:Destroy()
     end
