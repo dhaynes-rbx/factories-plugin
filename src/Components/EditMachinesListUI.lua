@@ -29,7 +29,7 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
-local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
+local getTemplateMachine = require(script.Parent.Parent.Helpers.getTemplateMachine)
 
 type Props = {}
 
@@ -45,10 +45,7 @@ local function EditMachinesListUI(props: Props)
 			Label = "Add Machine",
 			TextXAlignment = Enum.TextXAlignment.Center,
 			OnActivated = function()
-				local newMachine = getTemplateMachine()
-				--check for duplicate id and coordinates
-				table.insert(map["machines"], newMachine)
-				
+				local newMachine = Dataset:addMachine()
 				local anchor = Scene.instantiateMachineAnchor(newMachine)
 				props.OnMachineEditClicked(newMachine, anchor)
 				props.UpdateDataset(dataset)

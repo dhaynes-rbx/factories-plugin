@@ -1,4 +1,5 @@
-local getTemplateItem = require(script.Parent.Components.Helpers.getTemplateItem)
+local getTemplateItem = require(script.Parent.Helpers.getTemplateItem)
+local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
 local Dataset = {}
 
 Dataset.dataset = {}
@@ -83,6 +84,14 @@ function Dataset:removeItem(itemKey)
     end
 
     items[itemKey] = nil
+end
+
+function Dataset:addMachine()
+    local newMachine = getTemplateMachine()
+    --check for duplicate id and coordinates
+    table.insert(map["machines"], newMachine)
+    
+    return newMachine
 end
 
 function Dataset:removeMachine(machineKey)
