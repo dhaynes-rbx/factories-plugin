@@ -25,7 +25,6 @@ local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
-local Modal = require(script.Parent.Modal)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -146,7 +145,7 @@ function PluginRoot:updateConnections()
     self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
         self.state.currentMap,
         function(machineObj:table)
-            print("Called back to machine deletion!", machineObj)
+            
         end
     )
 end

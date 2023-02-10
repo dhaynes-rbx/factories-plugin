@@ -14,7 +14,6 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
-local Modal = require(script.Parent.Modal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 

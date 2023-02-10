@@ -1,4 +1,4 @@
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
@@ -8,7 +8,7 @@ local Text = FishBloxComponents.Text
 local Button = FishBloxComponents.Button
 local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
-local Scene = require(script.Parent.Parent.Scene)
+local Scene = require(script.Parent.Parent.Parent.Scene)
 
 type Props = {
     Key: string,

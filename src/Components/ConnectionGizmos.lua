@@ -8,11 +8,11 @@ local Text = FishBloxComponents.Text
 local Button = FishBloxComponents.Button
 local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
+
 local Scene = require(script.Parent.Parent.Scene)
+local Dataset = require(script.Parent.Parent.Dataset)
 
 local add = require(script.Parent.Helpers.add)
-local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
-local getMachineFromId = require(script.Parent.Helpers.getMachineFromId)
 
 type Props = {
     CurrentMap:table,
@@ -34,7 +34,6 @@ type MachineConnection = {
 }
 
 local function boxGizmo(adornee, cframe)
-    xOffset = xOffset or 0
     return React.createElement("BoxHandleAdornment", {
         AdornCullingMode = Enum.AdornCullingMode.Never,
         Adornee = adornee,
@@ -128,7 +127,7 @@ local function ConnectionGizmos(props: Props)
             for i,source in machine["sources"] do
                 local showError = false
 
-                local lineTarget = getMachineFromId(source, props.CurrentMap)
+                local lineTarget = Dataset:getMachineFromId(source)
                 if not lineTarget then
                     print("No machine that matches ID: "..source)
                     continue

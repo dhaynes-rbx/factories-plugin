@@ -14,8 +14,8 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
-local Modal = require(script.Parent.Modal)
-local SelectFromListModal = require(script.Parent.SelectFromListModal)
+local TextInputModal = require(script.Parent.Modals.TextInputModal)
+local SelectFromListModal = require(script.Parent.Modals.SelectFromListModal)
 local SidePanel = require(script.Parent.SidePanel)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
@@ -269,7 +269,7 @@ return function(props:Props)
             Title = "Edit Machine "..coordinateName
         }, children),
 
-        Modal = modalEnabled and Modal({
+        Modal = modalEnabled and TextInputModal({
             Key = currentFieldKey,
             Value = currentFieldValue,
             ValueType = valueType,

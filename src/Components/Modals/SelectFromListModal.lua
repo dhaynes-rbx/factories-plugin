@@ -1,4 +1,4 @@
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 local Dash = require(Packages.Dash)
 
@@ -11,7 +11,6 @@ local Button = FishBloxComponents.Button
 local RadioButtonGroup = FishBloxComponents.RadioButtonGroup
 local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
-local Scene = require(script.Parent.Parent.Scene)
 
 type Props = {
     Choices: table,

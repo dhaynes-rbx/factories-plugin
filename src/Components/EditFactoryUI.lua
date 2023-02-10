@@ -14,7 +14,7 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
-local Modal = require(script.Parent.Modal)
+local TextInputModal = require(script.Parent.Modals.TextInputModal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
@@ -93,7 +93,7 @@ return function(props)
 
     return React.createElement(React.Fragment, nil, {
         EditFactoryPanel = EditFactoryPanel,
-        Modal = modalEnabled and Modal({
+        Modal = modalEnabled and TextInputModal({
             Key = currentFieldKey,
             OnConfirm = function(value)
                 currentFieldCallback(value)
