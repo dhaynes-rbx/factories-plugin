@@ -23,6 +23,8 @@ function Input.listenForMachineSelection(map:table, callback:any)
                 end
                 callback(machine, selectedObj)
             end
+        else
+            callback(nil, nil)
         end
     end)
 end

@@ -40,7 +40,10 @@ local PluginRoot = React.Component:extend("PluginGui")
 local add = require(script.Parent.Parent.Helpers.add)
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
-    self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})
+    self:setState({
+        currentPanel = self.state.panelStack[#self.state.panelStack],
+        showModal = false
+    })
 end
 
 function PluginRoot:changePanel(panelId)
@@ -70,9 +73,6 @@ function PluginRoot:init()
     local datasetIsLoaded = false
     local currentMap = nil
     local currentMapIndex = game.Workspace:GetAttribute("CurrentMapIndex") or 1 --Stash the index in an attribute for when you load/unload the plugin.
-    local machines = nil
-    local items = nil
-    local powerups = nil
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetInstanceAsTable()
         if not dataset then
@@ -80,9 +80,6 @@ function PluginRoot:init()
         else
             datasetIsLoaded = true
             currentMap = dataset["maps"][currentMapIndex]
-            machines = currentMap["machines"]
-            items = currentMap["items"]
-            powerups = currentMap["powerups"]
             Dataset:updateDataset(dataset, currentMapIndex)
         end
     end
@@ -93,10 +90,7 @@ function PluginRoot:init()
         currentPanel = currentPanel,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
-        items = items,
-        machines = machines,
         panelStack = {currentPanel},
-        powerups = powerups,
         selectedItem = nil,
         selectedMachine = nil,
         selectedMachineAnchor = nil,
@@ -150,12 +144,25 @@ function PluginRoot:updateConnections()
 end
 
 function PluginRoot:setCurrentMap(mapIndex)
+    --mute the listener for the machine deletion.
+    if self.connections["MachineAnchorDeletion"] then
+        self.connections["MachineAnchorDeletion"]:Disconnect()
+        self.connections["MachineAnchorDeletion"] = nil
+    end
+
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
-    self:setState({currentMapIndex = mapIndex, currentMap = currentMap})
     Scene.instantiateMapMachineAnchors(currentMap)
     game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
     self:updateDataset(self.state.dataset)
+    self:setState({
+        currentMapIndex = mapIndex, 
+        currentMap = currentMap,
+        selectedItem = nil,
+        selectedMachine = nil,
+        selectedMachineAnchor = nil,
+        showModal = false
+    })
 end
 
 function PluginRoot:render()
@@ -389,7 +396,7 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap
             }),
 
-            ConfirmationModal = self.state.showModal and ConfirmationModal({
+            ConfirmationModal = self.state.showModal and self.state.selectedMachine and ConfirmationModal({
                 OnConfirm = function()
                     Dataset:removeMachine(self.state.selectedMachine["id"])
                     Scene.removeMachineAnchor(self.state.selectedMachine)
