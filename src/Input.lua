@@ -9,7 +9,6 @@ local Dataset = require(script.Parent.Dataset)
 local Scene = require(script.Parent.Scene)
 local SceneConfig = require(script.Parent.SceneConfig)
 
-
 local Input = {}
 
 function Input.listenForMachineSelection(map:table, callback:any)
@@ -66,6 +65,10 @@ function Input.listenForMachineAnchorDeletion(map:table, callback:any)
             callback(machine)
         end
     end)
+end
+
+function Input.listenForMachineDuplication(callback:any)
+    
 end
 
 return Input

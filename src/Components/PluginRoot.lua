@@ -25,6 +25,7 @@ local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
+local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -99,6 +100,7 @@ function PluginRoot:init()
         selectedItem = nil,
         selectedMachine = nil,
         selectedMachineAnchor = nil,
+        showModal = false,
     })
     
     self.connections = {}    
@@ -142,7 +144,7 @@ function PluginRoot:updateConnections()
     self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
         self.state.currentMap,
         function(machineObj:table)
-            
+            self:setState({showModal = true})
         end
     )
 end
@@ -385,6 +387,21 @@ function PluginRoot:render()
 
             ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
                 CurrentMap = self.state.currentMap
+            }),
+
+            ConfirmationModal = self.state.showModal and ConfirmationModal({
+                OnConfirm = function()
+                    Dataset:removeMachine(self.state.selectedMachine["id"])
+                    Scene.removeMachineAnchor(self.state.selectedMachine)
+                    self:showPreviousPanel()
+                    self:setState({showModal = false})
+                    self:updateDataset(self.state.dataset)
+                end,
+                OnCancel = function()
+                    Scene.instantiateMachineAnchor(self.state.selectedMachine)
+                    self:setState({showModal = false})
+                    self:updateDataset(self.state.dataset)
+                end,
             })
         })
     })
