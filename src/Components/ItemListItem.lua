@@ -18,7 +18,6 @@ local TextInput = FishBloxComponents.TextInput
 local Scene = require(script.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
 
-local add = require(script.Parent.Helpers.add)
 
 type Props = {
     Appearance : string,

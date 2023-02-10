@@ -24,8 +24,7 @@ local SidePanel = require(script.Parent.SidePanel)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
-local add = require(script.Parent.Helpers.add)
-
+local add = require(script.Parent.Parent.Helpers.add)
 type Props = {
 
 }

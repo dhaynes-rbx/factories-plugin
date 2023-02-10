@@ -12,8 +12,7 @@ local Overlay = FishBloxComponents.Overlay
 local Scene = require(script.Parent.Parent.Scene)
 local Dataset = require(script.Parent.Parent.Dataset)
 
-local add = require(script.Parent.Helpers.add)
-
+local add = require(script.Parent.Parent.Helpers.add)
 type Props = {
     CurrentMap:table,
 }

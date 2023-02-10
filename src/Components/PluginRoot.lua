@@ -36,8 +36,7 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
 
-local add = require(script.Parent.Helpers.add)
-
+local add = require(script.Parent.Parent.Helpers.add)
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
     self:setState({currentPanel = self.state.panelStack[#self.state.panelStack]})

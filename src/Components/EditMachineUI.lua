@@ -28,16 +28,22 @@ local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
-local add = require(script.Parent.Helpers.add)
-local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
+local add = require(script.Parent.Parent.Helpers.add)
+
 
 type Props = {
-    
+    AddMachineAnchor:any,
+    CurrentMap:table,
+    Dataset:table,
+    Machine:table,
+    MachineAnchor:Instance,
+    OnClosePanel:any,
+    UpdateDataset:any,
 }
 
 return function(props:Props)
     Studio.setSelectionTool()
-
+    
     local modalEnabled, setModalEnabled = React.useState(false)
     local listModalEnabled, setListModalEnabled = React.useState(false)
     local listChoices, setListChoices = React.useState({})
@@ -45,12 +51,25 @@ return function(props:Props)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
     local valueType, setValueType = React.useState(nil)
-
+    
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
     local map = props.CurrentMap
     local machines = map["machines"]
     local items = map["items"]
+    
+    --When the machineAnchor is changed, we need to make sure that all modals are closed and canceled out.
+    --
+    React.useEffect(function()
+        return function()
+            setCurrentFieldCallback(nil)
+            setModalEnabled(false)
+            setListModalEnabled(false)
+            setCurrentFieldKey(nil)
+            setCurrentFieldValue(nil)
+            Studio.setSelectionTool()
+        end
+    end, {props.MachineAnchor})
 
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
