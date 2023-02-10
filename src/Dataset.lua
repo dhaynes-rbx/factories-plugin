@@ -88,7 +88,7 @@ end
 
 function Dataset:addMachine()
     local newMachine = getTemplateMachine()
-    --check for duplicate id and coordinates
+    --TODO: check for duplicate id and coordinates
     table.insert(self.machines, newMachine)
     
     return newMachine

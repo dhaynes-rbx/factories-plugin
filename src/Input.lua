@@ -1,3 +1,4 @@
+local Debris = game:GetService("Debris")
 local InputService = game:GetService("UserInputService")
 local Selection = game:GetService("Selection")
 
@@ -13,6 +14,7 @@ local Input = {}
 
 function Input.listenForMachineSelection(map:table, callback:any)
     return Selection.SelectionChanged:Connect(function()
+        print("Selection Changed")
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
@@ -70,7 +72,16 @@ function Input.listenForMachineAnchorDeletion(map:table, callback:any)
 end
 
 function Input.listenForMachineDuplication(callback:any)
-    
+    return Scene.getMachinesFolder().ChildAdded:Connect(function(child) 
+        if not child:GetAttribute("debugId") then
+            return
+        end
+        local machine = Dataset:getMachineFromMachineAnchor(child)
+        child:SetAttribute("debugId", nil)
+        Debris:AddItem(child, 0.1)
+        local machineAnchor = Scene.getAnchorFromMachine(machine)
+        callback(machine, machineAnchor)
+    end)
 end
 
 return Input

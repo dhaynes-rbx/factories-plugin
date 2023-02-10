@@ -113,8 +113,6 @@ function PluginRoot:updateConnections()
         self.connections["Selection"]:Disconnect()
     end
     self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
-        self.selectedMachine = machine
-        self.selectedMachineAnchor = selectedObj
         self:setState({
             selectedMachineAnchor = selectedObj,
             selectedMachine = machine,
@@ -139,6 +137,25 @@ function PluginRoot:updateConnections()
         self.state.currentMap,
         function(machineObj:table)
             self:setState({showModal = true})
+        end
+    )
+
+    if self.connections["MachineAnchorDuplication"] then
+        self.connections["MachineAnchorDuplication"]:Disconnect()
+    end
+    self.connections["MachineAnchorDuplication"] = Input.listenForMachineDuplication(
+        function(machineObj:table, selectedObj)
+            if self.connections["Selection"] then
+                self.connections["Selection"]:Disconnect()
+            end
+
+            self:setState({
+                selectedMachine = machineObj,
+                selectedMachineAnchor = selectedObj,
+            })
+            self:changePanel(Constants.EditDatasetUI)
+            Selection:Set({selectedObj})
+            Studio.setSelectionTool()
         end
     )
 end
