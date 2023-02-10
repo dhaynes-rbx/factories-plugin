@@ -5,12 +5,12 @@ local Root = script.Parent
 local Packages = Root.Packages
 local React = require(Packages.React)
 
+local Dataset = require(script.Parent.Dataset)
 local Scene = require(script.Parent.Scene)
 local SceneConfig = require(script.Parent.SceneConfig)
 
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
 local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
-local getMachineFromMachineAnchor = require(script.Parent.Components.Helpers.getMachineFromMachineAnchor)
 
 local Input = {}
 
@@ -19,7 +19,7 @@ function Input.listenForMachineSelection(map:table, callback:any)
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
-                local machine = getMachineFromMachineAnchor(map, selectedObj)
+                local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
                 --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
                 if not machine then 
                     machine = React.None
@@ -41,7 +41,7 @@ function Input.listenForMachineDrag(map:table, callback:any)
             if Scene.isMachineAnchor(selection) then
                 --Register that the machine may have been moved.
                 local position = selection.PrimaryPart.CFrame.Position
-                local machine = getMachineFromMachineAnchor(map, selection)
+                local machine = Dataset:getMachineFromMachineAnchor(selection)
                 local worldPosition = Vector3.new(
                     machine["worldPosition"]["X"],
                     machine["worldPosition"]["Y"],
@@ -60,8 +60,13 @@ end
 
 function Input.listenForMachineAnchorDeletion(map:table, callback:any)
     return Scene.getMachinesFolder().ChildRemoved:Connect(function(child) 
-        print("Child was removed.", map["id"])
-        callback()
+        if not child:GetAttribute("debugId") then
+            return
+        end
+        local machine = Dataset:getMachineFromMachineAnchor(child)
+        if machine then
+            callback(machine)
+        end
     end)
 end
 

@@ -145,8 +145,8 @@ function PluginRoot:updateConnections()
     end
     self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
         self.state.currentMap,
-        function()
-            print("Called back to machine deletion")
+        function(machineObj:table)
+            print("Called back to machine deletion!", machineObj)
         end
     )
 end

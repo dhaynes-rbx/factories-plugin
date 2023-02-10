@@ -19,7 +19,6 @@ local Scene = require(script.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
 
 local add = require(script.Parent.Helpers.add)
-local getMachineFromMachineAnchor = require(script.Parent.Helpers.getMachineFromMachineAnchor)
 
 type Props = {
     Appearance : string,
