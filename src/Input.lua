@@ -10,7 +10,6 @@ local Scene = require(script.Parent.Scene)
 local SceneConfig = require(script.Parent.SceneConfig)
 
 local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
-local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
 
 local Input = {}
 

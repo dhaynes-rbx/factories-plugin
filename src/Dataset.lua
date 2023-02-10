@@ -119,7 +119,7 @@ end
 function Dataset:getMachineFromId(id)
     local machine = nil
     -- local num = 0
-    for _,v in self.currentMap["machines"] do
+    for _,v in self.machines do
         if v["id"] == id then
             -- num = num + 1
             machine = v
@@ -128,6 +128,25 @@ function Dataset:getMachineFromId(id)
     -- if num > 1 then
     --     assert(true, "ERROR! Duplicate machine id found in this map!")
     -- end
+    return machine
+end
+
+--takes the MachineAnchor name as an input and returns X and Y coordinates.
+function Dataset:getCoordinatesFromAnchorName(name)
+    local x, y = table.unpack(string.split(string.sub(name, 2, #name - 1), ","))
+    x = tonumber(x)
+    y = tonumber(y)
+    return x, y
+end
+
+--returns the machine data in the dataset, based on the coordinates provided
+function Dataset:getMachineFromCoordinates(x, y)
+    local machine = nil
+    for _,v in self.machines do
+        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
+            machine = v
+        end
+    end
     return machine
 end
 

@@ -29,7 +29,6 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Helpers.add)
-local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
 
 type Props = {}

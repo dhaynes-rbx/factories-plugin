@@ -37,8 +37,6 @@ local Studio = require(script.Parent.Parent.Studio)
 local PluginRoot = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Helpers.add)
-local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
-local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
@@ -168,9 +166,7 @@ function PluginRoot:render()
     if datasetIsLoaded then
         for _,machineAnchor in Scene.getMachineAnchors() do
 
-            local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
-            
-            local machine = getMachineFromCoordinates(x, y, self.state.currentMap)
+            local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
             if machine then
                 local outputsString = ""
                 for i,output in machine["outputs"] do
@@ -202,7 +198,7 @@ function PluginRoot:render()
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
                             LayoutOrder = 3,
-                            Text = "("..x..","..y..")"
+                            Text = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
                         }),
                     })
                 }))

@@ -25,8 +25,6 @@ local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
 local add = require(script.Parent.Helpers.add)
-local getCoordinatesFromAnchorName = require(script.Parent.Helpers.getCoordinatesFromAnchorName)
-local getMachineFromCoordinates = require(script.Parent.Helpers.getMachineFromCoordinates)
 
 type Props = {
 
@@ -123,26 +121,7 @@ local function EditDatasetUI(props:Props)
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
-        -- add(children, Button({
-        --     Label = "Save Machine Positions",
-        --     OnActivated = function()
-        --         local machines = map["machines"]
-        --         local machineAnchors = Scene.getMachineAnchors()
-        --         for _,machineAnchor in machineAnchors do
-        --             local x,y = getCoordinatesFromAnchorName(machineAnchor.Name)
-        --             local machine = getMachineFromCoordinates(x, y, map)
-        --             local worldPosition = machineAnchor.PrimaryPart.CFrame.Position
-        --             machine["worldPosition"] = {
-        --                 X = worldPosition.X,
-        --                 Y = worldPosition.Y,
-        --                 Z = worldPosition.Z,
-        --             }
-        --         end
-        --         props.UpdateDataset(dataset)
-        --     end,
-        --     Size = buttonSize,
-        --     TextXAlignment = Enum.TextXAlignment.Center
-        -- }))
+        
     end
 
     add(children, Button({

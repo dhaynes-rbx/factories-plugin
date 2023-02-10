@@ -1,9 +1,8 @@
 local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
+local Dataset = require(script.Parent.Dataset)
 local Utilities = require(script.Parent.Packages.Utilities)
-local getCoordinatesFromAnchorName = require(script.Parent.Components.Helpers.getCoordinatesFromAnchorName)
-local getMachineFromCoordinates = require(script.Parent.Components.Helpers.getMachineFromCoordinates)
 
 local function registerDebugId(instance:Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
@@ -51,7 +50,7 @@ end
 function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
     local machines = Scene.getMachineAnchors()
     for _,v in machines do
-        local nameX, nameY = getCoordinatesFromAnchorName(v.Name)
+        local nameX, nameY = Dataset:getCoordinatesFromAnchorName(v.Name)
         if nameX == x and nameY == y then
             return v
         end
