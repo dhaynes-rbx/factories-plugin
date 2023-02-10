@@ -22,6 +22,7 @@ local SidePanel = require(script.Parent.SidePanel)
 local SmallButton = require(script.Parent.SmallButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
+local Manifest = require(script.Parent.Parent.Manifest)
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
@@ -32,12 +33,13 @@ type Props = {
 }
 
 local function EditItemUI(props: Props)
-    local modalEnabled, setModalEnabled = React.useState(false)
-    local listModalEnabled, setListModalEnabled = React.useState(false)
-    local listChoices, setListChoices = React.useState({})
     local currentFieldKey, setCurrentFieldKey = React.useState(nil)
     local currentFieldValue, setCurrentFieldValue = React.useState(nil)
     local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
+    local listModalEnabled, setListModalEnabled = React.useState(false)
+    local listChoices, setListChoices = React.useState({})
+    local modalEnabled, setModalEnabled = React.useState(false)
+    local showThumbnails, setShowThumbnails = React.useState(false)
     local valueType, setValueType = React.useState(nil)
     
     local dataset = props.Dataset
@@ -84,7 +86,7 @@ local function EditItemUI(props: Props)
         })
     end
 
-    local createListModalButton = function(key:string | number, list:table, choices:table, callback:any)
+    local createListModalButton = function(key:string | number, list:table, choices:table, showThumbnailImages:boolean)
 
         return SmallButtonWithLabel({
             Appearance = "Filled",
@@ -94,17 +96,13 @@ local function EditItemUI(props: Props)
 
             OnActivated = function()
                 setListModalEnabled(true)
+                setShowThumbnails(showThumbnailImages)
                 setListChoices(choices)
                 setCurrentFieldKey(key)
                 setCurrentFieldValue(list[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
                         list[key] = newValue
-
-                        --Callback for additional special case functionality
-                        if callback then
-                            callback(newValue)
-                        end
                     end
                 end)
             end
@@ -115,7 +113,9 @@ local function EditItemUI(props: Props)
     local item = props.Item
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
-    add(children, createTextChangingButton("thumb", item))
+    -- add(children, createTextChangingButton("thumb", item))
+    local imageKeys = Dash.keys(Manifest.images)
+    add(children, createListModalButton("thumb", item, imageKeys, false))
 
     --REQUIREMENTS
     --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
@@ -129,7 +129,7 @@ local function EditItemUI(props: Props)
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
         for i,requirement in item["requirements"] do
-            add(children, createListModalButton("itemId", requirement, items, Dash.noop))
+            add(children, createListModalButton("itemId", requirement, items, false))
             add(children, createTextChangingButton("count", requirement, true))
             add(children, SmallButton({
                 Label = "Delete",
@@ -221,6 +221,7 @@ local function EditItemUI(props: Props)
             Choices = listChoices,
             Key = currentFieldKey,
             Value = currentFieldValue,
+            ShowThumbnails = showThumbnails,
 
             OnConfirm = function(value)
                 currentFieldCallback(value)

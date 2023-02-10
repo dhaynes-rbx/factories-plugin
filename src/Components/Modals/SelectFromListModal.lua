@@ -12,6 +12,8 @@ local RadioButtonGroup = FishBloxComponents.RadioButtonGroup
 local Panel = FishBloxComponents.Panel
 local Overlay = FishBloxComponents.Overlay
 
+local Manifest = require(script.Parent.Parent.Parent.Manifest)
+
 type Props = {
     Choices: table,
     OnClosePanel: any,

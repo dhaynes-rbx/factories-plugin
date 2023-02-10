@@ -15,6 +15,8 @@ local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
 local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
+local Icon = FishBloxComponents.Icon
+local Row = FishBloxComponents.Row
 
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -38,6 +40,7 @@ local Studio = require(script.Parent.Parent.Studio)
 local PluginRoot = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Parent.Helpers.add)
+local Manifest = require(script.Parent.Parent.Manifest)
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
     self:setState({
@@ -193,6 +196,24 @@ function PluginRoot:render()
 
             local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
             if machine then
+                
+                local outputs = machine["outputs"]
+                local icons = {}
+                if outputs then
+                    for _,output in outputs do
+                        local item = self.state.dataset["maps"][self.state.currentMapIndex]["items"][output]
+                        local image = item["thumb"]
+                        if not Manifest.images[image] then
+                            image = "icon-none"
+                        end
+                        table.insert(icons, React.createElement("ImageLabel", {
+                            Size = UDim2.fromOffset(25,25),
+                            BackgroundTransparency = 1,
+                            Image = Manifest.images[image],
+                        }))
+                    end
+                end
+
                 local outputsString = ""
                 for i,output in machine["outputs"] do
                     local separator = i > 1 and ", " or ""
@@ -207,6 +228,12 @@ function PluginRoot:render()
                         AutomaticSize = Enum.AutomaticSize.Y,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center
                     }, {
+                        Row = Row({
+                            Gaps = 4,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            LayoutOrder = 0,
+                            Size = UDim2.new(1, 0, 0, 25),
+                        }, icons),
                         Text1 = Text({
                             Color = Color3.new(1,1,1),
                             FontSize = 16,
