@@ -63,19 +63,30 @@ function ListItemButton(props)
             HorizontalAlignment = Enum.HorizontalAlignment.Left,
             Size = UDim2.fromScale(1,1),
         }, {
+            Index = props.Index and Text({
+                AutomaticSize = Enum.AutomaticSize.X,
+                Color = Color3.new(1,1,1),
+                LayoutOrder = 0,
+                
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextYAlignment = Enum.TextYAlignment.Center,
+                Text = props.Index
+            }),
+            Image = React.createElement("ImageLabel", {
+                BackgroundTransparency = 1,
+                Image = Manifest.images[props.Image] or "rbxassetid://7553285523", --Question mark icon
+                LayoutOrder = 2,
+                Size = UDim2.fromOffset(40,40),
+            }),
             Text1 = Text({
                 AutomaticSize = Enum.AutomaticSize.X,
                 Color = Color3.new(1,1,1),
+                LayoutOrder = 3,
                 Size = UDim2.fromScale(1,1),
                 TextXAlignment = Enum.TextXAlignment.Left,
                 TextYAlignment = Enum.TextYAlignment.Center,
                 Text = props.Label or "NONE"
             }),
-            Image = React.createElement("ImageLabel", {
-                Size = UDim2.fromOffset(40,40),
-                BackgroundTransparency = 1,
-                Image = Manifest.images[props.Image] or "rbxassetid://7553285523", --Question mark icon
-            })
         }),
         Row = Row({
             Gaps = 8,

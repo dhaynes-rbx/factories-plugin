@@ -49,24 +49,6 @@ local function EditItemsListUI(props: Props)
     local items = map["items"]
     local children = {}
     
-    local function createListItem(key:string, label:string, isTemplate:boolean)
-        return ItemListItem({
-            -- Error = errorText,
-            LabelColor = isTemplate and Color3.new(1,1,0) or Color3.new(1,1,1),
-            Item = items[key],
-            Label = label,
-            LayoutOrder = getLayoutOrderIndex(),
-            
-            OnEditButtonClicked = function(val)
-                props.ShowEditItemPanel(val)
-            end,
-            OnDeleteButtonClicked = function()
-                Dataset:removeItem(key)
-				props.UpdateDataset(dataset)
-            end,
-        })
-    end
-
     add(children, Button({
         Label = "Add Item",
 			TextXAlignment = Enum.TextXAlignment.Center,
@@ -78,30 +60,40 @@ local function EditItemsListUI(props: Props)
 			Size = UDim2.fromScale(1, 0),
     }))
 
-    --Sort the template items and the non-template items, so that template items show up at the top of the list.
-    local newItems = table.clone(items)
-    local templateItems = {}
-    for key,item in items do
-        if string.match(key, "templateItem") then
-            templateItems[key] = {}
-            table.insert(templateItems[key], newItems[key])
-            newItems[key] = nil
-        end
-    end
-    for key,_ in templateItems do
-        add(children, createListItem(key, key, true))
-    end
+    -- --Sort the template items and the non-template items, so that template items show up at the top of the list.
+    -- local newItems = table.clone(items)
+    -- local templateItems = {}
+    -- for key,item in items do
+    --     if string.match(key, "templateItem") then
+    --         templateItems[key] = {}
+    --         table.insert(templateItems[key], newItems[key])
+    --         newItems[key] = nil
+    --     end
+    -- end
+    local itemIndex = 1
+    -- --Add template items separately, so they show up at the top of the list.
+    -- for key,_ in templateItems do
+    --     add(children, ListItemButton({
+    --         Index = itemIndex,
+    --         Image = items[key]["thumb"],
+    --         Label = items[key]["id"],
+    --         LayoutOrder = getLayoutOrderIndex(),
+    --     }))
+    --     itemIndex += 1
+    -- end
 
-    local itemKeys = Dash.keys(newItems)
+    local itemKeys = Dash.keys(items)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
-    for i,itemKey in itemKeys do
+    for i,key in itemKeys do
         add(children, ListItemButton({
-            Image = items[itemKey]["thumb"],
-            Label = items[itemKey]["id"],
+            Index = itemIndex,
+            Image = items[key]["thumb"],
+            Label = items[key]["id"],
             LayoutOrder = getLayoutOrderIndex(),
         }))
+        itemIndex += 1
     end
 
     return React.createElement(React.Fragment, nil, {
