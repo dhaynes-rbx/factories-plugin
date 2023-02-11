@@ -14,7 +14,7 @@ local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
-local Image = FishBloxComponents.Image
+local Icon = FishBloxComponents.Icon
 
 local Scene = require(script.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
@@ -32,7 +32,6 @@ type Props = {
 }
 
 function ListItemButton(props)
-    print(Manifest.images[props.Image])
     local hover, setHover = React.useState(false)
 
     return React.createElement("Frame", {
@@ -40,11 +39,9 @@ function ListItemButton(props)
         LayoutOrder = props.LayoutOrder or 1,
         Size = UDim2.new(1, 0, 0, 45),
         [React.Event.MouseEnter] = function() 
-            print("Enter")
             setHover(true)
         end,
         [React.Event.MouseLeave] = function() 
-            print("Leave")
             setHover(false)
         end,
     }, {
@@ -74,11 +71,11 @@ function ListItemButton(props)
                 TextYAlignment = Enum.TextYAlignment.Center,
                 Text = props.Label or "NONE"
             }),
-            Image = Manifest.images[props.Image] and React.createElement("ImageLabel", {
+            Image = React.createElement("ImageLabel", {
                 Size = UDim2.fromOffset(40,40),
                 BackgroundTransparency = 1,
-                Image = Manifest.images[props.Image],
-            }),
+                Image = Manifest.images[props.Image] or "rbxassetid://7553285523", --Question mark icon
+            })
         }),
         Row = Row({
             Gaps = 8,

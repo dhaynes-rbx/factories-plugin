@@ -28,6 +28,7 @@ local EditMachineUI = require(script.Parent.EditMachineUI)
 local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
+local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -147,7 +148,7 @@ function PluginRoot:updateConnections()
         self.connections["MachineAnchorDuplication"]:Disconnect()
     end
     self.connections["MachineAnchorDuplication"] = Input.listenForMachineDuplication(
-        function(machineObj:table, selectedObj)
+        function(machineObj:table, selectedObj:Instance)
             if self.connections["Selection"] then
                 self.connections["Selection"]:Disconnect()
             end
@@ -188,75 +189,6 @@ end
 function PluginRoot:render()
     Studio.setSelectionTool()
     self:updateConnections()
-
-    local billboardGuis = {}
-    local datasetIsLoaded = self.state.dataset ~= nil and self.state.dataset ~= "NONE"
-    if datasetIsLoaded then
-        for _,machineAnchor in Scene.getMachineAnchors() do
-
-            local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
-            if machine then
-                
-                local outputs = machine["outputs"]
-                local icons = {}
-                if outputs then
-                    for _,output in outputs do
-                        local item = self.state.dataset["maps"][self.state.currentMapIndex]["items"][output]
-                        local image = item["thumb"]
-                        if not Manifest.images[image] then
-                            image = "icon-none"
-                        end
-                        table.insert(icons, React.createElement("ImageLabel", {
-                            Size = UDim2.fromOffset(25,25),
-                            BackgroundTransparency = 1,
-                            Image = Manifest.images[image],
-                        }))
-                    end
-                end
-
-                local outputsString = ""
-                for i,output in machine["outputs"] do
-                    local separator = i > 1 and ", " or ""
-                    outputsString = outputsString..separator..output
-                end
-                add(billboardGuis, React.createElement("BillboardGui", {
-                    Adornee = machineAnchor,
-                    AlwaysOnTop = true,
-                    Size = UDim2.new(0, 150, 0, 100),
-                }, {
-                    Column = Column({
-                        AutomaticSize = Enum.AutomaticSize.Y,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center
-                    }, {
-                        Row = Row({
-                            Gaps = 4,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            LayoutOrder = 0,
-                            Size = UDim2.new(1, 0, 0, 25),
-                        }, icons),
-                        Text1 = Text({
-                            Color = Color3.new(1,1,1),
-                            FontSize = 16,
-                            LayoutOrder = 1,
-                            Text = machine["id"]
-                        }),
-                        Text2 = Text({
-                            Color = Color3.new(1,1,1),
-                            FontSize = 16,
-                            LayoutOrder = 2,
-                            Text = "Makes: "..outputsString,
-                        }),
-                        Text3 = Text({
-                            Color = Color3.new(1,1,1),
-                            FontSize = 16,
-                            LayoutOrder = 3,
-                            Text = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
-                        }),
-                    })
-                }))
-            end
-        end
-    end
 
     local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
 
@@ -432,9 +364,9 @@ function PluginRoot:render()
             
             EditPowerupUI = nil,
 
-            MachineBillboardGUIs = React.createElement("Folder", {
-                Name = "BillboardGUIs"
-            }, billboardGuis),
+            MachineBillboardGUIs = MachineAnchorBillboardGuis({
+                Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"]
+            }),
 
             ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
                 CurrentMap = self.state.currentMap
