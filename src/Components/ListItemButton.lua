@@ -25,10 +25,12 @@ local Manifest = require(script.Parent.Parent.Manifest)
 
 type Props = {
     Image:string,
+    Index:number,
     Label:string,
     LayoutOrder:number,
     OnEditButtonClicked:any,
     OnDeleteButtonClicked:any,
+    ShowSwapButton:boolean,
 }
 
 function ListItemButton(props)
@@ -93,6 +95,13 @@ function ListItemButton(props)
             HorizontalAlignment = Enum.HorizontalAlignment.Right,
             Size = UDim2.fromScale(1, 1)
         }, {
+            SwapButton = hover and props.ShowSwapButton and SmallButton({
+                Label = "Swap",
+                LayoutOrder = 9,
+                OnActivated = function()
+                    props.OnSwapButtonClicked(props.ObjectToEdit["id"])
+                end
+            }),
             EditButton = hover and SmallButton({
                 Label = "Edit",
                 LayoutOrder = 10,
@@ -101,11 +110,13 @@ function ListItemButton(props)
                 end
             }),
             DeleteButton = hover and SmallButton({
+                AutomaticSize = Enum.AutomaticSize.None,
                 Label = "X",
                 LayoutOrder = 11,
                 OnActivated = function()
                     props.OnDeleteButtonClicked(props.ObjectToEdit["id"])
-                end
+                end,
+                Size = UDim2.new(0, 20, 0, 30)
             })
         })
     })

@@ -27,7 +27,7 @@ return function(props : Props)
     }
 
     return React.createElement("TextButton", {
-        AutomaticSize = Enum.AutomaticSize.X,
+        AutomaticSize = props.AutomaticSize or Enum.AutomaticSize.X,
         BackgroundColor3 = Color3.fromRGB(32, 117, 233),
         BackgroundTransparency = filled and 0 or 0.85,
         FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),

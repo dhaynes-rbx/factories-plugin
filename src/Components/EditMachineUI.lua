@@ -28,6 +28,8 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
+local ListItemButton = require(script.Parent.ListItemButton)
+local Manifest = require(script.Parent.Parent.Manifest)
 
 
 type Props = {
@@ -183,16 +185,46 @@ return function(props:Props)
         for _,outputItem in machine["outputs"] do
             machineOutputChoices[outputItem] = nil
         end
-        for i,_ in machine["outputs"] do
-            add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop))
-            add(children, SmallButton({
-                Label = "Delete",
+        for i,outputItem in machine["outputs"] do
+            add(children, ListItemButton({
+                Image = items[outputItem]["thumb"],
+                Index = i,
                 LayoutOrder = incrementLayoutOrder(),
-                OnActivated = function()
-                    table.remove(machine["outputs"], i)
-                    props.UpdateDataset(dataset)
-                end
+                Label = outputItem,
+                ObjectToEdit = items[outputItem],
+                OnSwapButtonClicked = function(itemKey)
+                    setListModalEnabled(true)
+                    setListChoices(machineOutputChoices)
+                    setCurrentFieldKey(i)
+                    setCurrentFieldValue(itemKey)
+                    setCurrentFieldCallback(function()
+                        return function(newValue)
+                            machine["outputs"][i] = newValue
+                        end
+                    end)
+                end,
+                OnEditButtonClicked = function()
+                    props.OnOutputItemEditClicked(outputItem)
+                end,
+                OnDeleteButtonClicked = function()
+                    props.OnOutputItemDeleteClicked(
+                        "Remove "..machine["outputs"][i].." from "..machine["id"].."?",
+                        function()
+                            table.remove(machine["outputs"], i)
+                        end
+                    )
+                end,
+                ShowSwapButton = true,
             }))
+            -- add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop))
+            -- add(children, SmallButton({
+            --     Label = "Delete",
+            --     LayoutOrder = incrementLayoutOrder(),
+            --     OnActivated = function()
+            --         table.remove(machine["outputs"], i)
+            --         props.UpdateDataset(dataset)
+            --     end
+            -- }))
         end
         add(children, SmallButton({
             Appearance = "Filled",

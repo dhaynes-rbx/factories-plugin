@@ -66,12 +66,14 @@ local function EditItemsListUI(props: Props)
             ObjectToEdit = items[key],
             Label = items[key]["id"],
             LayoutOrder = getLayoutOrderIndex(),
+            OnSwapButtonClicked = Dash.noop(),
             OnEditButtonClicked = function(val)
                 props.ShowEditItemPanel(val)
             end,
             OnDeleteButtonClicked = function()
                 props.OnItemDeleteClicked(key)
             end,
+            ShowSwapButton = false,
         }))
         itemIndex += 1
     end

@@ -101,6 +101,7 @@ function PluginRoot:init()
         showModal = false,
         modalConfirmationCallback = Dash.noop(),
         modalCancellationCallback = Dash.noop(),
+        modalTitle = "",
     })
     
     self.connections = {}    
@@ -344,6 +345,23 @@ function PluginRoot:render()
                     Selection:Set({})
                     self:showPreviousPanel()
                 end,
+                OnOutputItemDeleteClicked = function(title, callback)
+                    self:setState({
+                        showModal = true,
+                        modalConfirmationCallback = function()
+                            self:setState({showModal = false})
+                            callback()
+                        end,
+                        modalCancellationCallback = function()
+                            self:setState({showModal = false})
+                        end,
+                        modalTitle = title,
+                    })
+                end,
+                OnOutputItemEditClicked = function(itemKey)
+                    self:changePanel(Panels.EditItemUI)
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
+                end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
                 end,
@@ -374,7 +392,8 @@ function PluginRoot:render()
                         end,
                         modalCancellationCallback = function()
                             self:setState({showModal = false})
-                        end
+                        end,
+                        modalTitle = "Do you want to remove "..itemKey.." from the dataset?"
                     })
                 end
             }),
@@ -419,19 +438,12 @@ function PluginRoot:render()
             }),
 
             ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
+                Title = self.state.modalTitle,
                 OnConfirm = function()
                     self.state.modalConfirmationCallback()
-                    -- Dataset:removeMachine(self.state.selectedMachine["id"])
-                    -- Scene.removeMachineAnchor(self.state.selectedMachine)
-                    -- self:showPreviousPanel()
-                    -- self:setState({showModal = false})
-                    -- self:updateDataset(self.state.dataset)
                 end,
                 OnCancel = function()
                     self.state.modalCancellationCallback()
-                    -- Scene.instantiateMachineAnchor(self.state.selectedMachine)
-                    -- self:setState({showModal = false})
-                    -- self:updateDataset(self.state.dataset)
                 end,
             })
         })

@@ -15,17 +15,13 @@ local Modal = require(script.Parent.Modal)
 local Scene = require(script.Parent.Parent.Parent.Scene)
 
 type Props = {
-    Key: string,
-    OnClosePanel: any,
-    OnConfirm: any,
-    Value: string | number,
-    ValueType: string,
+    OnConfirm:any,
+    OnCancel:any,
+    Title:string,
 }
 
 local function ConfirmationModal(props: Props)
-    
-    local showError, setShowError = React.useState(false)
-    
+        
     local ModalElements = {
         Row = Row({
             AutomaticSize = Enum.AutomaticSize.Y,
@@ -66,7 +62,7 @@ local function ConfirmationModal(props: Props)
     return Modal({
         ModalElements = ModalElements,
         ShowClose = false,
-        Title = "Do you want to remove this machine from the dataset?",
+        Title = props.Title,
     })
 end
 
