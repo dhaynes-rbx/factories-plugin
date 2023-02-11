@@ -19,6 +19,7 @@ local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
 local ItemListItem = require(script.Parent.ItemListItem)
+local ListItemButton = require(script.Parent.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
@@ -96,7 +97,11 @@ local function EditItemsListUI(props: Props)
         return a:lower() < b:lower()
     end)
     for i,itemKey in itemKeys do
-        add(children, createListItem(itemKey, i..": "..itemKey))
+        add(children, ListItemButton({
+            Image = items[itemKey]["thumb"],
+            Label = items[itemKey]["id"],
+            LayoutOrder = getLayoutOrderIndex(),
+        }))
     end
 
     return React.createElement(React.Fragment, nil, {

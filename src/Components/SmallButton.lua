@@ -32,6 +32,7 @@ return function(props : Props)
         BackgroundTransparency = filled and 0 or 0.85,
         FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json"),
         LayoutOrder = props.LayoutOrder,
+        Position = props.Position or UDim2.new(),
         RichText = true,
         Size = props.Size or UDim2.new(0, 30, 0, 30),
         Text = props.Label,
