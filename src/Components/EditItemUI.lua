@@ -29,7 +29,12 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 type Props = {
-
+    CurrentMap:table,
+    Dataset:table,
+    Item:table,
+    OnClosePanel:any,
+    UpdateDataset:any,
+    UpdateItem:any,
 }
 
 local function EditItemUI(props: Props)
@@ -135,8 +140,8 @@ local function EditItemUI(props: Props)
                 Label = "Delete",
                 LayoutOrder = incrementLayoutOrder(),
                 OnActivated = function()
-                    table.remove(item["requirements"], i)
-                    props.UpdateDataset(dataset)
+                    -- table.remove(item["requirements"], i)
+                    -- props.UpdateDataset(dataset)
                 end
             }))
         end

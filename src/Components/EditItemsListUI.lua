@@ -18,7 +18,6 @@ local TextInputModal = require(script.Parent.Modals.TextInputModal)
 local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SidePanel = require(script.Parent.SidePanel)
-local ItemListItem = require(script.Parent.ItemListItem)
 local ListItemButton = require(script.Parent.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)

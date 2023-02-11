@@ -115,6 +115,7 @@ function PluginRoot:updateDataset(dataset)
 end
 
 function PluginRoot:updateConnections()
+    if not self.state.datasetIsLoaded then return end
     if self.connections["Selection"] then
         self.connections["Selection"]:Disconnect()
     end
@@ -409,7 +410,7 @@ function PluginRoot:render()
             
             EditPowerupUI = nil,
 
-            MachineBillboardGUIs = MachineAnchorBillboardGuis({
+            MachineBillboardGUIs = self.state.datasetIsLoaded and MachineAnchorBillboardGuis({
                 Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"]
             }),
 

@@ -21,7 +21,6 @@ local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SmallButton = require(script.Parent.SmallButton)
 local MachineListItem = require(script.Parent.MachineListItem)
-local ItemListItem = require(script.Parent.ItemListItem)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
