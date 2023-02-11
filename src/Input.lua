@@ -59,14 +59,14 @@ function Input.listenForMachineDrag(map:table, callback:any)
     end)
 end
 
-function Input.listenForMachineAnchorDeletion(map:table, callback:any)
+function Input.listenForMachineAnchorDeletion(callback:any)
     return Scene.getMachinesFolder().ChildRemoved:Connect(function(child) 
         if not child:GetAttribute("debugId") then
             return
         end
         local machine = Dataset:getMachineFromMachineAnchor(child)
         if machine then
-            callback(machine)
+            callback()
         end
     end)
 end

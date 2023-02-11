@@ -99,6 +99,8 @@ function PluginRoot:init()
         selectedMachine = nil,
         selectedMachineAnchor = nil,
         showModal = false,
+        modalConfirmationCallback = Dash.noop(),
+        modalCancellationCallback = Dash.noop(),
     })
     
     self.connections = {}    
@@ -138,9 +140,22 @@ function PluginRoot:updateConnections()
         self.connections["MachineAnchorDeletion"]:Disconnect()
     end
     self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
-        self.state.currentMap,
-        function(machineObj:table)
-            self:setState({showModal = true})
+        function()
+            self:setState({
+                showModal = true,
+                modalConfirmationCallback = function()
+                    Dataset:removeMachine(self.state.selectedMachine["id"])
+                    Scene.removeMachineAnchor(self.state.selectedMachine)
+                    self:showPreviousPanel()
+                    self:setState({showModal = false})
+                    self:updateDataset(self.state.dataset)
+                end,
+                modalCancellationCallback = function()
+                    Scene.instantiateMachineAnchor(self.state.selectedMachine)
+                    self:setState({showModal = false})
+                    self:updateDataset(self.state.dataset)
+                end
+            })
         end
     )
 
@@ -207,7 +222,6 @@ function PluginRoot:render()
                     Scene.loadScene()
                     self:changePanel(Panels.EditDatasetUI)
                 end
-                
             }, {}),
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
@@ -296,6 +310,23 @@ function PluginRoot:render()
                     self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
                     self:changePanel(Panels.EditMachineUI)
                     Selection:Set({machineAnchor})
+                end,
+                OnMachineDeleteClicked = function()
+                    -- self:setState({
+                    --     showModal = true,
+                    --     modalConfirmationCallback = function()
+                    --         Dataset:removeMachine(self.state.selectedMachine["id"])
+                    --         Scene.removeMachineAnchor(self.state.selectedMachine)
+                    --         self:showPreviousPanel()
+                    --         self:setState({showModal = false})
+                    --         self:updateDataset(self.state.dataset)
+                    --     end,
+                    --     modalCancellationCallback = function()
+                    --         Scene.instantiateMachineAnchor(self.state.selectedMachine)
+                    --         self:setState({showModal = false})
+                    --         self:updateDataset(self.state.dataset)
+                    --     end
+                    -- })
                 end
             }),
             
@@ -320,7 +351,7 @@ function PluginRoot:render()
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
-                
+
                 ShowEditItemPanel = function(itemKey)
                     self:changePanel(Panels.EditItemUI)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
@@ -331,6 +362,20 @@ function PluginRoot:render()
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
                 end,
+                OnItemDeleteClicked = function(itemKey)
+                    self:setState({
+                        showModal = true,
+                        selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                        modalConfirmationCallback = function()
+                            Dataset:removeItem(itemKey)
+                            self:setState({showModal = false})
+                            self:updateDataset(self.state.dataset)
+                        end,
+                        modalCancellationCallback = function()
+                            self:setState({showModal = false})
+                        end
+                    })
+                end
             }),
 
             EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
@@ -372,18 +417,20 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap
             }),
 
-            ConfirmationModal = self.state.showModal and self.state.selectedMachine and ConfirmationModal({
+            ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
                 OnConfirm = function()
-                    Dataset:removeMachine(self.state.selectedMachine["id"])
-                    Scene.removeMachineAnchor(self.state.selectedMachine)
-                    self:showPreviousPanel()
-                    self:setState({showModal = false})
-                    self:updateDataset(self.state.dataset)
+                    self.state.modalConfirmationCallback()
+                    -- Dataset:removeMachine(self.state.selectedMachine["id"])
+                    -- Scene.removeMachineAnchor(self.state.selectedMachine)
+                    -- self:showPreviousPanel()
+                    -- self:setState({showModal = false})
+                    -- self:updateDataset(self.state.dataset)
                 end,
                 OnCancel = function()
-                    Scene.instantiateMachineAnchor(self.state.selectedMachine)
-                    self:setState({showModal = false})
-                    self:updateDataset(self.state.dataset)
+                    self.state.modalCancellationCallback()
+                    -- Scene.instantiateMachineAnchor(self.state.selectedMachine)
+                    -- self:setState({showModal = false})
+                    -- self:updateDataset(self.state.dataset)
                 end,
             })
         })

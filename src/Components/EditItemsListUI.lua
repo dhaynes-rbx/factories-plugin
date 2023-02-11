@@ -31,11 +31,6 @@ type Props = {
 
 }
 
-local Errors = {
-    ItemIsNotRequiredByAnother = "Item is not required by another!"
-}
-
-
 local function EditItemsListUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
@@ -60,28 +55,7 @@ local function EditItemsListUI(props: Props)
 			Size = UDim2.fromScale(1, 0),
     }))
 
-    -- --Sort the template items and the non-template items, so that template items show up at the top of the list.
-    -- local newItems = table.clone(items)
-    -- local templateItems = {}
-    -- for key,item in items do
-    --     if string.match(key, "templateItem") then
-    --         templateItems[key] = {}
-    --         table.insert(templateItems[key], newItems[key])
-    --         newItems[key] = nil
-    --     end
-    -- end
     local itemIndex = 1
-    -- --Add template items separately, so they show up at the top of the list.
-    -- for key,_ in templateItems do
-    --     add(children, ListItemButton({
-    --         Index = itemIndex,
-    --         Image = items[key]["thumb"],
-    --         Label = items[key]["id"],
-    --         LayoutOrder = getLayoutOrderIndex(),
-    --     }))
-    --     itemIndex += 1
-    -- end
-
     local itemKeys = Dash.keys(items)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
@@ -90,8 +64,15 @@ local function EditItemsListUI(props: Props)
         add(children, ListItemButton({
             Index = itemIndex,
             Image = items[key]["thumb"],
+            ObjectToEdit = items[key],
             Label = items[key]["id"],
             LayoutOrder = getLayoutOrderIndex(),
+            OnEditButtonClicked = function(val)
+                props.ShowEditItemPanel(val)
+            end,
+            OnDeleteButtonClicked = function()
+                props.OnItemDeleteClicked(key)
+            end,
         }))
         itemIndex += 1
     end

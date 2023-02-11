@@ -27,8 +27,8 @@ type Props = {
     Image:string,
     Label:string,
     LayoutOrder:number,
-    OnMouseEnter:any,
-    OnMouseLeave:any,
+    OnEditButtonClicked:any,
+    OnDeleteButtonClicked:any,
 }
 
 function ListItemButton(props)
@@ -96,10 +96,16 @@ function ListItemButton(props)
             EditButton = hover and SmallButton({
                 Label = "Edit",
                 LayoutOrder = 10,
+                OnActivated = function()
+                    props.OnEditButtonClicked(props.ObjectToEdit["id"])
+                end
             }),
             DeleteButton = hover and SmallButton({
                 Label = "X",
                 LayoutOrder = 11,
+                OnActivated = function()
+                    props.OnDeleteButtonClicked(props.ObjectToEdit["id"])
+                end
             })
         })
     })
