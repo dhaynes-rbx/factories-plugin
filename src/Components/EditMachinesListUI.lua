@@ -45,7 +45,6 @@ local function EditMachinesListUI(props: Props)
         return index
     end
 
-	-- local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
 	local dataset = props.Dataset
 	local map = props.CurrentMap
 
@@ -83,9 +82,6 @@ local function EditMachinesListUI(props: Props)
 			ObjectToEdit = machine,
 			OnDeleteButtonClicked = function(machineId)
 				props.OnMachineDeleteClicked(machineId)
-				-- Scene.removeMachineAnchor(Dataset:getMachineFromId(machineId))
-				-- Dataset:removeMachine(machineId)
-				-- props.UpdateDataset(dataset)
 			end,
 			OnEditButtonClicked = function(machineId)
 				local machineObj = Dataset:getMachineFromId(machineId)

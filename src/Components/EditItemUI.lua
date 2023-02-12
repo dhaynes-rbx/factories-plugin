@@ -9,6 +9,7 @@ local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
 local Button = FishBloxComponents.Button
 local Column = FishBloxComponents.Column
+local Row = FishBloxComponents.Row
 local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
@@ -30,6 +31,7 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 local Separator = require(script.Parent.SubComponents.Separator)
+local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 type Props = {
     CurrentMap:table,
     Dataset:table,
@@ -118,11 +120,25 @@ local function EditItemUI(props: Props)
 
     local children = {}
     local item = props.Item
+
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
     local imageKeys = Dash.keys(Manifest.images)
     add(children, createListModalButton("thumb", item, imageKeys, false))
-
+    add(children, Row({
+        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        LayoutOrder = incrementLayoutOrder(),
+        Size = UDim2.new(1, 0, 0, 75)
+    }, {
+        Icon = React.createElement("ImageLabel", {
+            AnchorPoint = Vector2.new(0.5,0.5),
+            BackgroundTransparency = 1,
+            Image = Manifest.images[props.Item["thumb"]],
+            Size = UDim2.fromScale(1,1),
+            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+        })
+    }))
+    
     --REQUIREMENTS
     --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
     local itemRequirementChoices = table.clone(items)
@@ -135,7 +151,26 @@ local function EditItemUI(props: Props)
     end
 
     add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
-    add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
+    add(children, LabelWithAdd({
+        Label = "requirements:",
+        LayoutOrder = incrementLayoutOrder(),
+        OnActivated = function()
+            if not item["requirements"] then
+                item["requirements"] = {}
+            end
+            setListModalEnabled(true)
+            setListChoices(itemRequirementChoices)
+            setCurrentFieldKey(nil)
+            setCurrentFieldValue(nil)
+            setCurrentFieldCallback(function()
+                return function(newValue)
+                    local newRequirementItem = {itemId = newValue, count = 0.2}
+                    table.insert(item["requirements"], newRequirementItem)
+                    props.UpdateDataset(dataset)
+                end
+            end)
+        end,
+    }))
     if item["requirements"] then
         for i,requirement in item["requirements"] do
             -- add(children, createListModalButton("itemId", requirement, items, false))
@@ -176,32 +211,11 @@ local function EditItemUI(props: Props)
             add(children, createTextChangingButton("count", requirement, true))
         end
     end
-    add(children, SmallButton({
-        Appearance = "Filled",
-        Label = "Add New Requirement Item",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = function()
-            if not item["requirements"] then
-                item["requirements"] = {}
-            end
-            setListModalEnabled(true)
-            setListChoices(itemRequirementChoices)
-            setCurrentFieldKey(nil)
-            setCurrentFieldValue(nil)
-            setCurrentFieldCallback(function()
-                return function(newValue)
-                    local newRequirementItem = {itemId = newValue, count = 0.2}
-                    table.insert(item["requirements"], newRequirementItem)
-                    props.UpdateDataset(dataset)
-                end
-            end)
-        end
-    }))
 
     add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
     add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
     if item["value"] and item["value"]["itemId"] then
-        add(children, createTextChangingButton("itemId", item["value"]))
+        -- add(children, createTextChangingButton("itemId", item["value"]))
         add(children, createTextChangingButton("count", item["value"]))
         add(children, SmallButton({
             Appearance = "Filled",
