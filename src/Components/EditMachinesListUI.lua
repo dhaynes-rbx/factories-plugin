@@ -30,10 +30,20 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 local getTemplateMachine = require(script.Parent.Parent.Helpers.getTemplateMachine)
+local ListItemButton = require(script.Parent.ListItemButton)
 
-type Props = {}
+type Props = {
+	OnMachineDeleteClicked:any
+}
 
 local function EditMachinesListUI(props: Props)
+	--use this to create a consistent layout order that plays nice with Roact
+    local index = 0
+    local getLayoutOrderIndex = function()
+        index = index + 1
+        return index
+    end
+
 	-- local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
 	local dataset = props.Dataset
 	local map = props.CurrentMap
@@ -61,25 +71,53 @@ local function EditMachinesListUI(props: Props)
 
 	for i, machine in machines do
 		
-		add(children, MachineListItem({
-			ButtonLabel = "Edit",
-			Label = i..": "..machine["id"],
-			Machine = machine,
+		add(children, ListItemButton({
+			CanDelete = true,
+            CanEdit = true,
+			CanSwap = false,
+			HideIcon = true,
+			Index = i,
+			Label = machine["id"],
+			LayoutOrder = getLayoutOrderIndex(),
+			ObjectToEdit = machine,
 
-			FixMissingMachineAnchor = function(machineObj)
-				local anchor = Scene.instantiateMachineAnchor(machineObj)
-				props.UpdateDataset(dataset)
-                Selection:Set({anchor})
+			-- FixMissingMachineAnchor = function(machineObj)
+			-- 	local anchor = Scene.instantiateMachineAnchor(machineObj)
+			-- 	props.UpdateDataset(dataset)
+            --     Selection:Set({anchor})
+			-- end,
+			OnDeleteButtonClicked = function(machineId)
+				props.OnMachineDeleteClicked(machineId)
+				-- Scene.removeMachineAnchor(Dataset:getMachineFromId(machineId))
+				-- Dataset:removeMachine(machineId)
+				-- props.UpdateDataset(dataset)
 			end,
-			OnDeleteMachineClicked = function(machineObj)
-				Dataset:removeMachine(machineObj["id"])
-				Scene.removeMachineAnchor(machineObj)
-				props.UpdateDataset(dataset)
-			end,
-			OnMachineEditClicked = function(machineObj, machineAnchor)
+			OnEditButtonClicked = function(machineId)
+				local machineObj = Dataset:getMachineFromId(machineId)
+				local machineAnchor = Scene.getAnchorFromMachine(machineObj)
 				props.OnMachineEditClicked(machineObj, machineAnchor)
-			end
+			end,
 		}))
+		
+		-- add(children, MachineListItem({
+		-- 	ButtonLabel = "Edit",
+		-- 	Label = i..": "..machine["id"],
+		-- 	Machine = machine,
+
+		-- 	FixMissingMachineAnchor = function(machineObj)
+		-- 		local anchor = Scene.instantiateMachineAnchor(machineObj)
+		-- 		props.UpdateDataset(dataset)
+        --         Selection:Set({anchor})
+		-- 	end,
+		-- 	OnDeleteMachineClicked = function(machineObj)
+		-- 		Dataset:removeMachine(machineObj["id"])
+		-- 		Scene.removeMachineAnchor(machineObj)
+		-- 		props.UpdateDataset(dataset)
+		-- 	end,
+		-- 	OnMachineEditClicked = function(machineObj, machineAnchor)
+		-- 		props.OnMachineEditClicked(machineObj, machineAnchor)
+		-- 	end
+		-- }))
 		
 	end
 

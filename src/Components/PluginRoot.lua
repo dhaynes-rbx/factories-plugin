@@ -316,22 +316,30 @@ function PluginRoot:render()
                     self:changePanel(Panels.EditMachineUI)
                     Selection:Set({machineAnchor})
                 end,
-                OnMachineDeleteClicked = function()
-                    -- self:setState({
-                    --     showModal = true,
-                    --     modalConfirmationCallback = function()
-                    --         Dataset:removeMachine(self.state.selectedMachine["id"])
-                    --         Scene.removeMachineAnchor(self.state.selectedMachine)
-                    --         self:showPreviousPanel()
-                    --         self:setState({showModal = false})
-                    --         self:updateDataset(self.state.dataset)
-                    --     end,
-                    --     modalCancellationCallback = function()
-                    --         Scene.instantiateMachineAnchor(self.state.selectedMachine)
-                    --         self:setState({showModal = false})
-                    --         self:updateDataset(self.state.dataset)
-                    --     end
-                    -- })
+                OnMachineDeleteClicked = function(machineId)
+                    local machineObj = Dataset:getMachineFromId(machineId)
+                    self:setState({
+                        showModal = true,
+                        selectedMachine = Dataset:getMachineFromId(machineId),
+                        modalConfirmationCallback = function()
+                            if self.connections["MachineAnchorDeletion"] then
+                                self.connections["MachineAnchorDeletion"]:Disconnect()
+                            end
+                            
+                            Scene.removeMachineAnchor(machineObj)
+                            Dataset:removeMachine(machineId)
+                            self:setState({showModal = false})
+                            self:updateDataset(self.state.dataset)
+                        end,
+                        modalCancellationCallback = function()
+                            self:setState({
+                                showModal = false,
+                                selectedMachine = nil,
+                                selectedMachineAnchor = nil,
+                            })
+                        end,
+                        modalTitle = "Would you like to delete "..machineObj["id"].."?"
+                    })
                 end
             }),
             

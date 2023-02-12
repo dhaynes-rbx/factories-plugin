@@ -74,7 +74,7 @@ local function EditItemsListUI(props: Props)
             OnDeleteButtonClicked = function()
                 props.OnItemDeleteClicked(key)
             end,
-            ShowSwapButton = false,
+            CanSwap = false,
         }))
         itemIndex += 1
     end

@@ -24,6 +24,7 @@ local Manifest = require(script.Parent.Parent.Manifest)
 
 
 type Props = {
+    HideIcon:boolean,
     Image:string,
     Index:number,
     Label:string,
@@ -37,10 +38,10 @@ type Props = {
 
 function ListItemButton(props)
     local hover, setHover = React.useState(false)
-    local showImage = props.Label ~= "currency" and props.Label ~= "none"
-    local canEdit = showImage
+    local showImage = not props.HideIcon and (props.Label ~= "currency" and props.Label ~= "none")
+    local canEdit = props.CanEdit or showImage
     local canDelete = props.CanDelete and props.Label ~= "none"
-    local canSwap = props.ShowSwapButton == nil or props.ShowSwapButton
+    local canSwap = props.CanSwap == nil or props.CanSwap
 
     return React.createElement("Frame", {
         BackgroundTransparency = .95,

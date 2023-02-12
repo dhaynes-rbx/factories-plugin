@@ -1,6 +1,6 @@
 return function()
     local template = {
-        id = "none",
+        id = "templateMachine",
         type = "maker",
         locName = "None",
         thumb = "",
