@@ -125,7 +125,9 @@ function PluginRoot:updateConnections()
             selectedMachineAnchor = selectedObj,
             selectedMachine = machine,
         })
-        self:changePanel(Panels.EditMachineUI)
+        if machine then
+            self:changePanel(Panels.EditMachineUI)
+        end
     end)
 
     if self.connections["MachineInput"] then
@@ -259,10 +261,12 @@ function PluginRoot:render()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
                     saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
                     saveFile.Parent = datasetInstance.Parent
+                    Selection:Set({saveFile})
                     local fileSaved = getfenv(0).plugin:PromptSaveSelection()
                     if fileSaved then
                         print("File saved")
                     end
+                    Selection:Set({})
                     saveFile:Destroy()
                 end,
 

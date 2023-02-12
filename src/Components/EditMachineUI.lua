@@ -162,8 +162,9 @@ return function(props:Props)
     end
 
     local machine = props.Machine
-    local coordinateName = machine and machine["coordinates"]["X"]..","..machine["coordinates"]["Y"] or props.MachineAnchor.Name
     local children = {}
+    -- local coordinateName = machine and machine["coordinates"]["X"]..","..machine["coordinates"]["Y"] or props.MachineAnchor.Name
+    local coordinateName = ""
     
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
