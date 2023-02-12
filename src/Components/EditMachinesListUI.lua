@@ -18,10 +18,10 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local TextInputModal = require(script.Parent.Modals.TextInputModal)
-local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SmallLabel)
-local SidePanel = require(script.Parent.SidePanel)
-local MachineListItem = require(script.Parent.MachineListItem)
+local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
+local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
+local SidePanel = require(script.Parent.SubComponents.SidePanel)
+local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
@@ -30,7 +30,7 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 local getTemplateMachine = require(script.Parent.Parent.Helpers.getTemplateMachine)
-local ListItemButton = require(script.Parent.ListItemButton)
+local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 type Props = {
 	OnMachineDeleteClicked:any

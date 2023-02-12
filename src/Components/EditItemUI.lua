@@ -16,10 +16,11 @@ local TextInput = FishBloxComponents.TextInput
 
 local TextInputModal = require(script.Parent.Modals.TextInputModal)
 local SelectFromListModal = require(script.Parent.Modals.SelectFromListModal)
-local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SmallLabel)
-local SidePanel = require(script.Parent.SidePanel)
-local SmallButton = require(script.Parent.SmallButton)
+local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
+local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
+local SidePanel = require(script.Parent.SubComponents.SidePanel)
+local SmallButton = require(script.Parent.SubComponents.SmallButton)
+local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Manifest = require(script.Parent.Parent.Manifest)
@@ -28,7 +29,7 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
-local ListItemButton = require(script.Parent.ListItemButton)
+local Separator = require(script.Parent.SubComponents.Separator)
 type Props = {
     CurrentMap:table,
     Dataset:table,
@@ -133,6 +134,7 @@ local function EditItemUI(props: Props)
         itemRequirementChoices[item["id"]] = nil
     end
 
+    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
         for i,requirement in item["requirements"] do
@@ -196,6 +198,7 @@ local function EditItemUI(props: Props)
         end
     }))
 
+    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
     add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
     if item["value"] and item["value"]["itemId"] then
         add(children, createTextChangingButton("itemId", item["value"]))

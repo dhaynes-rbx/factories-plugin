@@ -1,6 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local StudioService = game:GetService("StudioService")
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
 local Dash = require(Packages.Dash)
 local React = require(Packages.React)
 local Roact = require(Packages.Roact)
@@ -16,11 +16,11 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 local Icon = FishBloxComponents.Icon
 
-local Scene = require(script.Parent.Parent.Scene)
+local Scene = require(script.Parent.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SmallButton = require(script.Parent.SmallButton)
 
-local Manifest = require(script.Parent.Parent.Manifest)
+local Manifest = require(script.Parent.Parent.Parent.Manifest)
 
 
 type Props = {

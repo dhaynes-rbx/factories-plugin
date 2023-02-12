@@ -1,6 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local StudioService = game:GetService("StudioService")
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
 local Dash = require(Packages.Dash)
 local React = require(Packages.React)
 local Roact = require(Packages.Roact)

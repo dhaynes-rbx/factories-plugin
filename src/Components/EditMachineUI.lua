@@ -16,11 +16,12 @@ local TextInput = FishBloxComponents.TextInput
 
 local TextInputModal = require(script.Parent.Modals.TextInputModal)
 local SelectFromListModal = require(script.Parent.Modals.SelectFromListModal)
-local SidePanel = require(script.Parent.SidePanel)
-local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SmallLabel)
-local SmallButton = require(script.Parent.SmallButton)
-local MachineListItem = require(script.Parent.MachineListItem)
+local SidePanel = require(script.Parent.SubComponents.SidePanel)
+local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
+local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
+local SmallButton = require(script.Parent.SubComponents.SmallButton)
+local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
+local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
@@ -28,9 +29,10 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
-local ListItemButton = require(script.Parent.ListItemButton)
 local Manifest = require(script.Parent.Parent.Manifest)
 local Dataset = require(script.Parent.Parent.Dataset)
+local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
+local Separator = require(script.Parent.SubComponents.Separator)
 
 
 type Props = {
@@ -178,13 +180,34 @@ return function(props:Props)
         add(children, createTextChangingButton("X", machine["coordinates"], true))
         add(children, createTextChangingButton("Y", machine["coordinates"], true))
         
+        add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
         --Outputs : Item
-        add(children, SmallLabel({Label = "outputs", LayoutOrder = incrementLayoutOrder()}))
         --Remove any outputs from the list that already exist as a machine's output. We don't want to allow duplicate outputs.
         local machineOutputChoices = table.clone(items)
         for _,outputItem in machine["outputs"] do
             machineOutputChoices[outputItem] = nil
         end
+        --Label with add button
+        add(children, LabelWithAdd({
+           Label = "outputs",
+           LayoutOrder = incrementLayoutOrder(),
+           OnActivated = function()
+                if not machine["outputs"] then
+                    machine["outputs"] = {}
+                end
+                setListModalEnabled(true)
+                setListChoices(Dataset:getValidItems(machineOutputChoices))
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        table.insert(machine["outputs"], newValue)
+                        props.UpdateDataset(dataset)
+                    end
+                end)
+            end,
+        }))
+
         for i,outputItem in machine["outputs"] do
             add(children, ListItemButton({
                 CanDelete = true,
@@ -201,6 +224,7 @@ return function(props:Props)
                     setCurrentFieldCallback(function()
                         return function(newValue)
                             machine["outputs"][i] = newValue
+                            props.UpdateDataset(props.Dataset)
                         end
                     end)
                 end,
@@ -208,65 +232,28 @@ return function(props:Props)
                     props.OnOutputItemEditClicked(outputItem)
                 end,
                 OnDeleteButtonClicked = function()
-                    props.OnOutputItemDeleteClicked(
+                    props.OnDeleteButtonClicked(
                         "Remove "..machine["outputs"][i].." from "..machine["id"].."?",
                         function()
                             table.remove(machine["outputs"], i)
+                            props.UpdateDataset(props.Dataset)
                         end
                     )
                 end,
                 ShowSwapButton = true,
             }))
         end
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Add New Output Item",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                if not machine["sources"] then
-                    machine["sources"] = {}
-                end
-                setListModalEnabled(true)
-                setListChoices(Dataset:getValidItems(machineOutputChoices))
-                setCurrentFieldKey(nil)
-                setCurrentFieldValue(nil)
-                setCurrentFieldCallback(function()
-                    return function(newValue)
-                        table.insert(machine["outputs"], newValue)
-                        props.UpdateDataset(dataset)
-                    end
-                end)
-            end
-        }))
+        add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
 
         --Sources : Machine
-        add(children, SmallLabel({Label = "sources", LayoutOrder = incrementLayoutOrder()}))
         local machineSourceChoices = {}
         for _,machineObj in machines do
             machineSourceChoices[machineObj["id"]] = machineObj["id"]
         end
-        machineSourceChoices[machine["id"]] = nil --Remove this machine. A machine shouldn't be able to choose itself as a source.
-        if machine["sources"] and #machine["sources"] > 0 then --Sometimes machine source tables don't exist, and sometimes they're empty.
-        for _,sourceMachine in machine["sources"] do
-            machineSourceChoices[sourceMachine] = nil
-        end
-        for i,_ in machine["sources"] do
-                add(children, createListModalButton(i, machine["sources"], machineSourceChoices, function(machineId)
-                    print("Callback: ", machineId)
-                end))
-                add(children, SmallButton({
-                    Label = "Delete",
-                    LayoutOrder = incrementLayoutOrder(),
-                    OnActivated = function()
-                        table.remove(machine["sources"], i)
-                        props.UpdateDataset(dataset)
-                    end
-                }))
-            end
-        end 
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Add New Source Machine",
+
+        --Label with add button
+        add(children, LabelWithAdd({
+            Label = "sources",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
                 if not machine["sources"] then
@@ -281,8 +268,53 @@ return function(props:Props)
                         table.insert(machine["sources"], newValue)
                     end
                 end)
-            end
+            end,
         }))
+
+        machineSourceChoices[machine["id"]] = nil --Remove this machine. A machine shouldn't be able to choose itself as a source.
+        if machine["sources"] and #machine["sources"] > 0 then --Sometimes machine source tables don't exist, and sometimes they're empty.
+            for _,sourceMachine in machine["sources"] do
+                machineSourceChoices[sourceMachine] = nil
+            end
+
+            for i,source in machine["sources"] do
+                local machineObj = Dataset:getMachineFromId(source)
+                add(children, ListItemButton({
+                    CanDelete = true,
+                    -- Image = items[source]["thumb"],
+                    HideIcon = true,
+                    Index = i,
+                    LayoutOrder = incrementLayoutOrder(),
+                    Label = source,
+                    ObjectToEdit = machineObj,
+                    OnSwapButtonClicked = function(machineId)
+                        setListModalEnabled(true)
+                        setListChoices(machineSourceChoices)
+                        setCurrentFieldKey(machineId)
+                        setCurrentFieldValue(machineId)
+                        setCurrentFieldCallback(function()
+                            return function(newValue)
+                                machine["sources"][i] = newValue
+                            end
+                        end)
+                    end,
+                    OnEditButtonClicked = function()
+                        props.OnOutputItemEditClicked(source)
+                    end,
+                    OnDeleteButtonClicked = function()
+                        props.OnDeleteButtonClicked(
+                            "Remove "..machine["sources"][i].." from "..machine["id"].."?",
+                            function()
+                                table.remove(machine["sources"], i)
+                                props.UpdateDataset(props.Dataset)
+                            end
+                        )
+                    end,
+                    ShowSwapButton = true,
+                }))
+            end
+        end 
+        add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
 
         add(children, Block({LayoutOrder = incrementLayoutOrder(), Size = UDim2.new(1, 0, 0, 50)}))
         add(children, createTextChangingButton("defaultProductionDelay", machine, true))

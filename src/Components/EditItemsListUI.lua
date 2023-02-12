@@ -15,10 +15,10 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local TextInputModal = require(script.Parent.Modals.TextInputModal)
-local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SmallLabel)
-local SidePanel = require(script.Parent.SidePanel)
-local ListItemButton = require(script.Parent.ListItemButton)
+local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
+local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
+local SidePanel = require(script.Parent.SubComponents.SidePanel)
+local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)

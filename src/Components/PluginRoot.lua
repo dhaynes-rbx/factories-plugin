@@ -356,7 +356,7 @@ function PluginRoot:render()
                     Selection:Set({})
                     self:showPreviousPanel()
                 end,
-                OnOutputItemDeleteClicked = function(title, callback)
+                OnDeleteButtonClicked = function(title, callback)
                     self:setState({
                         showModal = true,
                         modalConfirmationCallback = function()

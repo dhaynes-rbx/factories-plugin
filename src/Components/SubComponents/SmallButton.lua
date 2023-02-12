@@ -1,4 +1,4 @@
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 
 type Props = {
