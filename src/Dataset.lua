@@ -86,6 +86,19 @@ function Dataset:removeItem(itemKey)
     items[itemKey] = nil
 end
 
+--Returns items, minus the currency and none items
+function Dataset:getValidItems(originalItems:table)
+    local result = {}
+    for k,v in originalItems do
+        if v["id"] == "currency" or v["id"] == "none" then 
+            continue 
+        else
+            result[v["id"]] = v
+        end
+    end
+    return result
+end
+
 function Dataset:addMachine()
     local newMachine = getTemplateMachine()
     --TODO: check for duplicate id and coordinates

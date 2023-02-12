@@ -259,7 +259,6 @@ function PluginRoot:render()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
                     saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
                     saveFile.Parent = datasetInstance.Parent
-                    Selection:Set({saveFile})
                     local fileSaved = getfenv(0).plugin:PromptSaveSelection()
                     if fileSaved then
                         print("File saved")

@@ -653,6 +653,19 @@
                 "singular": "hour"
             },
             "items": {
+                "none": {
+                    "id": "none",
+                    "locName": "None",
+                    "thumb": "",
+                    "asset": "",
+                    "requirements": []
+                },
+                "currency": {
+                    "id": "currency",
+                    "locName": "Money",
+                    "thumb": "",
+                    "asset": ""
+                },
                 "butts": {
                     "thumb": "icon-none",
                     "id": "butts",

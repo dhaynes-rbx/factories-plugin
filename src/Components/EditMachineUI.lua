@@ -30,6 +30,7 @@ local Studio = require(script.Parent.Parent.Studio)
 local add = require(script.Parent.Parent.Helpers.add)
 local ListItemButton = require(script.Parent.ListItemButton)
 local Manifest = require(script.Parent.Parent.Manifest)
+local Dataset = require(script.Parent.Parent.Dataset)
 
 
 type Props = {
@@ -80,7 +81,6 @@ return function(props:Props)
     end
 
     local createTextChangingButton = function(key:string | number, machineObject:table, isNumber:boolean, filled:boolean)
-
         return SmallButtonWithLabel({
             Appearance = filled and "Filled",
             ButtonLabel = tostring(machineObject[key]),
@@ -136,7 +136,6 @@ return function(props:Props)
     end
 
     local createListModalButton = function(key:string | number, list:table, choices:table, callback:any)
-
         return SmallButtonWithLabel({
             Appearance = "Filled",
             ButtonLabel = tostring(list[key]),
@@ -187,6 +186,7 @@ return function(props:Props)
         end
         for i,outputItem in machine["outputs"] do
             add(children, ListItemButton({
+                CanDelete = #machine["outputs"] ~= 1,
                 Image = items[outputItem]["thumb"],
                 Index = i,
                 LayoutOrder = incrementLayoutOrder(),
@@ -194,7 +194,7 @@ return function(props:Props)
                 ObjectToEdit = items[outputItem],
                 OnSwapButtonClicked = function(itemKey)
                     setListModalEnabled(true)
-                    setListChoices(machineOutputChoices)
+                    setListChoices(Dataset:getValidItems(machineOutputChoices))
                     setCurrentFieldKey(i)
                     setCurrentFieldValue(itemKey)
                     setCurrentFieldCallback(function()
@@ -216,15 +216,6 @@ return function(props:Props)
                 end,
                 ShowSwapButton = true,
             }))
-            -- add(children, createListModalButton(i, machine["outputs"], machineOutputChoices, Dash.noop))
-            -- add(children, SmallButton({
-            --     Label = "Delete",
-            --     LayoutOrder = incrementLayoutOrder(),
-            --     OnActivated = function()
-            --         table.remove(machine["outputs"], i)
-            --         props.UpdateDataset(dataset)
-            --     end
-            -- }))
         end
         add(children, SmallButton({
             Appearance = "Filled",
@@ -235,7 +226,7 @@ return function(props:Props)
                     machine["sources"] = {}
                 end
                 setListModalEnabled(true)
-                setListChoices(machineOutputChoices)
+                setListChoices(Dataset:getValidItems(machineOutputChoices))
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
                 setCurrentFieldCallback(function()

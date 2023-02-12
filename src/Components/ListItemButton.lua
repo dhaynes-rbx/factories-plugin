@@ -28,13 +28,18 @@ type Props = {
     Index:number,
     Label:string,
     LayoutOrder:number,
-    OnEditButtonClicked:any,
+    ObjectToEdit:table,
     OnDeleteButtonClicked:any,
+    OnEditButtonClicked:any,
+    OnSwapButtonClicked:any,
     ShowSwapButton:boolean,
 }
 
 function ListItemButton(props)
     local hover, setHover = React.useState(false)
+    local showImage = props.Label ~= "currency" and props.Label ~= "none"
+    local canEdit = showImage
+    local canDelete = props.CanDelete and props.Label ~= "none"
 
     return React.createElement("Frame", {
         BackgroundTransparency = .95,
@@ -74,7 +79,7 @@ function ListItemButton(props)
                 TextYAlignment = Enum.TextYAlignment.Center,
                 Text = props.Index
             }),
-            Image = React.createElement("ImageLabel", {
+            Image = showImage and React.createElement("ImageLabel", {
                 BackgroundTransparency = 1,
                 Image = Manifest.images[props.Image] or "rbxassetid://7553285523", --Question mark icon
                 LayoutOrder = 2,
@@ -102,14 +107,14 @@ function ListItemButton(props)
                     props.OnSwapButtonClicked(props.ObjectToEdit["id"])
                 end
             }),
-            EditButton = hover and SmallButton({
+            EditButton = canEdit and hover and SmallButton({
                 Label = "Edit",
                 LayoutOrder = 10,
                 OnActivated = function()
                     props.OnEditButtonClicked(props.ObjectToEdit["id"])
                 end
             }),
-            DeleteButton = hover and SmallButton({
+            DeleteButton = canDelete and hover and SmallButton({
                 AutomaticSize = Enum.AutomaticSize.None,
                 Label = "X",
                 LayoutOrder = 11,

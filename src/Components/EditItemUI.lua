@@ -28,6 +28,7 @@ local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
+local ListItemButton = require(script.Parent.ListItemButton)
 type Props = {
     CurrentMap:table,
     Dataset:table,
@@ -118,32 +119,45 @@ local function EditItemUI(props: Props)
     local item = props.Item
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
-    -- add(children, createTextChangingButton("thumb", item))
     local imageKeys = Dash.keys(Manifest.images)
     add(children, createListModalButton("thumb", item, imageKeys, false))
 
     --REQUIREMENTS
     --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
     local itemRequirementChoices = table.clone(items)
-    for _,outputItem in item["requirements"] do
-        local id = outputItem["itemId"]
-        itemRequirementChoices[id] = nil
+    if item["requirements"] then
+        for _,outputItem in item["requirements"] do
+            local id = outputItem["itemId"]
+            itemRequirementChoices[id] = nil
+        end
+        itemRequirementChoices[item["id"]] = nil
     end
-    itemRequirementChoices[item["id"]] = nil
 
     add(children, SmallLabel({Label = "requirements:", LayoutOrder = incrementLayoutOrder()}))
     if item["requirements"] then
         for i,requirement in item["requirements"] do
-            add(children, createListModalButton("itemId", requirement, items, false))
-            add(children, createTextChangingButton("count", requirement, true))
-            add(children, SmallButton({
-                Label = "Delete",
+            -- add(children, createListModalButton("itemId", requirement, items, false))
+            add(children, ListItemButton({
+                Image = items[requirement["itemId"]]["thumb"],
+                Index = i,
+                Label = requirement["itemId"],
                 LayoutOrder = incrementLayoutOrder(),
-                OnActivated = function()
-                    -- table.remove(item["requirements"], i)
-                    -- props.UpdateDataset(dataset)
-                end
+                ObjectToEdit = items[requirement["itemId"]],
+                OnDeleteButtonClicked = function(itemKey) 
+                    table.remove(item["requirements"], i)
+                end,
+                OnEditButtonClicked = function(itemKey) end,
+                OnSwapButtonClicked = function(itemKey) end,
             }))
+            add(children, createTextChangingButton("count", requirement, true))
+            -- add(children, SmallButton({
+            --     Label = "Delete",
+            --     LayoutOrder = incrementLayoutOrder(),
+            --     OnActivated = function()
+            --         table.remove(item["requirements"], i)
+            --         props.UpdateDataset(dataset)
+            --     end
+            -- }))
         end
     end
     add(children, SmallButton({

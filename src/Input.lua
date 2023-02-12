@@ -14,7 +14,6 @@ local Input = {}
 
 function Input.listenForMachineSelection(map:table, callback:any)
     return Selection.SelectionChanged:Connect(function()
-        print("Selection Changed")
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
             if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
