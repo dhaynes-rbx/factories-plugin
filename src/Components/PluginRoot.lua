@@ -421,6 +421,10 @@ function PluginRoot:render()
                         modalTitle = title,
                     })
                 end,
+                ShowEditItemPanel = function(itemKey)
+                    self:changePanel(Panels.EditItemUI)
+                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
+                end,
                 UpdateItem = function(itemKey)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,

@@ -153,7 +153,7 @@ local function EditItemUI(props: Props)
                     )
                 end,
                 OnEditButtonClicked = function(itemKey) 
-                
+                    props.ShowEditItemPanel(itemKey)
                 end,
                 OnSwapButtonClicked = function(itemKey) 
                     setListModalEnabled(true)
@@ -166,19 +166,12 @@ local function EditItemUI(props: Props)
                                 itemId = newValue,
                                 count = 0.2
                             }
+                            props.UpdateDataset(props.Dataset)
                         end
                     end)
                 end,
             }))
             add(children, createTextChangingButton("count", requirement, true))
-            -- add(children, SmallButton({
-            --     Label = "Delete",
-            --     LayoutOrder = incrementLayoutOrder(),
-            --     OnActivated = function()
-            --         table.remove(item["requirements"], i)
-            --         props.UpdateDataset(dataset)
-            --     end
-            -- }))
         end
     end
     add(children, SmallButton({
@@ -231,7 +224,7 @@ local function EditItemUI(props: Props)
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
-            Title = props.Item["id"],
+            Title = "Edit Item: "..props.Item["id"],
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),

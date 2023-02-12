@@ -186,7 +186,7 @@ return function(props:Props)
         end
         for i,outputItem in machine["outputs"] do
             add(children, ListItemButton({
-                CanDelete = #machine["outputs"] ~= 1,
+                CanDelete = true,
                 Image = items[outputItem]["thumb"],
                 Index = i,
                 LayoutOrder = incrementLayoutOrder(),
