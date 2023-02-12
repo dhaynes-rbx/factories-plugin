@@ -18,6 +18,7 @@ local Text = FishBloxComponents.Text
 local TextInput = FishBloxComponents.TextInput
 
 local TextInputModal = require(script.Parent.Modals.TextInputModal)
+local SmallButton = require(script.Parent.SubComponents.SmallButton)
 local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
 local SidePanel = require(script.Parent.SubComponents.SidePanel)
@@ -80,12 +81,6 @@ local function EditMachinesListUI(props: Props)
 			Label = machine["id"],
 			LayoutOrder = getLayoutOrderIndex(),
 			ObjectToEdit = machine,
-
-			-- FixMissingMachineAnchor = function(machineObj)
-			-- 	local anchor = Scene.instantiateMachineAnchor(machineObj)
-			-- 	props.UpdateDataset(dataset)
-            --     Selection:Set({anchor})
-			-- end,
 			OnDeleteButtonClicked = function(machineId)
 				props.OnMachineDeleteClicked(machineId)
 				-- Scene.removeMachineAnchor(Dataset:getMachineFromId(machineId))
@@ -98,6 +93,25 @@ local function EditMachinesListUI(props: Props)
 				props.OnMachineEditClicked(machineObj, machineAnchor)
 			end,
 		}))
+
+		--There might be a case where a machine exists but the machine anchor is missing.
+		local missingMachineAnchor = false
+		if missingMachineAnchor then 
+			add(children, SmallButton({
+				AutomaticSize = Enum.AutomaticSize.X,
+				BackgroundColor3 = Color3.fromRGB(32, 117, 233),
+				LayoutOrder = getLayoutOrderIndex(),
+				Size = UDim2.new(0, 30, 0, 30),
+				Text = "Fix Missing Machine Anchor",
+				TextXAlignment = Enum.TextXAlignment.Center,
+
+				OnActivated = function()
+					local anchor = Scene.instantiateMachineAnchor(machine)
+					props.UpdateDataset(dataset)
+					Selection:Set({anchor})
+				end,
+			}))
+		end
 		
 		-- add(children, MachineListItem({
 		-- 	ButtonLabel = "Edit",
