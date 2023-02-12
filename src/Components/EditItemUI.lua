@@ -138,16 +138,37 @@ local function EditItemUI(props: Props)
         for i,requirement in item["requirements"] do
             -- add(children, createListModalButton("itemId", requirement, items, false))
             add(children, ListItemButton({
+                CanDelete = true,
                 Image = items[requirement["itemId"]]["thumb"],
                 Index = i,
                 Label = requirement["itemId"],
                 LayoutOrder = incrementLayoutOrder(),
                 ObjectToEdit = items[requirement["itemId"]],
                 OnDeleteButtonClicked = function(itemKey) 
-                    table.remove(item["requirements"], i)
+                    props.OnDeleteRequirementClicked(
+                        "Do you want to delete "..itemKey.." as a requirement for "..props.Item["id"].."?",
+                        function()
+                            table.remove(item["requirements"], i)
+                        end
+                    )
                 end,
-                OnEditButtonClicked = function(itemKey) end,
-                OnSwapButtonClicked = function(itemKey) end,
+                OnEditButtonClicked = function(itemKey) 
+                
+                end,
+                OnSwapButtonClicked = function(itemKey) 
+                    setListModalEnabled(true)
+                    setListChoices(itemRequirementChoices)
+                    setCurrentFieldKey(i)
+                    setCurrentFieldValue(itemKey)
+                    setCurrentFieldCallback(function()
+                        return function(newValue)
+                            item["requirements"][i] = {
+                                itemId = newValue,
+                                count = 0.2
+                            }
+                        end
+                    end)
+                end,
             }))
             add(children, createTextChangingButton("count", requirement, true))
             -- add(children, SmallButton({

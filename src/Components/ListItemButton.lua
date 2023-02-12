@@ -40,6 +40,7 @@ function ListItemButton(props)
     local showImage = props.Label ~= "currency" and props.Label ~= "none"
     local canEdit = showImage
     local canDelete = props.CanDelete and props.Label ~= "none"
+    local canSwap = props.ShowSwapButton == nil or props.ShowSwapButton
 
     return React.createElement("Frame", {
         BackgroundTransparency = .95,
@@ -100,21 +101,21 @@ function ListItemButton(props)
             HorizontalAlignment = Enum.HorizontalAlignment.Right,
             Size = UDim2.fromScale(1, 1)
         }, {
-            SwapButton = hover and props.ShowSwapButton and SmallButton({
+            SwapButton = hover and canSwap and SmallButton({
                 Label = "Swap",
                 LayoutOrder = 9,
                 OnActivated = function()
                     props.OnSwapButtonClicked(props.ObjectToEdit["id"])
                 end
             }),
-            EditButton = canEdit and hover and SmallButton({
+            EditButton = hover and canEdit and SmallButton({
                 Label = "Edit",
                 LayoutOrder = 10,
                 OnActivated = function()
                     props.OnEditButtonClicked(props.ObjectToEdit["id"])
                 end
             }),
-            DeleteButton = canDelete and hover and SmallButton({
+            DeleteButton = hover and canDelete and SmallButton({
                 AutomaticSize = Enum.AutomaticSize.None,
                 Label = "X",
                 LayoutOrder = 11,

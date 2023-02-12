@@ -56,12 +56,12 @@ local function EditItemsListUI(props: Props)
 
     local itemIndex = 1
     local itemKeys = Dash.keys(Dataset:getValidItems(items))
-    print(itemKeys)
     table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
     for i,key in itemKeys do
         add(children, ListItemButton({
+            CanDelete = true,
             Index = itemIndex,
             Image = items[key]["thumb"],
             ObjectToEdit = items[key],

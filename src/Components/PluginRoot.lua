@@ -406,6 +406,21 @@ function PluginRoot:render()
                     self:showPreviousPanel()
                     self:setState({selectedItem = nil})
                 end,
+                OnDeleteRequirementClicked = function(title, callback)
+                    self:setState({
+                        showModal = true,
+                        modalConfirmationCallback = function()
+                            callback()
+                            self:setState({
+                                showModal = false,
+                            })
+                        end,
+                        modalCancellationCallback = function()
+                            self:setState({showModal = false})
+                        end,
+                        modalTitle = title,
+                    })
+                end,
                 UpdateItem = function(itemKey)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
