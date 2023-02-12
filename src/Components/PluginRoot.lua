@@ -42,11 +42,13 @@ local PluginRoot = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
+
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
     self:setState({
         currentPanel = self.state.panelStack[#self.state.panelStack],
-        showModal = false
+        showModal = false,
+        highlightedMachineAnchor = React.None,
     })
 end
 
@@ -94,14 +96,15 @@ function PluginRoot:init()
         currentPanel = currentPanel,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
+        highlightedMachineAnchor = nil,
+        modalCancellationCallback = Dash.noop(),
+        modalConfirmationCallback = Dash.noop(),
+        modalTitle = "",
         panelStack = {currentPanel},
         selectedItem = nil,
         selectedMachine = nil,
         selectedMachineAnchor = nil,
         showModal = false,
-        modalConfirmationCallback = Dash.noop(),
-        modalCancellationCallback = Dash.noop(),
-        modalTitle = "",
     })
     
     self.connections = {}    
@@ -147,6 +150,7 @@ function PluginRoot:updateConnections()
         function()
             self:setState({
                 showModal = true,
+                modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
                 modalConfirmationCallback = function()
                     Dataset:removeMachine(self.state.selectedMachine["id"])
                     Scene.removeMachineAnchor(self.state.selectedMachine)
@@ -183,12 +187,16 @@ function PluginRoot:updateConnections()
     )
 end
 
-function PluginRoot:setCurrentMap(mapIndex)
+function PluginRoot:muteMachineDeletionConnection()
     --mute the listener for the machine deletion.
     if self.connections["MachineAnchorDeletion"] then
         self.connections["MachineAnchorDeletion"]:Disconnect()
         self.connections["MachineAnchorDeletion"] = nil
     end
+end
+
+function PluginRoot:setCurrentMap(mapIndex)
+    self:muteMachineDeletionConnection()
 
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
@@ -283,6 +291,7 @@ function PluginRoot:render()
                     
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
+                    self:muteMachineDeletionConnection()
                     Scene.instantiateMapMachineAnchors(currentMap)
                     self:updateDataset(dataset)
                 end,
@@ -311,12 +320,12 @@ function PluginRoot:render()
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
                 end,
-                OnMachineEditClicked = function(machine, machineAnchor)
+                OnMachineEditClicked = function(machine:table, machineAnchor:Instance)
                     self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
                     self:changePanel(Panels.EditMachineUI)
                     Selection:Set({machineAnchor})
                 end,
-                OnMachineDeleteClicked = function(machineId)
+                OnMachineDeleteClicked = function(machineId:string)
                     local machineObj = Dataset:getMachineFromId(machineId)
                     self:setState({
                         showModal = true,
@@ -340,7 +349,16 @@ function PluginRoot:render()
                         end,
                         modalTitle = "Would you like to delete "..machineObj["id"].."?"
                     })
-                end
+                end,
+                HighlightMachineAnchor = function(machine:table)
+                    if machine then
+                        local anchor = machine and Scene.getAnchorFromMachine(machine) or nil
+                        self:setState({highlightedMachineAnchor = anchor})
+                    else
+                        self:setState({highlightedMachineAnchor = React.None})
+                    end
+                    
+                end,
             }),
             
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
@@ -460,7 +478,8 @@ function PluginRoot:render()
             EditPowerupUI = nil,
 
             MachineBillboardGUIs = self.state.datasetIsLoaded and MachineAnchorBillboardGuis({
-                Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"]
+                Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
+                HighlightedAnchor = self.state.highlightedMachineAnchor
             }),
 
             ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({

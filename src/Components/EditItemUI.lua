@@ -124,7 +124,16 @@ local function EditItemUI(props: Props)
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
     local imageKeys = Dash.keys(Manifest.images)
-    add(children, createListModalButton("thumb", item, imageKeys, false))
+    table.sort(imageKeys, function(a,b)
+        return a < b
+    end)
+    local trimmedImageKeys = {}
+    for _,key in imageKeys do
+        if string.find(key, "icon") then
+            table.insert(trimmedImageKeys, key)
+        end
+    end
+    add(children, createListModalButton("thumb", item, trimmedImageKeys, false))
     add(children, Row({
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         LayoutOrder = incrementLayoutOrder(),

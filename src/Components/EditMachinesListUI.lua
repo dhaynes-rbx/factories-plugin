@@ -88,6 +88,9 @@ local function EditMachinesListUI(props: Props)
 				local machineAnchor = Scene.getAnchorFromMachine(machineObj)
 				props.OnMachineEditClicked(machineObj, machineAnchor)
 			end,
+			OnHover = function(machineObj:table)
+				props.HighlightMachineAnchor(machineObj)
+			end
 		}))
 
 		--There might be a case where a machine exists but the machine anchor is missing.

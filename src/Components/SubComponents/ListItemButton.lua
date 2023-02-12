@@ -49,9 +49,15 @@ function ListItemButton(props)
         Size = UDim2.new(1, 0, 0, 45),
         [React.Event.MouseEnter] = function() 
             setHover(true)
+            if props.OnHover and props.ObjectToEdit["machineAnchor"] then
+                props.OnHover(props.ObjectToEdit)
+            end
         end,
         [React.Event.MouseLeave] = function() 
             setHover(false)
+            if props.OnHover and props.ObjectToEdit["machineAnchor"] then
+                props.OnHover(nil)
+            end
         end,
     }, {
         uiPadding = React.createElement("UIPadding", {

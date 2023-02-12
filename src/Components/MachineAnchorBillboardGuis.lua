@@ -36,7 +36,6 @@ type Props =
 
 local function MachineAnchorBillboardGuis(props:Props)
     local billboardGuis = {}
-
     for _,machineAnchor in Scene.getMachineAnchors() do
     
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
@@ -93,7 +92,13 @@ local function MachineAnchorBillboardGuis(props:Props)
                         LayoutOrder = 3,
                         Text = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
                     }),
-                })
+                }),
+                HighlightBox = props.HighlightedAnchor and React.createElement("SelectionBox", {
+                    Adornee = props.HighlightedAnchor,
+                    LineThickness = 0.25,
+                    SurfaceColor3 = Color3.fromRGB(0, 255, 38),
+                    Color3 = Color3.fromRGB(38, 255, 0),
+                  })
             }))
         end
     end
