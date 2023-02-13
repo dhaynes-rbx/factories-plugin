@@ -42,10 +42,10 @@ return function(props, children)
             ScrollingDirection = Enum.ScrollingDirection.Y,
         },{
             Content = Column({ --This overrides the built-in panel Column
-            -- AutomaticSize = Enum.AutomaticSize.Y,
-            Gaps = 8,
-            PaddingHorizontal = 20,
-            PaddingTop = 5,
+                -- AutomaticSize = Enum.AutomaticSize.Y,
+                Gaps = 8,
+                PaddingHorizontal = 20,
+                PaddingTop = 5,
             }, children)
         })
     })

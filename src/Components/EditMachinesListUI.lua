@@ -40,7 +40,7 @@ type Props = {
 local function EditMachinesListUI(props: Props)
 	--use this to create a consistent layout order that plays nice with Roact
     local index = 0
-    local getLayoutOrderIndex = function()
+    local incrementLayoutOrder = function()
         index = index + 1
         return index
     end
@@ -78,7 +78,7 @@ local function EditMachinesListUI(props: Props)
 			HideIcon = true,
 			Index = i,
 			Label = machine["id"],
-			LayoutOrder = getLayoutOrderIndex(),
+			LayoutOrder = incrementLayoutOrder(),
 			ObjectToEdit = machine,
 			OnDeleteButtonClicked = function(machineId)
 				props.OnMachineDeleteClicked(machineId)
@@ -99,7 +99,7 @@ local function EditMachinesListUI(props: Props)
 			add(children, SmallButton({
 				AutomaticSize = Enum.AutomaticSize.X,
 				BackgroundColor3 = Color3.fromRGB(32, 117, 233),
-				LayoutOrder = getLayoutOrderIndex(),
+				LayoutOrder = incrementLayoutOrder(),
 				Size = UDim2.new(0, 30, 0, 30),
 				Text = "Fix Missing Machine Anchor",
 				TextXAlignment = Enum.TextXAlignment.Center,

@@ -33,7 +33,7 @@ type Props = {
 local function EditItemsListUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local index = 0
-    local getLayoutOrderIndex = function()
+    local incrementLayoutOrder = function()
         index = index + 1
         return index
     end
@@ -66,7 +66,7 @@ local function EditItemsListUI(props: Props)
             Image = items[key]["thumb"],
             ObjectToEdit = items[key],
             Label = items[key]["id"],
-            LayoutOrder = getLayoutOrderIndex(),
+            LayoutOrder = incrementLayoutOrder(),
             OnSwapButtonClicked = Dash.noop(),
             OnEditButtonClicked = function(val)
                 props.ShowEditItemPanel(val)

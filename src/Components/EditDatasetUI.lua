@@ -25,12 +25,19 @@ local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
 
 local add = require(script.Parent.Parent.Helpers.add)
+local SmallButton = require(script.Parent.SubComponents.SmallButton)
 type Props = {
 
 }
 
 local function EditDatasetUI(props:Props)
     local currentMapIndex, setCurrentMapIndex = React.useState(props.CurrentMapIndex)
+
+    local index = 0
+    local incrementLayoutOrder = function()
+        index = index + 1
+        return index
+    end
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
@@ -63,18 +70,21 @@ local function EditDatasetUI(props:Props)
         }))
         add(children, Button({
             Label = "Edit Factory",
+            LayoutOrder = incrementLayoutOrder(),
             OnActivated = props.ShowEditFactoryPanel,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
         add(children, Button({
             Label = "Edit Machine List",
+            LayoutOrder = incrementLayoutOrder(),
             OnActivated = props.ShowEditMachinesListUI,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
         add(children, Button({
             Label = "Edit Items List",
+            LayoutOrder = incrementLayoutOrder(),
             OnActivated = props.ShowEditItemsListUI,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
@@ -87,48 +97,57 @@ local function EditDatasetUI(props:Props)
         -- }))
         
         add(children, Block({
+            LayoutOrder = incrementLayoutOrder(),
             Size = UDim2.fromOffset(0, 40)
         }))
 
         add(children, Button({
             Label = "Export Dataset",
+            LayoutOrder = incrementLayoutOrder(),
             OnActivated = props.ExportDataset,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        add(children, Button({
-            Label = "Print Dataset to Console",
-            OnActivated = function()
-                print(Dash.pretty(dataset, {multiline = true, indent = "\t"}))
-            end,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        add(children, Button({
-            Label = "Print Machines to Console",
-            OnActivated = function()
-                print(Dash.pretty(map["machines"], {multiline = true, indent = "\t"}))
-            end,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        add(children, Button({
-            Label = "Print Items to Console",
-            OnActivated = function()
-                print(Dash.pretty(map["items"], {multiline = true, indent = "\t"}))
-            end,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        
+        }))        
     end
-
+    
     add(children, Button({
         Label = "Import Dataset",
+        LayoutOrder = incrementLayoutOrder(),
         OnActivated = props.ImportDataset,
         Size = buttonSize,
         TextXAlignment = Enum.TextXAlignment.Center,
     }))
+    
+    if datasetIsLoaded then
+
+        add(children, SmallButton({
+            Label = "Print Dataset to Console",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                print(Dash.pretty(dataset, {multiline = true, indent = "\t"}))
+            end,
+            Size = UDim2.new(.925,0,0,30),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, SmallButton({
+            Label = "Print Machines to Console",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                print(Dash.pretty(map["machines"], {multiline = true, indent = "\t"}))
+            end,
+            Size = UDim2.new(.925,0,0,30),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, SmallButton({
+            Label = "Print Items to Console",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                print(Dash.pretty(map["items"], {multiline = true, indent = "\t"}))
+            end,
+            Size = UDim2.new(.925,0,0,30),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+    end
 
     return SidePanel({
         ShowClose = false,
