@@ -18,7 +18,7 @@ type Props = {
     ValueType: string,
 }
 
-local function Modal(props: Props)
+local function TextInputModal(props: Props)
     
     local value, setValue = React.useState(props.Value)
     local showError, setShowError = React.useState(false)
@@ -93,5 +93,5 @@ local function Modal(props: Props)
 end
 
 return function(props)
-    return React.createElement(Modal, props)
+    return React.createElement(TextInputModal, props)
 end

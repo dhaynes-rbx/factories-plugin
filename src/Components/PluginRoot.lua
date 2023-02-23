@@ -220,7 +220,7 @@ function PluginRoot:render()
     local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
 
     return React.createElement("ScreenGui", {}, {
-        Block({
+        PluginRoot = Block({
             PaddingLeft = 20,
             PaddingRight = 20,
             PaddingTop = 20,
