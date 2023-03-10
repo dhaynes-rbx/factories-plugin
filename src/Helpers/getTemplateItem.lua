@@ -4,7 +4,7 @@ return function()
         id = "templateItem",
         requirements = {
             {
-                count = 0.2,
+                count = 1,
                 itemId = "currency"
             }
         },

@@ -183,8 +183,9 @@ local function EditItemUI(props: Props)
     if item["requirements"] then
         for i,requirement in item["requirements"] do
             -- add(children, createListModalButton("itemId", requirement, items, false))
+            local currentCount = requirement["count"]
             add(children, ListItemButton({
-                CanDelete = true,
+                CanDelete = (#item["requirements"] > 1),
                 Image = items[requirement["itemId"]]["thumb"],
                 Index = i,
                 Label = requirement["itemId"],
@@ -210,7 +211,7 @@ local function EditItemUI(props: Props)
                         return function(newValue)
                             item["requirements"][i] = {
                                 itemId = newValue,
-                                count = 0.2
+                                count = currentCount
                             }
                             props.UpdateDataset(props.Dataset)
                         end
@@ -219,6 +220,11 @@ local function EditItemUI(props: Props)
             }))
             add(children, createTextChangingButton("count", requirement, true))
         end
+    else
+        --if there are no requirements, then make a requirement. An item should ALWAYS have a currency requirement if there is no item requirement.
+        item["requirements"] = {}
+        table.insert(item["requirements"], {count = 1, itemId = "currency"})
+        props.UpdateDataset(props.Dataset)
     end
 
     add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
