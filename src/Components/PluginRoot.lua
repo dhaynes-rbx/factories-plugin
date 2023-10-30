@@ -17,6 +17,7 @@ local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 local Icon = FishBloxComponents.Icon
 local Row = FishBloxComponents.Row
+local Button = FishBloxComponents.Button
 
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -235,6 +236,31 @@ function PluginRoot:render()
                     self:changePanel(Panels.EditDatasetUI)
                 end
             }, {}),
+
+            AddMachineButton = (self.state.currentPanel ~= Panels.InitializeFactoryUI) and Block({
+                Size = UDim2.new(0, 200,0, 50),
+                Position = UDim2.new(1, -25, 1, -50),
+                AnchorPoint = Vector2.new(1, 0),
+            }, {
+                Button({
+                Label = "Add Machine",
+                AutomaticSize = Enum.AutomaticSize.XY,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                OnActivated = function()
+                    -- print("Click")
+                    local newMachine = Dataset:addMachine()
+                    local anchor = Scene.instantiateMachineAnchor(newMachine)
+                    -- props.OnMachineEditClicked(newMachine, anchor)
+                    self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
+                    self:changePanel(Panels.EditMachineUI)
+                    Selection:Set({anchor})
+                    self:updateDataset(self.state.dataset)
+
+                    -- props.UpdateDataset(dataset)
+                end,
+                
+            })}),
+            
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
