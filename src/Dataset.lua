@@ -1,3 +1,4 @@
+local Types = require(script.Parent.Types)
 local getTemplateItem = require(script.Parent.Helpers.getTemplateItem)
 local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
 local Dataset = {}
@@ -91,7 +92,7 @@ function Dataset:getValidItems(originalItems:table)
     local result = {}
     for k,v in originalItems do
         if v["id"] == "currency" or v["id"] == "none" then 
-            continue 
+            continue
         else
             result[v["id"]] = v
         end
@@ -101,25 +102,48 @@ end
 
 function Dataset:resolveDuplicateId(idToCheck:string, tableToCheck:table)
     local dupeCounter = 0
-    local originalId = idToCheck
     local function checkIds(id)
         local newId = id
         for _,item in tableToCheck do
             if item.id == id then
                 dupeCounter = dupeCounter + 1
-                newId = checkIds(originalId..tostring(dupeCounter))
+                newId = checkIds(idToCheck..tostring(dupeCounter))
             end
         end
         return newId
     end
 
-    return checkIds(originalId)
+    return checkIds(idToCheck)
+end
+
+function Dataset:resolveDuplicateCoordinates(coordinatesToCheck:{X:number, Y:number}, tableToCheck:table)
+    local dupeCounter = 0
+    local function checkCoords(coords)
+        local newCoords = coords
+        for _,machine:Types.Machine in tableToCheck do
+            local dupeXFound = false
+            local dupeYFound = false
+            if machine.coordinates.X == coords.X then
+                dupeXFound = true
+            end
+            if machine.coordinates.Y == coords.Y then
+                dupeYFound = true
+            end
+            if dupeXFound and dupeYFound then
+                dupeCounter = dupeCounter + 1
+                newCoords = checkCoords({X = coords.X, Y = coords.Y + 1})
+            end
+        end
+        return newCoords
+    end
+    return checkCoords(coordinatesToCheck)
 end
 
 function Dataset:addMachine()
     local newMachine = getTemplateMachine()
     -- check for duplicate id
     newMachine.id = self:resolveDuplicateId(newMachine.id, self.machines)
+    newMachine.coordinates = self:resolveDuplicateCoordinates(newMachine.coordinates, self.machines)
     
     table.insert(self.machines, newMachine)
     
@@ -159,16 +183,11 @@ end
 
 function Dataset:getMachineFromId(id)
     local machine = nil
-    -- local num = 0
     for _,v in self.machines do
         if v["id"] == id then
-            -- num = num + 1
             machine = v
         end
     end
-    -- if num > 1 then
-    --     assert(true, "ERROR! Duplicate machine id found in this map!")
-    -- end
     return machine
 end
 

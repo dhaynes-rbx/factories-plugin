@@ -102,7 +102,7 @@ return function(props:Props)
                     return function(newValue)
                         local previousValue = machineObject[key]
                         if key == "id" and previousValue ~= newValue then
-                            newValue = Dataset:resolveDuplicateId(previousValue, machines)
+                            newValue = Dataset:resolveDuplicateId(newValue, machines)
                         end
                         machineObject[key] = newValue
                         
