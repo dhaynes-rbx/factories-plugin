@@ -99,9 +99,28 @@ function Dataset:getValidItems(originalItems:table)
     return result
 end
 
+function Dataset:resolveDuplicateId(idToCheck:string, tableToCheck:table)
+    local dupeCounter = 0
+    local originalId = idToCheck
+    local function checkIds(id)
+        local newId = id
+        for _,item in tableToCheck do
+            if item.id == id then
+                dupeCounter = dupeCounter + 1
+                newId = checkIds(originalId..tostring(dupeCounter))
+            end
+        end
+        return newId
+    end
+
+    return checkIds(originalId)
+end
+
 function Dataset:addMachine()
     local newMachine = getTemplateMachine()
-    --TODO: check for duplicate id and coordinates
+    -- check for duplicate id
+    newMachine.id = self:resolveDuplicateId(newMachine.id, self.machines)
+    
     table.insert(self.machines, newMachine)
     
     return newMachine
