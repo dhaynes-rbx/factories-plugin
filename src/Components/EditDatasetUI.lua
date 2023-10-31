@@ -32,7 +32,6 @@ type Props = {
     CurrentMap:table,
     CurrentMapIndex:number,
     Error:string,
-    ShowError:(string),
     Title:string,
 }
 

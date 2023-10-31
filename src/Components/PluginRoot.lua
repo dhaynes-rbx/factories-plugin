@@ -265,9 +265,6 @@ function PluginRoot:render()
                 CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
                 Error = self.state.datasetError,
-                ShowError = function(error)
-                    self:setState({datasetError = error})
-                end,
                 
                 Title = self.state.currentPanel..": "..mapName,
 
