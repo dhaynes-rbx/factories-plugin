@@ -63,7 +63,6 @@ return function(props:Props)
     local items = map["items"]
     
     --When the machineAnchor is changed, we need to make sure that all modals are closed and canceled out.
-    --
     React.useEffect(function()
         return function()
             setCurrentFieldCallback(nil)
@@ -102,6 +101,9 @@ return function(props:Props)
                 setCurrentFieldCallback(function()
                     return function(newValue)
                         local previousValue = machineObject[key]
+                        if key == "id" and previousValue ~= newValue then
+                            newValue = Dataset:resolveDuplicateId(previousValue, machines)
+                        end
                         machineObject[key] = newValue
                         
                         --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
