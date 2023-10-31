@@ -32,6 +32,7 @@ local Manifest = require(script.Parent.Parent.Manifest)
 type Props =
 {
     Items:table,
+    HighlightedAnchor:Model,
 }
 
 local function MachineAnchorBillboardGuis(props:Props)
@@ -39,6 +40,7 @@ local function MachineAnchorBillboardGuis(props:Props)
     for _,machineAnchor in Scene.getMachineAnchors() do
     
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
+        local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
         if machine then
             local outputs = machine["outputs"]
             local icons = {}
@@ -87,7 +89,7 @@ local function MachineAnchorBillboardGuis(props:Props)
                         Text = "Makes: "..outputsString,
                     }),
                     Text3 = Text({
-                        Color = Color3.new(1,1,1),
+                        Color = duplicateCoordinatesExist and Color3.new(1,0,0) or Color3.new(1,1,1),
                         FontSize = 16,
                         LayoutOrder = 3,
                         Text = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"

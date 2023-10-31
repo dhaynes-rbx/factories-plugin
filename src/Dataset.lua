@@ -139,6 +139,25 @@ function Dataset:resolveDuplicateCoordinates(coordinatesToCheck:{X:number, Y:num
     return checkCoords(coordinatesToCheck)
 end
 
+function Dataset:duplicateCoordinatesExist(coordinatesToCheck:{X:number, Y:number})
+    local dupeCounter = 0
+    for _,machine in self.machines do
+        local existingX = false
+        local existingY = false
+        if machine.coordinates.X == coordinatesToCheck.X then
+            existingX = true
+        end
+        if machine.coordinates.Y == coordinatesToCheck.Y then
+            existingY = true
+        end
+        if existingX and existingY then
+            dupeCounter = dupeCounter + 1
+        end
+        -- print(machine.id, machine.coordinates.Y, coordinatesToCheck.Y, "Counter:", existingCoordCounter)
+    end
+    return dupeCounter > 1
+end
+
 function Dataset:addMachine()
     local newMachine = getTemplateMachine()
     -- check for duplicate id

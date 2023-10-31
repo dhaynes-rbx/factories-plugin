@@ -95,6 +95,7 @@ function PluginRoot:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
+        -- error = Constants.Errors.None,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
         highlightedMachineAnchor = nil,

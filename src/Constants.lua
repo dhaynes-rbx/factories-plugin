@@ -19,5 +19,9 @@ return {
         maker = "Assets.Machines.Machine-Default",
         makerSeller = "Assets.Machines.Seller",
         purchaser = "Assets.Machines.Purchaser",
+    },
+    Errors = {
+        None = "None",
+        DuplicateCoordinatesError = "Duplicate Coordinates Error"
     }
 }
