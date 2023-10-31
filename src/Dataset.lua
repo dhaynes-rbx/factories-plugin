@@ -1,12 +1,24 @@
 local Types = require(script.Parent.Types)
 local getTemplateItem = require(script.Parent.Helpers.getTemplateItem)
 local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
+local Constants = require(script.Parent.Constants)
 local Dataset = {}
 
 Dataset.dataset = {}
 Dataset.currentMap = {}
 Dataset.items = {}
 Dataset.machines = {}
+
+function Dataset:checkForErrors()
+    --Check for duplicate IDs
+    local datasetError = Constants.Errors.None
+    for _,machine in self.machines do
+        if self:duplicateCoordinatesExist(machine.coordinates) then
+            datasetError = Constants.Errors.DuplicateCoordinatesError            
+        end
+    end
+    return datasetError
+end
 
 function Dataset:updateDataset(dataset, currentMapIndex)
     self.dataset = dataset

@@ -95,7 +95,7 @@ function PluginRoot:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
-        -- error = Constants.Errors.None,
+        datasetError = Constants.Errors.None,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
         highlightedMachineAnchor = nil,
@@ -116,6 +116,7 @@ function PluginRoot:updateDataset(dataset)
     SceneConfig.updateDatasetInstance(dataset)
     self:setState({
         dataset = dataset,
+        datasetError = Dataset:checkForErrors(),
     })
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
 end
@@ -248,16 +249,12 @@ function PluginRoot:render()
                 AutomaticSize = Enum.AutomaticSize.XY,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 OnActivated = function()
-                    -- print("Click")
                     local newMachine = Dataset:addMachine()
                     local anchor = Scene.instantiateMachineAnchor(newMachine)
-                    -- props.OnMachineEditClicked(newMachine, anchor)
                     self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
                     self:changePanel(Panels.EditMachineUI)
                     Selection:Set({anchor})
                     self:updateDataset(self.state.dataset)
-
-                    -- props.UpdateDataset(dataset)
                 end,
                 
             })}),
@@ -267,6 +264,11 @@ function PluginRoot:render()
                 CurrentMap = self.state.currentMap,
                 CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
+                Error = self.state.datasetError,
+                ShowError = function(error)
+                    self:setState({datasetError = error})
+                end,
+                
                 Title = self.state.currentPanel..": "..mapName,
 
                 SetCurrentMap = function(mapIndex)
@@ -326,6 +328,8 @@ function PluginRoot:render()
                 UpdateDataset = function(dataset) 
                     self:updateDataset(dataset) 
                 end,
+
+                
             }),
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
