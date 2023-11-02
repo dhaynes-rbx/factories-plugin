@@ -102,9 +102,6 @@ return function(props:Props)
                     return function(newValue)
                         if valueType == "string" then
                             newValue = newValue:gsub("%s", "")
-                            if string.match(newValue, "%S") == false then
-                                newValue = object[key]
-                            end
                         end
 
                         local previousValue = object[key]
