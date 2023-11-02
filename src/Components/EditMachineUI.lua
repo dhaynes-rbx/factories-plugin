@@ -100,6 +100,13 @@ return function(props:Props)
                 setCurrentFieldValue(object[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
+                        if valueType == "string" then
+                            newValue = newValue:gsub("%s", "")
+                            if string.match(newValue, "%S") == false then
+                                newValue = object[key]
+                            end
+                        end
+
                         local previousValue = object[key]
                         if previousValue == newValue then
                             return
