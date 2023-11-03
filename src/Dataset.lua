@@ -10,11 +10,11 @@ Dataset.items = {}
 Dataset.machines = {}
 
 function Dataset:checkForErrors()
-    --Check for duplicate IDs
     local datasetError = Constants.Errors.None
+    --Check for duplicate IDs
     for _,machine in self.machines do
         if self:duplicateCoordinatesExist(machine.coordinates) then
-            datasetError = Constants.Errors.DuplicateCoordinatesError            
+            datasetError = Constants.Errors.DuplicateCoordinatesError
         end
     end
     return datasetError
@@ -28,6 +28,9 @@ function Dataset:updateDataset(dataset, currentMapIndex)
 end
 
 function Dataset:changeItemId(itemKey, newName)
+    --check for naming collisions
+    newName = self:resolveDuplicateId(newName, self.items)
+
     local items = self.items
     local oldName = itemKey
     local newItem = table.clone(items[itemKey])
