@@ -57,15 +57,6 @@ function Dataset:addItem()
     local items = self.items
     local newItem = getTemplateItem()
     local newItemId = self:resolveDuplicateId(newItem["id"], self.items)
-    
-    -- local duplicateIdCount = 0
-    -- for _,item in items do
-    --     if string.match(item["id"], "templateItem") then
-    --         duplicateIdCount += 1
-    --     end
-    -- end
-
-    -- newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
     newItem["id"] = newItemId
     items[newItemId] = newItem
     
