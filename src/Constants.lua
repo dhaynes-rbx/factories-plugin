@@ -9,6 +9,7 @@ return {
         EditItemUI = "Edit Item",
         EditPowerupsListUI = "Edit Powerups List",
         EditPowerupUI = "Edit Powerup",
+        ImageSelector = "Image Selector"
     },
     MachineTypes = {
         maker = "maker",

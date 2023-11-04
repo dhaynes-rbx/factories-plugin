@@ -30,6 +30,8 @@ local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
+local ImageSelector = require(script.Parent.ImageSelector)
+
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -483,6 +485,9 @@ function PluginRoot:render()
                     self:changePanel(Panels.EditItemUI)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
+                ShowImageSelector = function()
+                    self:changePanel(Panels.ImageSelector)
+                end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
                 end,
@@ -498,7 +503,9 @@ function PluginRoot:render()
             --         self:updateDataset(dataset) 
             --     end,
             -- }),
+            ImageSelector = self.state.currentPanel == Panels.ImageSelector and ImageSelector({
 
+            }),
             
             EditPowerupUI = nil,
 
