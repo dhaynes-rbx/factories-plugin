@@ -34,6 +34,7 @@ function Dataset:changeItemId(itemKey, newName)
     local items = self.items
     local oldName = itemKey
     local newItem = table.clone(items[itemKey])
+
     newItem["id"] = newName
     items[newName] = newItem
     items[oldName] = nil
@@ -48,21 +49,23 @@ function Dataset:changeItemId(itemKey, newName)
             end
         end
     end
+    
+    return newName
 end
 
 function Dataset:addItem()
     local items = self.items
     local newItem = getTemplateItem()
-    local newItemId = newItem["id"]
+    local newItemId = self:resolveDuplicateId(newItem["id"], self.items)
     
-    local duplicateIdCount = 0
-    for _,item in items do
-        if string.match(item["id"], "templateItem") then
-            duplicateIdCount += 1
-        end
-    end
+    -- local duplicateIdCount = 0
+    -- for _,item in items do
+    --     if string.match(item["id"], "templateItem") then
+    --         duplicateIdCount += 1
+    --     end
+    -- end
 
-    newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
+    -- newItemId = duplicateIdCount > 0 and newItemId..tostring(duplicateIdCount) or newItemId
     newItem["id"] = newItemId
     items[newItemId] = newItem
     

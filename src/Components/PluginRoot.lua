@@ -425,7 +425,7 @@ function PluginRoot:render()
             }, {}),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
-                CurrentMap = self.state.currentMap,
+                CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
 
                 ShowEditItemPanel = function(itemKey)
@@ -456,7 +456,7 @@ function PluginRoot:render()
             }),
 
             EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
-                CurrentMap = self.state.currentMap,
+                CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
                 Item = self.state.selectedItem,
                 
@@ -481,9 +481,6 @@ function PluginRoot:render()
                 end,
                 ShowEditItemPanel = function(itemKey)
                     self:changePanel(Panels.EditItemUI)
-                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
-                end,
-                UpdateItem = function(itemKey)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
                 UpdateDataset = function(dataset)
@@ -536,83 +533,3 @@ function PluginRoot:componentWillUnmount()
 end
 
 return PluginRoot
-
--- buttons.InitializeSceneButton = not self.state.sceneIsLoaded and Button({
---     Label = "Initialize Scene",
---     OnActivated = function()
---         Scene.loadScene()
---         self:setState({sceneIsLoaded = Scene.isLoaded()})
---     end
--- }) or nil
-
--- buttons.AddMachineButton = self.state.sceneIsLoaded and Button({
---     Label = "Add Machine",
---     OnActivated = function()
---         print("Machine added")
---     end
--- }) or nil
-
--- for i,_ in ipairs(self.state.machines) do
---     table.insert(buttons, Button({Label = "Machine "..i}))
--- end
-
--- local panel = Panel({Size = UDim2.new(0, 300, 1, 0)}, buttons)
-
--- if not self.state.sceneIsLoaded then
-    --     children.InitializeSceneButton = Button({
-    --         Label = "Initialize Scene",
-    --         OnActivated = function()
-    --             Scene.loadScene()
-    --             self:setState({sceneIsLoaded = Scene.isLoaded()})
-    --         end
-    --     })
-    -- end
-
-    -- if self.state.sceneIsLoaded then 
-    --     children.InitializeSceneButton = Button({
-    --         Label = "Add Machine",
-    --         OnActivated = function()
-    --             print("Machine added")
-    --         end
-    --     })
-    -- end
-    
-    -- children.Panel.Column = Column({
-        --     Size = UDim2.fromScale(1, 0),
-    --     AutomaticSize = Enum.AutomaticSize.Y,
-    --     -- Gaps = theme.Tokens.Sizes.Registered.Small.Value,
-    --     HorizontalAlignment = Enum.HorizontalAlignment.Center,
-    --     VerticalAlignment = Enum.VerticalAlignment.Top,
-    --     -- ZIndex = self.props.ZIndex,
-    -- })
-    
-    -- if not self.state.sceneIsLoaded then
-    --     children.Panel.Column.InitializeScene = React.createElement("TextButton", {
-    --         Text = "Intialize Scene",
-    --         TextColor3 = Color3.fromRGB(0, 0, 0),
-    --         TextSize = 14,
-    --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    --         Size = self.state.buttonSize,
-    --         [React.Event.MouseButton1Click] = function()
-    --             Scene.loadScene()
-    --             self:setState({sceneIsLoaded = Scene.isLoaded()})
-    --         end
-    --     })
-    -- end
-
-    -- if self.state.sceneIsLoaded then
-    --     children.Panel.Column.CreateMachine = React.createElement("TextButton", {
-    --         Text = "Create Machine",
-    --         TextColor3 = Color3.fromRGB(0, 0, 0),
-    --         TextSize = 14,
-    --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    --         Size = self.state.buttonSize,
-    --         [React.Event.MouseButton1Click] = function()
-    --             Scene.loadScene()
-    --         end
-    --     })
-
-    --     local butt = React.createElement(Button, {Size = self.state.buttonSize})
-    --     children.Panel.Column.TestButton = Block({Size = self.state.buttonSize}, butt)
-    -- end
-    

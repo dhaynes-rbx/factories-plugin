@@ -27,7 +27,8 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 type Props = {
-
+    CurrentMapIndex:number,
+    Dataset:table,
 }
 
 local function EditItemsListUI(props: Props)
@@ -39,7 +40,7 @@ local function EditItemsListUI(props: Props)
     end
     
     local dataset = props.Dataset
-    local map = props.CurrentMap
+    local map = dataset["maps"][props.CurrentMapIndex]
     local items = map["items"]
     local children = {}
     
