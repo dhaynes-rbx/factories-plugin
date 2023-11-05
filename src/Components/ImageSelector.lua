@@ -33,7 +33,7 @@ local function ImageSelector(props:Props)
         SidePanel({
             -- Title = "Select Image",
             ShowClose = true,
-            -- OnClosePanel = props.OnClosePanel,
+            OnClosePanel = props.OnClosePanel,
         }, {}),
     })
 end

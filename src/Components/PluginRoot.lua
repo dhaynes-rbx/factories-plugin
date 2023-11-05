@@ -504,7 +504,10 @@ function PluginRoot:render()
             --     end,
             -- }),
             ImageSelector = self.state.currentPanel == Panels.ImageSelector and ImageSelector({
-
+                OnClosePanel = function()
+                    self:showPreviousPanel()
+                    self:setState({selectedItem = nil})
+                end,
             }),
             
             EditPowerupUI = nil,
