@@ -36,12 +36,13 @@ type Props = {
 
 }
 
-local function ImageButton(image)
+local function ImageButton(imageKey)
     return React.createElement("Frame", {
         BackgroundTransparency = .95,
         LayoutOrder = incrementLayoutOrder(),
         Size = UDim2.new(0, 90, 0, 90),
-        [React.Event.MouseEnter] = function() 
+        [React.Event.MouseEnter] = function()
+            print(imageKey)
             -- setHover(true)
             -- if props.OnHover and props.ObjectToEdit["machineAnchor"] then
             --     props.OnHover(props.ObjectToEdit)
@@ -56,16 +57,16 @@ local function ImageButton(image)
     }, {
         Image = React.createElement("ImageLabel", {
             BackgroundTransparency = 1,
-            Image = image, --Question mark icon
+            Image = Manifest.images[imageKey],
             LayoutOrder = 2,
             Size = UDim2.fromScale(1,1)
         })
     })
 end
 
-local function ImageButtonRow(images:{string})
+local function ImageButtonRow(imageNames:{string})
     local rowButtons = {}
-    for _,v in images do
+    for _,v in imageNames do
         table.insert(rowButtons, ImageButton(v))
     end
     return Row({Gaps = 8}, rowButtons)
@@ -75,9 +76,9 @@ local function ImageSelector(props:Props)
     local children = {}
     
     local thumbnails = {}
-    for k,v in Manifest.images do
-        if k:split("-")[1] == "icon" then
-            table.insert(thumbnails, v)
+    for imageKey,_ in Manifest.images do
+        if imageKey:split("-")[1] == "icon" then
+            table.insert(thumbnails, imageKey)
         end
     end
     table.sort(thumbnails, function(a,b)  --Do this to make sure buttons show in alphabetical order
@@ -86,14 +87,14 @@ local function ImageSelector(props:Props)
 
     local count = 0
     local imagesToShow = {}
-    for k,v in thumbnails do    
+    for _,imageKey in thumbnails do    
         count = count + 1
         if count%3 == 0 then
-            table.insert(imagesToShow, v)
+            table.insert(imagesToShow, imageKey)
             table.insert(children, ImageButtonRow(imagesToShow))
             table.clear(imagesToShow)
         else
-            table.insert(imagesToShow, v)
+            table.insert(imagesToShow, imageKey)
         end
     end
 

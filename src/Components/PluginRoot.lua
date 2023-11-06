@@ -6,7 +6,7 @@ local StudioService = game:GetService("StudioService")
 local Root = script.Parent.Parent
 local Packages = Root.Packages
 
-local Utilities = require(Packages.Utilities)
+-- local Utilities = require(Packages.Utilities)
 local Dash = require(Packages.Dash)
 
 local React = require(Packages.React)
@@ -45,6 +45,7 @@ local PluginRoot = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
+
 
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
