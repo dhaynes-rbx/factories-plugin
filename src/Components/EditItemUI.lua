@@ -87,7 +87,6 @@ local function EditItemUI(props: Props)
                                 --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
                                 newValue = Dataset:changeItemId(previousValue, newValue)
                                 props.ShowEditItemPanel(newValue)
-                                -- props.UpdateDataset(dataset)
                             else
                                 itemObject[key] = newValue
                             end
@@ -98,46 +97,12 @@ local function EditItemUI(props: Props)
         })
     end
 
-    local createListModalButton = function(key:string | number, list:table, choices:table, showThumbnailImages:boolean)
-
-        return SmallButtonWithLabel({
-            Appearance = "Filled",
-            ButtonLabel = tostring(list[key]),
-            Label = key..": ",
-            LayoutOrder = incrementLayoutOrder(),
-
-            OnActivated = function()
-                setListModalEnabled(true)
-                setShowThumbnails(showThumbnailImages)
-                setListChoices(choices)
-                setCurrentFieldKey(key)
-                setCurrentFieldValue(list[key])
-                setCurrentFieldCallback(function()
-                    return function(newValue)
-                        list[key] = newValue
-                    end
-                end)
-            end
-        })
-    end
-
     local children = {}
     local item = props.Item
 
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
 
-    -- local imageKeys = Dash.keys(Manifest.images)
-    -- table.sort(imageKeys, function(a,b)
-    --     return a < b
-    -- end)
-    -- local trimmedImageKeys = {}
-    -- for _,key in imageKeys do
-    --     if string.find(key, "icon") then
-    --         table.insert(trimmedImageKeys, key)
-    --     end
-    -- end
-    -- add(children, createListModalButton("thumb", item, trimmedImageKeys, false))
     add(children, SmallButtonWithLabel({
         Appearance = "Filled",
         ButtonLabel = item["thumb"],

@@ -57,6 +57,7 @@ function PluginRoot:setPanel()
 end
 
 function PluginRoot:changePanel(panelId)
+
     Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
         return
@@ -86,7 +87,7 @@ function PluginRoot:init()
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetInstanceAsTable()
         if not dataset then
-            print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
+            warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
             currentMap = dataset["maps"][currentMapIndex]
@@ -487,7 +488,7 @@ function PluginRoot:render()
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
                 ShowImageSelector = function()
-                    self:changePanel(Panels.ImageSelector)
+                    self:changePanel(Panels.ImageSelectorUI)
                 end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
@@ -510,7 +511,9 @@ function PluginRoot:render()
                     self:setState({selectedItem = nil})
                 end,
                 OnClick = function(imageKey)
-                    
+                    local item = self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                    item["thumb"] = imageKey
+                    self:updateDataset(self.state.dataset)
                     self:showPreviousPanel()
                 end,
             }),
@@ -534,7 +537,11 @@ function PluginRoot:render()
                 OnCancel = function()
                     self.state.modalCancellationCallback()
                 end,
-            })
+            }),
+
+            -- TempPanel = Panel({
+            --     Position = UDim2.new(0, 500, 0, 0),
+            -- })
         })
     })
 end
