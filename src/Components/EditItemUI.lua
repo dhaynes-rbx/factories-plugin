@@ -33,12 +33,14 @@ local add = require(script.Parent.Parent.Helpers.add)
 local Separator = require(script.Parent.SubComponents.Separator)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 type Props = {
-    CurrentMap:table,
+    CurrentMapIndex:number,
     Dataset:table,
     Item:table,
     OnClosePanel:any,
+    OnDeleteRequirementClicked:any,
+    ShowEditItemPanel:any,
     UpdateDataset:any,
-    UpdateItem:any,
+    ShowImageSelector:any,
 }
 
 local function EditItemUI(props: Props)
@@ -52,8 +54,7 @@ local function EditItemUI(props: Props)
     local valueType, setValueType = React.useState(nil)
     
     local dataset = props.Dataset
-    local map = props.CurrentMap
-    local machines = props.CurrentMap["machines"]
+    local map = dataset["maps"][props.CurrentMapIndex]
     local items = map["items"]
 
     --use this to create a consistent layout order that plays nice with Roact
@@ -82,11 +83,12 @@ local function EditItemUI(props: Props)
                     return function(newValue)
                         local previousValue = itemObject[key]
                         if newValue ~= previousValue then
-                            itemObject[key] = newValue
-                            --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
                             if key == "id" then
-                                Dataset:changeItemId(previousValue, newValue)
-                                props.UpdateDataset(dataset)
+                                --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
+                                newValue = Dataset:changeItemId(previousValue, newValue)
+                                props.ShowEditItemPanel(newValue)
+                            else
+                                itemObject[key] = newValue
                             end
                         end
                     end
@@ -95,45 +97,21 @@ local function EditItemUI(props: Props)
         })
     end
 
-    local createListModalButton = function(key:string | number, list:table, choices:table, showThumbnailImages:boolean)
-
-        return SmallButtonWithLabel({
-            Appearance = "Filled",
-            ButtonLabel = tostring(list[key]),
-            Label = key..": ",
-            LayoutOrder = incrementLayoutOrder(),
-
-            OnActivated = function()
-                setListModalEnabled(true)
-                setShowThumbnails(showThumbnailImages)
-                setListChoices(choices)
-                setCurrentFieldKey(key)
-                setCurrentFieldValue(list[key])
-                setCurrentFieldCallback(function()
-                    return function(newValue)
-                        list[key] = newValue
-                    end
-                end)
-            end
-        })
-    end
-
     local children = {}
     local item = props.Item
 
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
-    local imageKeys = Dash.keys(Manifest.images)
-    table.sort(imageKeys, function(a,b)
-        return a < b
-    end)
-    local trimmedImageKeys = {}
-    for _,key in imageKeys do
-        if string.find(key, "icon") then
-            table.insert(trimmedImageKeys, key)
-        end
-    end
-    add(children, createListModalButton("thumb", item, trimmedImageKeys, false))
+
+    add(children, SmallButtonWithLabel({
+        Appearance = "Filled",
+        ButtonLabel = item["thumb"],
+        Label = "thumb:",
+        LayoutOrder = incrementLayoutOrder(),
+        OnActivated = function()
+            props.ShowImageSelector()
+        end,
+    }))
     add(children, Row({
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         LayoutOrder = incrementLayoutOrder(),
@@ -270,7 +248,6 @@ local function EditItemUI(props: Props)
                 setModalEnabled(false)
                 setCurrentFieldKey(nil)
                 setCurrentFieldValue(nil)
-                props.UpdateItem(value)
                 props.UpdateDataset(dataset)
                 Studio.setSelectionTool()
             end,

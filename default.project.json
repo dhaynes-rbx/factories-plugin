@@ -33,6 +33,13 @@
               }
               
           }
+      },
+      "ReplicatedStorage": {
+        "$className": "ReplicatedStorage",
+        "Packages": {
+          "$className": "Folder",
+          "$path": "Packages"
+        }
       }
   }
 }

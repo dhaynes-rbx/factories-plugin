@@ -23,11 +23,16 @@ local SidePanel = require(script.Parent.SubComponents.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
 local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local Constants = require(script.Parent.Parent.Constants)
 
 local add = require(script.Parent.Parent.Helpers.add)
 local SmallButton = require(script.Parent.SubComponents.SmallButton)
 type Props = {
-
+    Dataset:table,
+    CurrentMap:table,
+    CurrentMapIndex:number,
+    Error:string,
+    Title:string,
 }
 
 local function EditDatasetUI(props:Props)
@@ -101,13 +106,30 @@ local function EditDatasetUI(props:Props)
             Size = UDim2.fromOffset(0, 40)
         }))
 
-        add(children, Button({
-            Label = "Export Dataset",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = props.ExportDataset,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))        
+        if props.Error == Constants.Errors.None then
+            add(children, Button({
+                Label = "Export Dataset",
+                LayoutOrder = incrementLayoutOrder(),
+                OnActivated = props.ExportDataset,
+                Size = buttonSize,
+                TextXAlignment = Enum.TextXAlignment.Center,
+            }))
+        else
+            add(children, Text({
+                LayoutOrder = incrementLayoutOrder(),
+                Text = props.Error.."!",
+                Color = Color3.new(1,0,0),
+                Size = UDim2.new(1, 0, 0, 10),
+                TextXAlignment = Enum.TextXAlignment.Center,
+            }))
+            add(children, Text({
+                LayoutOrder = incrementLayoutOrder(),
+                Text = "You must fix this before exporting.",
+                Color = Color3.new(1,0,0),
+                Size = UDim2.new(1, 0, 0, 10),
+                TextXAlignment = Enum.TextXAlignment.Center,
+            }))
+        end
     end
     
     add(children, Button({

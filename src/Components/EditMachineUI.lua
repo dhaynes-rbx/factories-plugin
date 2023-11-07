@@ -63,7 +63,6 @@ return function(props:Props)
     local items = map["items"]
     
     --When the machineAnchor is changed, we need to make sure that all modals are closed and canceled out.
-    --
     React.useEffect(function()
         return function()
             setCurrentFieldCallback(nil)
@@ -82,10 +81,10 @@ return function(props:Props)
         return index
     end
 
-    local createTextChangingButton = function(key:string | number, machineObject:table, isNumber:boolean, filled:boolean)
+    local createTextChangingButton = function(key:string | number, object:table, isNumber:boolean, filled:boolean)
         return SmallButtonWithLabel({
             Appearance = filled and "Filled",
-            ButtonLabel = tostring(machineObject[key]),
+            ButtonLabel = tostring(object[key]),
             Label = key..": ",
             LayoutOrder = incrementLayoutOrder(),
 
@@ -98,29 +97,21 @@ return function(props:Props)
                 --set modal enabled
                 setModalEnabled(true)
                 setCurrentFieldKey(key)
-                setCurrentFieldValue(machineObject[key])
+                setCurrentFieldValue(object[key])
                 setCurrentFieldCallback(function()
                     return function(newValue)
-                        local previousValue = machineObject[key]
-                        machineObject[key] = newValue
-                        
-                        --if the value being changed is a Machine's coordinates, then we need to update the MachineAnchor's name as well.
-                        --This is because when you select a MachineAnchor, it uses the Name to query which Machine the anchor refers to.
-                        if key == "X" or key == "Y" then
-                            local prevX = machineObject["X"]
-                            local prevY = machineObject["Y"]
-                            if key == "X" and machineObject["X"] ~= previousValue then
-                                prevX = previousValue
-                            elseif key == "Y" and machineObject["Y"] ~= previousValue then
-                                prevY = previousValue
-                            end
-                            
-                            --TODO: Check for, and prevent, duplicate coordinates
-                            local machineAnchor = Scene.getMachineAnchorFromCoordinates(prevX, prevY)
-                            machineAnchor.Name = "("..tostring(machineObject["X"])..","..tostring(machineObject["Y"])..")"
+                        if valueType == "string" then
+                            newValue = newValue:gsub("%s", "")
+                        end
 
-                        --if we're changing the ID, we must also change it wherever it appears as another machine's source
-                        elseif key == "id" then
+                        local previousValue = object[key]
+                        if previousValue == newValue then
+                            return
+                        end
+                        
+                        if key == "id" then
+                            object[key] = Dataset:resolveDuplicateId(newValue, machines)
+                            --if we're changing the ID, we must also change it wherever it appears as another machine's source
                             for i,machine in machines do
                                 if machine["sources"] then
                                     for j,source in machine["sources"] do
@@ -130,6 +121,11 @@ return function(props:Props)
                                     end
                                 end
                             end
+                        elseif key == "X" or key == "Y" then
+                            props.MachineAnchor.Name = "("..tostring(object["X"])..","..tostring(object["Y"])..")"
+                            object[key] = newValue
+                        else
+                            object[key] = newValue
                         end
                     end
                 end)

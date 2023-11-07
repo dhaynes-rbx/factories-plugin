@@ -45,7 +45,7 @@ return function(props, children)
         },{
             Content = Column({
                 AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = 8,
+                Gaps = props.Gaps or 8,
                 PaddingHorizontal = 20,
                 PaddingTop = 5,
             }, children)

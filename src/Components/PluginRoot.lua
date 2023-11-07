@@ -6,7 +6,7 @@ local StudioService = game:GetService("StudioService")
 local Root = script.Parent.Parent
 local Packages = Root.Packages
 
-local Utilities = require(Packages.Utilities)
+-- local Utilities = require(Packages.Utilities)
 local Dash = require(Packages.Dash)
 
 local React = require(Packages.React)
@@ -17,6 +17,7 @@ local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 local Icon = FishBloxComponents.Icon
 local Row = FishBloxComponents.Row
+local Button = FishBloxComponents.Button
 
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -29,6 +30,8 @@ local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
+local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
+
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -43,6 +46,7 @@ local PluginRoot = React.Component:extend("PluginGui")
 local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
 
+
 function PluginRoot:setPanel()
     Studio.setSelectionTool()
     self:setState({
@@ -53,6 +57,7 @@ function PluginRoot:setPanel()
 end
 
 function PluginRoot:changePanel(panelId)
+
     Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
         return
@@ -82,7 +87,7 @@ function PluginRoot:init()
     if SceneConfig.getDatasetInstance() then
         dataset = SceneConfig.getDatasetInstanceAsTable()
         if not dataset then
-            print("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
+            warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
             datasetIsLoaded = true
             currentMap = dataset["maps"][currentMapIndex]
@@ -94,6 +99,7 @@ function PluginRoot:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
+        datasetError = Constants.Errors.None,
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
         highlightedMachineAnchor = nil,
@@ -114,6 +120,7 @@ function PluginRoot:updateDataset(dataset)
     SceneConfig.updateDatasetInstance(dataset)
     self:setState({
         dataset = dataset,
+        datasetError = Dataset:checkForErrors(),
     })
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
 end
@@ -236,10 +243,33 @@ function PluginRoot:render()
                 end
             }, {}),
 
+            AddMachineButton = (self.state.currentPanel ~= Panels.InitializeFactoryUI) and Block({
+                Size = UDim2.new(0, 200,0, 50),
+                Position = UDim2.new(1, -25, 1, -50),
+                AnchorPoint = Vector2.new(1, 0),
+            }, {
+                Button({
+                Label = "Add Machine",
+                AutomaticSize = Enum.AutomaticSize.XY,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                OnActivated = function()
+                    local newMachine = Dataset:addMachine()
+                    local anchor = Scene.instantiateMachineAnchor(newMachine)
+                    self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
+                    self:changePanel(Panels.EditMachineUI)
+                    Selection:Set({anchor})
+                    self:updateDataset(self.state.dataset)
+                end,
+                
+            })}),
+            
+
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
                 CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
+                Error = self.state.datasetError,
+                
                 Title = self.state.currentPanel..": "..mapName,
 
                 SetCurrentMap = function(mapIndex)
@@ -299,6 +329,8 @@ function PluginRoot:render()
                 UpdateDataset = function(dataset) 
                     self:updateDataset(dataset) 
                 end,
+
+                
             }),
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
@@ -397,7 +429,7 @@ function PluginRoot:render()
             }, {}),
 
             EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
-                CurrentMap = self.state.currentMap,
+                CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
 
                 ShowEditItemPanel = function(itemKey)
@@ -428,7 +460,7 @@ function PluginRoot:render()
             }),
 
             EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
-                CurrentMap = self.state.currentMap,
+                CurrentMapIndex = self.state.currentMapIndex,
                 Dataset = self.state.dataset,
                 Item = self.state.selectedItem,
                 
@@ -455,8 +487,8 @@ function PluginRoot:render()
                     self:changePanel(Panels.EditItemUI)
                     self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
                 end,
-                UpdateItem = function(itemKey)
-                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
+                ShowImageSelector = function()
+                    self:changePanel(Panels.ImageSelectorUI)
                 end,
                 UpdateDataset = function(dataset)
                     self:updateDataset(dataset)
@@ -473,7 +505,18 @@ function PluginRoot:render()
             --         self:updateDataset(dataset) 
             --     end,
             -- }),
-
+            ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
+                OnClosePanel = function()
+                    self:showPreviousPanel()
+                    self:setState({selectedItem = nil})
+                end,
+                OnClick = function(imageKey)
+                    local item = self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                    item["thumb"] = imageKey
+                    self:updateDataset(self.state.dataset)
+                    self:showPreviousPanel()
+                end,
+            }),
             
             EditPowerupUI = nil,
 
@@ -494,7 +537,11 @@ function PluginRoot:render()
                 OnCancel = function()
                     self.state.modalCancellationCallback()
                 end,
-            })
+            }),
+
+            -- TempPanel = Panel({
+            --     Position = UDim2.new(0, 500, 0, 0),
+            -- })
         })
     })
 end
@@ -508,83 +555,3 @@ function PluginRoot:componentWillUnmount()
 end
 
 return PluginRoot
-
--- buttons.InitializeSceneButton = not self.state.sceneIsLoaded and Button({
---     Label = "Initialize Scene",
---     OnActivated = function()
---         Scene.loadScene()
---         self:setState({sceneIsLoaded = Scene.isLoaded()})
---     end
--- }) or nil
-
--- buttons.AddMachineButton = self.state.sceneIsLoaded and Button({
---     Label = "Add Machine",
---     OnActivated = function()
---         print("Machine added")
---     end
--- }) or nil
-
--- for i,_ in ipairs(self.state.machines) do
---     table.insert(buttons, Button({Label = "Machine "..i}))
--- end
-
--- local panel = Panel({Size = UDim2.new(0, 300, 1, 0)}, buttons)
-
--- if not self.state.sceneIsLoaded then
-    --     children.InitializeSceneButton = Button({
-    --         Label = "Initialize Scene",
-    --         OnActivated = function()
-    --             Scene.loadScene()
-    --             self:setState({sceneIsLoaded = Scene.isLoaded()})
-    --         end
-    --     })
-    -- end
-
-    -- if self.state.sceneIsLoaded then 
-    --     children.InitializeSceneButton = Button({
-    --         Label = "Add Machine",
-    --         OnActivated = function()
-    --             print("Machine added")
-    --         end
-    --     })
-    -- end
-    
-    -- children.Panel.Column = Column({
-        --     Size = UDim2.fromScale(1, 0),
-    --     AutomaticSize = Enum.AutomaticSize.Y,
-    --     -- Gaps = theme.Tokens.Sizes.Registered.Small.Value,
-    --     HorizontalAlignment = Enum.HorizontalAlignment.Center,
-    --     VerticalAlignment = Enum.VerticalAlignment.Top,
-    --     -- ZIndex = self.props.ZIndex,
-    -- })
-    
-    -- if not self.state.sceneIsLoaded then
-    --     children.Panel.Column.InitializeScene = React.createElement("TextButton", {
-    --         Text = "Intialize Scene",
-    --         TextColor3 = Color3.fromRGB(0, 0, 0),
-    --         TextSize = 14,
-    --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    --         Size = self.state.buttonSize,
-    --         [React.Event.MouseButton1Click] = function()
-    --             Scene.loadScene()
-    --             self:setState({sceneIsLoaded = Scene.isLoaded()})
-    --         end
-    --     })
-    -- end
-
-    -- if self.state.sceneIsLoaded then
-    --     children.Panel.Column.CreateMachine = React.createElement("TextButton", {
-    --         Text = "Create Machine",
-    --         TextColor3 = Color3.fromRGB(0, 0, 0),
-    --         TextSize = 14,
-    --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    --         Size = self.state.buttonSize,
-    --         [React.Event.MouseButton1Click] = function()
-    --             Scene.loadScene()
-    --         end
-    --     })
-
-    --     local butt = React.createElement(Button, {Size = self.state.buttonSize})
-    --     children.Panel.Column.TestButton = Block({Size = self.state.buttonSize}, butt)
-    -- end
-    
