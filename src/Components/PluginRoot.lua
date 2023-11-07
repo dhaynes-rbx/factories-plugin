@@ -30,7 +30,7 @@ local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
-local ImageSelector = require(script.Parent.ImageSelector)
+local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
 
 
 local Constants = require(script.Parent.Parent.Constants)
@@ -504,10 +504,14 @@ function PluginRoot:render()
             --         self:updateDataset(dataset) 
             --     end,
             -- }),
-            ImageSelector = self.state.currentPanel == Panels.ImageSelector and ImageSelector({
+            ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
                 OnClosePanel = function()
                     self:showPreviousPanel()
                     self:setState({selectedItem = nil})
+                end,
+                OnClick = function(imageKey)
+                    
+                    self:showPreviousPanel()
                 end,
             }),
             

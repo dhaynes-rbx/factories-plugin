@@ -33,46 +33,66 @@ local incrementLayoutOrder = function()
     return index
 end
 type Props = {
-
+    OnClick:(any)
 }
 
-local function ImageButton(imageKey)
-    return React.createElement("Frame", {
-        BackgroundTransparency = .95,
+local function ImageButton(imageKey, onClick)
+    local hover, setHover = React.useState(false)
+
+    local prefix = imageKey:split("-")[1]
+    local imageLabel = imageKey:gsub(prefix, ""):sub(2)
+    return Block({
+        BackgroundTransparency = hover and .85 or 0.9,
+        Corner = UDim.new(0,8),
+        HasStroke = true,
+        StrokeThickness = 2,
+        StrokeColor = Color3.new(1,1,1),
+        StrokeTransparency = hover and 0.7 or 0.8,
         LayoutOrder = incrementLayoutOrder(),
-        Size = UDim2.new(0, 90, 0, 90),
-        [React.Event.MouseEnter] = function()
-            print(imageKey)
-            -- setHover(true)
-            -- if props.OnHover and props.ObjectToEdit["machineAnchor"] then
-            --     props.OnHover(props.ObjectToEdit)
-            -- end
+        Size = UDim2.new(0, 90, 0, 120),
+        OnClick = function()
+            onClick(imageKey)
         end,
-        [React.Event.MouseLeave] = function() 
-            -- setHover(false)
-            -- if props.OnHover and props.ObjectToEdit["machineAnchor"] then
-            --     props.OnHover(nil)
-            -- end
+        OnMouseEnter = function()
+            setHover(true)
+
+        end,
+        OnMouseLeave = function() 
+            setHover(false)
+
         end,
     }, {
-        Image = React.createElement("ImageLabel", {
-            BackgroundTransparency = 1,
-            Image = Manifest.images[imageKey],
-            LayoutOrder = 2,
-            Size = UDim2.fromScale(1,1)
+        Column = Column({
+            Padding = UDim.new(0,8),
+            Gaps = 8,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        },{
+            Image = React.createElement("ImageLabel", {
+                BackgroundTransparency = 1,
+                Image = Manifest.images[imageKey],
+                LayoutOrder = 1,
+                Size = UDim2.fromScale(0.9,0.9),
+                SizeConstraint = Enum.SizeConstraint.RelativeXX,
+            }),
+            Text = Text({
+                Color = Color3.new(1,1,1),
+                TextXAlignment = Enum.TextXAlignment.Center,
+                LayoutOrder = 2,
+                Text = imageLabel,
+            })
         })
     })
 end
 
-local function ImageButtonRow(imageNames:{string})
+local function ImageButtonRow(imageNames:{string}, onClick)
     local rowButtons = {}
     for _,v in imageNames do
-        table.insert(rowButtons, ImageButton(v))
+        table.insert(rowButtons, ImageButton(v, onClick))
     end
-    return Row({Gaps = 8}, rowButtons)
+    return Row({Gaps = 12}, rowButtons)
 end
 
-local function ImageSelector(props:Props)
+local function ImageSelectorUI(props:Props)
     local children = {}
     
     local thumbnails = {}
@@ -91,7 +111,7 @@ local function ImageSelector(props:Props)
         count = count + 1
         if count%3 == 0 then
             table.insert(imagesToShow, imageKey)
-            table.insert(children, ImageButtonRow(imagesToShow))
+            table.insert(children, ImageButtonRow(imagesToShow, props.OnClick))
             table.clear(imagesToShow)
         else
             table.insert(imagesToShow, imageKey)
@@ -100,7 +120,8 @@ local function ImageSelector(props:Props)
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
-            Title = "Select Image",
+            Gaps = 12,
+            Title = "Choose a thumbnail",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
@@ -108,5 +129,5 @@ local function ImageSelector(props:Props)
 end
 
 return function(props:Props)
-    return React.createElement(ImageSelector, props)
+    return React.createElement(ImageSelectorUI, props)
 end
