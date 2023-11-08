@@ -32,6 +32,7 @@ local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
 local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
 
+-- local ConveyorBelts = require(script.Parent.ConveyorBelts)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -122,7 +123,7 @@ function PluginRoot:updateDataset(dataset)
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
     })
-    Dataset:updateDataset(dataset, self.state.currentMapIndex)
+    Dataset:updateDataset(SceneConfig.getDatasetInstanceAsTable(), self.state.currentMapIndex)
 end
 
 function PluginRoot:updateConnections()
@@ -207,7 +208,9 @@ function PluginRoot:setCurrentMap(mapIndex)
 
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
-    Scene.instantiateMapMachineAnchors(currentMap)
+    self:updateDataset(self.state.dataset)
+    Dataset:updateMap(currentMap) --Do this to make sure machineAnchor IDs get registered in the dataset.
+    Scene.instantiateMapMachineAnchors(mapIndex)
     game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
     self:updateDataset(self.state.dataset)
     self:setState({
@@ -243,7 +246,7 @@ function PluginRoot:render()
                 end
             }, {}),
 
-            AddMachineButton = (self.state.currentPanel ~= Panels.InitializeFactoryUI) and Block({
+            AddMachineButton = self.state.datasetIsLoaded and Block({
                 Size = UDim2.new(0, 200,0, 50),
                 Position = UDim2.new(1, -25, 1, -50),
                 AnchorPoint = Vector2.new(1, 0),
@@ -322,7 +325,7 @@ function PluginRoot:render()
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                     self:muteMachineDeletionConnection()
-                    Scene.instantiateMapMachineAnchors(currentMap)
+                    Scene.instantiateMapMachineAnchors(self.state.currentMapIndex)
                     self:updateDataset(dataset)
                 end,
 
@@ -525,9 +528,13 @@ function PluginRoot:render()
                 HighlightedAnchor = self.state.highlightedMachineAnchor
             }),
 
-            ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
-                CurrentMap = self.state.currentMap
-            }),
+            -- ConveyorBelts = self.state.datasetIsLoaded and ConveyorBelts({
+            --     CurrentMap = self.state.currentMap,
+            -- }),
+
+            -- ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
+            --     CurrentMap = self.state.currentMap
+            -- }),
 
             ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
                 Title = self.state.modalTitle,

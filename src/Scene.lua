@@ -148,7 +148,7 @@ function Scene.instantiateMachineAnchor(machine:table)
     -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
     --TODO: Figure out why mesh machines are not importing correctly
     local anchor = Scene.getAnchorFromMachine(machine)
-    if not anchor then 
+    if not anchor then
         anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
         anchor.PrimaryPart.Color = Color3.new(0.1,0.1,0.1)
         anchor.PrimaryPart.Transparency = 0.1
@@ -165,30 +165,58 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.instantiateMapMachineAnchors(map:table)
+function Scene.instantiateMapMachineAnchors(mapIndex:number)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
         folder.Name = "Machines"
-        -- folder.ChildRemoved:Connect(function(child:Instance)
-            
-        -- end)
-        -- folder.ChildAdded:Connect(function(child:Instance)
-        --     registerDebugId(child)
-        -- end)
+
         folder.Parent = game.Workspace.Scene.FactoryLayout
     end
     folder:ClearAllChildren()
 
+    local map = Dataset:getMap(mapIndex)
     for _,machine in map["machines"] do
         Scene.instantiateMachineAnchor(machine)
     end
+
+    Dataset:updateMap(map)
+    
 end
 
 function Scene.removeMachineAnchor(machine:table)
     local anchor = Scene.getMachineAnchor(machine)
     if anchor then
         anchor:Destroy()
+    end
+end
+
+function Scene.getBeltsFolder()
+    return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
+end
+
+function Scene.createConveyorBelt(startPosition:Vector3, endPosition:Vector3)
+    local part = Instance.new("Part")
+    part.Anchored = true
+    part:PivotTo(CFrame.new(startPosition))
+    part.Parent = Scene.getBeltsFolder()
+    return part
+end
+
+function Scene.updateConveyorBelts(machines:table)
+    print("Updating conveyor belts...")
+    local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
+    folder:ClearAllChildren()
+    for _,machine in machines do
+        local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
+        local endPosition = Vector3.new()
+        if machine["sources"] then
+            for _,source in machine["sources"] do
+                local sourceMachine = Dataset:getMachineFromId(source)
+                endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
+            end
+        end
+        -- Scene.createConveyorBelt(startPosition, endPosition)
     end
 end
 

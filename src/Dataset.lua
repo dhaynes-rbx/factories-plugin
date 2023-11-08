@@ -2,6 +2,9 @@ local Types = require(script.Parent.Types)
 local getTemplateItem = require(script.Parent.Helpers.getTemplateItem)
 local getTemplateMachine = require(script.Parent.Helpers.getTemplateMachine)
 local Constants = require(script.Parent.Constants)
+local Root = script.Parent
+local Packages = Root.Packages
+local Dash = require(Packages.Dash)
 local Dataset = {}
 
 Dataset.dataset = {}
@@ -25,6 +28,14 @@ function Dataset:updateDataset(dataset, currentMapIndex)
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
     self.machines = self.currentMap["machines"]
+end
+
+function Dataset:getMap(mapIndex:number)
+    return self.dataset["maps"][mapIndex]
+end
+
+function Dataset:updateMap(map:table)
+    self.currentMap = map
 end
 
 function Dataset:changeItemId(itemKey, newName)
@@ -162,7 +173,6 @@ function Dataset:duplicateCoordinatesExist(coordinatesToCheck:{X:number, Y:numbe
         if existingX and existingY then
             dupeCounter = dupeCounter + 1
         end
-        -- print(machine.id, machine.coordinates.Y, coordinatesToCheck.Y, "Counter:", existingCoordCounter)
     end
     return dupeCounter > 1
 end
@@ -205,12 +215,13 @@ function Dataset:getMachineFromMachineAnchor(machineAnchor:Instance)
     if counter > 1 then
         print("Error! More than one machine refers to this anchor!")
     end
-
+    
     return machine
 end
 
 function Dataset:getMachineFromId(id)
     local machine = nil
+    print("Machine from id?", self.machines)
     for _,v in self.machines do
         if v["id"] == id then
             machine = v
