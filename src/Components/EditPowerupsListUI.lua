@@ -19,7 +19,6 @@ local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
 local SidePanel = require(script.Parent.SubComponents.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 type Props = {

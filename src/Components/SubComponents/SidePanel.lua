@@ -18,7 +18,6 @@ local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
 local SmallLabel = require(script.Parent.SmallLabel)
 
 local Scene = require(script.Parent.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.Parent.SceneConfig)
 
 return function(props, children)
     children = children or {}

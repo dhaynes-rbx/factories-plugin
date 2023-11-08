@@ -25,7 +25,6 @@ local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)

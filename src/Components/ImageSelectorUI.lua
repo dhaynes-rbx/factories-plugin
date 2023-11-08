@@ -22,7 +22,6 @@ local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 local Manifest = require(script.Parent.Parent.Manifest)
 

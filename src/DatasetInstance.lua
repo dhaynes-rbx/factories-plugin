@@ -5,7 +5,7 @@ local Packages = script.Parent.Packages
 local Utilities = require(Packages.Utilities)
 
 --TODO: Make this manage the config folder structure that holds dataset data
-local SceneConfig = {}
+local DatasetInstance = {}
 
 local function getOrCreateFolder(name:string, parent:Instance)
     local folder = parent:FindFirstChild(name)
@@ -17,25 +17,24 @@ local function getOrCreateFolder(name:string, parent:Instance)
     return folder
 end
 
-function SceneConfig.replaceDatasetInstance(datasetInstance)
-    local folder = getOrCreateFolder("SceneConfig", game.Workspace)
-    local datasetFolder = getOrCreateFolder("Dataset", folder)
+function DatasetInstance.replaceDatasetInstance(datasetInstance)
+    local datasetFolder = getOrCreateFolder("Dataset", game.Workspace)
     if #datasetFolder:GetChildren() then
         datasetFolder:ClearAllChildren()
     end
     datasetInstance.Parent = datasetFolder
 end
 
-function SceneConfig.getDatasetInstance()
-    local datasetFolder = Utilities.getValueAtPath(game.Workspace, "SceneConfig.Dataset")
+function DatasetInstance.getDatasetInstance()
+    local datasetFolder = Utilities.getValueAtPath(game.Workspace, "Dataset")
     if datasetFolder then
         return datasetFolder:GetChildren()[1]
     end
     return nil
 end
                                                                                     
-function SceneConfig.checkIfDatasetInstanceExists()
-    local instance = SceneConfig.getDatasetInstance()
+function DatasetInstance.checkIfDatasetInstanceExists()
+    local instance = DatasetInstance.getDatasetInstance()
     if instance then
         return true
     else
@@ -43,12 +42,12 @@ function SceneConfig.checkIfDatasetInstanceExists()
     end
 end
 
-function SceneConfig.getDatasetInstanceAsTable()
-    local str = SceneConfig.getDatasetInstance().Source
+function DatasetInstance.getDatasetInstanceAsTable()
+    local str = DatasetInstance.getDatasetInstance().Source
     return HttpService:JSONDecode(string.sub(str, #"return [[" + 1, #str - 2))
 end
 
-function SceneConfig.instantiateNewDatasetInstance()
+function DatasetInstance.instantiateNewDatasetInstance()
     local file = StudioService:PromptImportFile()
     if not file then
         return nil
@@ -59,18 +58,18 @@ function SceneConfig.instantiateNewDatasetInstance()
     
     newDatasetInstance.Name = file.Name:split(".")[1]
     newDatasetInstance.Parent = game.Workspace
-    SceneConfig.replaceDatasetInstance(newDatasetInstance)
+    DatasetInstance.replaceDatasetInstance(newDatasetInstance)
 
-    return SceneConfig.getDatasetInstanceAsTable(), newDatasetInstance
+    return DatasetInstance.getDatasetInstanceAsTable(), newDatasetInstance
 end
 
-function SceneConfig.updateDatasetInstance(dataset:table)
-    local datasetInstance = SceneConfig.getDatasetInstance()
+function DatasetInstance.updateDatasetInstance(dataset:table)
+    local datasetInstance = DatasetInstance.getDatasetInstance()
     datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
 end
 
-function SceneConfig.getDatasetInstanceName()
-    local dataset = SceneConfig.getDatasetInstance()
+function DatasetInstance.getDatasetInstanceName()
+    local dataset = DatasetInstance.getDatasetInstance()
     if dataset then
         local str = dataset.Name:split("_")
         return str[#str]
@@ -79,8 +78,8 @@ function SceneConfig.getDatasetInstanceName()
 end
 
 --TODO: Make it so that you can change the name of the dataset
-function SceneConfig.setDatasetInstanceName(name)
-    SceneConfig.getDatasetInstance().Name = name
+function DatasetInstance.setDatasetInstanceName(name)
+    DatasetInstance.getDatasetInstance().Name = name
 end
 
-return SceneConfig
+return DatasetInstance

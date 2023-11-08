@@ -38,7 +38,7 @@ local Dataset = require(script.Parent.Parent.Dataset)
 local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
 local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
@@ -84,8 +84,8 @@ function PluginRoot:init()
     local datasetIsLoaded = false
     local currentMap = nil
     local currentMapIndex = game.Workspace:GetAttribute("CurrentMapIndex") or 1 --Stash the index in an attribute for when you load/unload the plugin.
-    if SceneConfig.getDatasetInstance() then
-        dataset = SceneConfig.getDatasetInstanceAsTable()
+    if DatasetInstance.getDatasetInstance() then
+        dataset = DatasetInstance.getDatasetInstanceAsTable()
         if not dataset then
             warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
@@ -117,7 +117,7 @@ function PluginRoot:init()
 end
 
 function PluginRoot:updateDataset(dataset)
-    SceneConfig.updateDatasetInstance(dataset)
+    DatasetInstance.updateDatasetInstance(dataset)
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
@@ -208,7 +208,6 @@ function PluginRoot:setCurrentMap(mapIndex)
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
     Scene.instantiateMapMachineAnchors(currentMap)
-    game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
     self:updateDataset(self.state.dataset)
     self:setState({
         currentMapIndex = mapIndex, 
@@ -293,8 +292,8 @@ function PluginRoot:render()
                 end,
                 
                 ExportDataset = function()
-                    SceneConfig.updateDatasetInstance(self.state.dataset)
-                    local datasetInstance = SceneConfig.getDatasetInstance()
+                    DatasetInstance.updateDatasetInstance(self.state.dataset)
+                    local datasetInstance = DatasetInstance.getDatasetInstance()
                     local saveFile = datasetInstance:Clone()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
                     saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
@@ -309,7 +308,7 @@ function PluginRoot:render()
                 end,
 
                 ImportDataset = function()
-                    local dataset, newDatasetInstance = SceneConfig.instantiateNewDatasetInstance()
+                    local dataset, newDatasetInstance = DatasetInstance.instantiateNewDatasetInstance()
                     
                     if not newDatasetInstance then
                         return

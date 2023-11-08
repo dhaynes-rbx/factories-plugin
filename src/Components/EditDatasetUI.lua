@@ -22,7 +22,6 @@ local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
 local SidePanel = require(script.Parent.SubComponents.SidePanel)
 
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Constants = require(script.Parent.Parent.Constants)
 
 local add = require(script.Parent.Parent.Helpers.add)

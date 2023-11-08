@@ -8,7 +8,7 @@ local React = require(Packages.React)
 
 local Dataset = require(script.Parent.Dataset)
 local Scene = require(script.Parent.Scene)
-local SceneConfig = require(script.Parent.SceneConfig)
+local DatasetInstance = require(script.Parent.DatasetInstance)
 
 local Input = {}
 
@@ -17,7 +17,7 @@ function Input.listenForMachineSelection(map:table, callback:any)
 
         if #Selection:Get() >= 1 then
             local selectedObj = Selection:Get()[1]
-            if SceneConfig.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
+            if DatasetInstance.checkIfDatasetInstanceExists() and Scene.isMachineAnchor(selectedObj) then
                 local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
                 --If we set selectedMachine to nil, then it will not trigger a re-render for the machine prop.
                 if not machine then 
