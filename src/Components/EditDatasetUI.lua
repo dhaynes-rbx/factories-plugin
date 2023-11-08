@@ -145,7 +145,7 @@ local function EditDatasetUI(props:Props)
             Label = "Print Dataset to Console",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
-                print(Dash.pretty(dataset, {multiline = true, indent = "\t"}))
+                print(Dash.pretty(dataset, {multiline = true, indent = "\t", depth = 10}))
             end,
             Size = UDim2.new(.925,0,0,30),
             TextXAlignment = Enum.TextXAlignment.Center,
