@@ -83,9 +83,10 @@ function PluginRoot:init()
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
-    local currentMapIndex = game.Workspace:GetAttribute("CurrentMapIndex") or 1 --Stash the index in an attribute for when you load/unload the plugin.
-    if DatasetInstance.getDatasetInstance() then
-        dataset = DatasetInstance.getDatasetInstanceAsTable()
+    --If the map index has been saved as an attribute, load this map when reloading the plugin.
+    local currentMapIndex = (game.Workspace:FindFirstChild("Dataset") and game.Workspace.Dataset:GetAttribute("CurrentMapIndex")) or 1
+    if DatasetInstance.checkIfDatasetInstanceExists() then
+        dataset = Dataset:getDataset()
         if not dataset then
             warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
@@ -117,12 +118,12 @@ function PluginRoot:init()
 end
 
 function PluginRoot:updateDataset(dataset)
-    DatasetInstance.updateDatasetInstance(dataset)
+    
+    Dataset:updateDataset(dataset, self.state.currentMapIndex)
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
     })
-    Dataset:updateDataset(dataset, self.state.currentMapIndex)
 end
 
 function PluginRoot:updateConnections()
@@ -207,7 +208,7 @@ function PluginRoot:setCurrentMap(mapIndex)
 
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
-    Scene.instantiateMapMachineAnchors(currentMap)
+    Scene.instantiateNewMapAssets(currentMap)
     self:updateDataset(self.state.dataset)
     self:setState({
         currentMapIndex = mapIndex, 
@@ -217,6 +218,8 @@ function PluginRoot:setCurrentMap(mapIndex)
         selectedMachineAnchor = nil,
         showModal = false
     })
+
+    game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
 end
 
 function PluginRoot:render()
@@ -292,7 +295,7 @@ function PluginRoot:render()
                 end,
                 
                 ExportDataset = function()
-                    DatasetInstance.updateDatasetInstance(self.state.dataset)
+                    DatasetInstance.write(self.state.dataset)
                     local datasetInstance = DatasetInstance.getDatasetInstance()
                     local saveFile = datasetInstance:Clone()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
@@ -321,7 +324,7 @@ function PluginRoot:render()
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                     self:muteMachineDeletionConnection()
-                    Scene.instantiateMapMachineAnchors(currentMap)
+                    Scene.instantiateNewMapAssets(currentMap)
                     self:updateDataset(dataset)
                 end,
 

@@ -3,18 +3,19 @@ local StudioService = game:GetService("StudioService")
 
 local Packages = script.Parent.Packages
 local Utilities = require(Packages.Utilities)
+local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 
 --TODO: Make this manage the config folder structure that holds dataset data
 local DatasetInstance = {}
 
-local function getOrCreateFolder(name:string, parent:Instance)
-    local folder = parent:FindFirstChild(name)
-    if not folder then
-        folder = Instance.new("Folder")
-        folder.Name = name
-        folder.Parent = parent
-    end
-    return folder
+function DatasetInstance.read()
+    local str = DatasetInstance.getDatasetInstance().Source
+    return HttpService:JSONDecode(string.sub(str, #"return [[" + 1, #str - 2))
+end
+
+function DatasetInstance.write(dataset:table)
+    local datasetInstance = DatasetInstance.getDatasetInstance()
+    datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
 end
 
 function DatasetInstance.replaceDatasetInstance(datasetInstance)
@@ -42,10 +43,6 @@ function DatasetInstance.checkIfDatasetInstanceExists()
     end
 end
 
-function DatasetInstance.getDatasetInstanceAsTable()
-    local str = DatasetInstance.getDatasetInstance().Source
-    return HttpService:JSONDecode(string.sub(str, #"return [[" + 1, #str - 2))
-end
 
 function DatasetInstance.instantiateNewDatasetInstance()
     local file = StudioService:PromptImportFile()
@@ -60,13 +57,9 @@ function DatasetInstance.instantiateNewDatasetInstance()
     newDatasetInstance.Parent = game.Workspace
     DatasetInstance.replaceDatasetInstance(newDatasetInstance)
 
-    return DatasetInstance.getDatasetInstanceAsTable(), newDatasetInstance
+    return DatasetInstance.read(), newDatasetInstance
 end
 
-function DatasetInstance.updateDatasetInstance(dataset:table)
-    local datasetInstance = DatasetInstance.getDatasetInstance()
-    datasetInstance.Source = "return [["..HttpService:JSONEncode(dataset).."]]"
-end
 
 function DatasetInstance.getDatasetInstanceName()
     local dataset = DatasetInstance.getDatasetInstance()

@@ -28,15 +28,7 @@ function Scene.setCamera()
     Camera.CameraType = Enum.CameraType.Custom
 end
 
-function Scene.getOrCreateFolder(name, parent)
-    local folder:Folder = parent:FindFirstChild(name)
-    if not folder then
-        folder = Instance.new("Folder")
-        folder.Name = name
-        folder.Parent = parent
-    end
-    return folder
-end
+
 
 function Scene.getMachinesFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
@@ -116,10 +108,6 @@ function Scene.isMachineAnchor(obj)
     return false
 end
 
-function Scene.getMachineStorageFolder()
-    return Scene.getOrCreateFolder("FactoriesPlugin-Machines", ServerStorage)
-end
-
 function Scene.getAnchorFromMachine(machine:table)
     local anchor = nil
     if machine["machineAnchor"] then
@@ -165,12 +153,11 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.instantiateMapMachineAnchors(map:table)
+function Scene.instantiateNewMapAssets(map:table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
         folder.Name = "Machines"
-
         folder.Parent = game.Workspace.Scene.FactoryLayout
     end
     folder:ClearAllChildren()

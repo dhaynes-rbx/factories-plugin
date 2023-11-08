@@ -5,6 +5,7 @@ local Constants = require(script.Parent.Constants)
 local Root = script.Parent
 local Packages = Root.Packages
 local Dash = require(Packages.Dash)
+local DatasetInstance = require(script.Parent.DatasetInstance)
 local Dataset = {}
 
 Dataset.dataset = {}
@@ -23,7 +24,12 @@ function Dataset:checkForErrors()
     return datasetError
 end
 
+function Dataset:getDataset()
+    return DatasetInstance.read()
+end
+
 function Dataset:updateDataset(dataset, currentMapIndex)
+    DatasetInstance.write(dataset)
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
@@ -221,7 +227,6 @@ end
 
 function Dataset:getMachineFromId(id)
     local machine = nil
-    print("Machine from id?", self.machines)
     for _,v in self.machines do
         if v["id"] == id then
             machine = v
