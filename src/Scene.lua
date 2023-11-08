@@ -165,7 +165,7 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.instantiateMapMachineAnchors(mapIndex:number)
+function Scene.instantiateMapMachineAnchors(map:table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
@@ -175,13 +175,9 @@ function Scene.instantiateMapMachineAnchors(mapIndex:number)
     end
     folder:ClearAllChildren()
 
-    local map = Dataset:getMap(mapIndex)
     for _,machine in map["machines"] do
         Scene.instantiateMachineAnchor(machine)
     end
-
-    Dataset:updateMap(map)
-    
 end
 
 function Scene.removeMachineAnchor(machine:table)
