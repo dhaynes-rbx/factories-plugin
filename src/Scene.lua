@@ -3,6 +3,7 @@ local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
 local Dataset = require(script.Parent.Dataset)
 local Utilities = require(script.Parent.Packages.Utilities)
+local MapData = require(script.Parent.MapData)
 
 local function registerDebugId(instance:Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
@@ -153,7 +154,7 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.instantiateNewMapAssets(map:table)
+function Scene.updateAllMapAssets(map:table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
@@ -165,6 +166,8 @@ function Scene.instantiateNewMapAssets(map:table)
     for _,machine in map["machines"] do
         Scene.instantiateMachineAnchor(machine)
     end
+
+    Scene.updateAllConveyorBelts(map)
 end
 
 function Scene.removeMachineAnchor(machine:table)
@@ -178,30 +181,74 @@ function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
 end
 
-function Scene.createConveyorBelt(startPosition:Vector3, endPosition:Vector3)
+function Scene.instantiateConveyorBelt(conveyorBelt:table)
     local part = Instance.new("Part")
     part.Anchored = true
-    part:PivotTo(CFrame.new(startPosition))
+    local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
+    local size = Vector3.new(1, 1, distance)
+    part.Size = size
+    part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
+    part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
+    part.Name = conveyorBelt.name
     part.Parent = Scene.getBeltsFolder()
+
     return part
 end
 
-function Scene.updateConveyorBelts(machines:table)
-    print("Updating conveyor belts...")
+function Scene.updateAllConveyorBelts(map:table)
+    local machines = map["machines"]
     local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
     folder:ClearAllChildren()
+
+    local conveyorBelts = {}
     for _,machine in machines do
-        local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-        local endPosition = Vector3.new()
         if machine["sources"] then
-            for _,source in machine["sources"] do
-                local sourceMachine = Dataset:getMachineFromId(source)
-                endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
+            for _,sourceId in machine["sources"] do
+                local conveyorBelt = {}
+                local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
+                local endPosition = Vector3.new()
+                local sourceMachine = nil
+                for _,machineToCheck in machines do
+                    if sourceId == machineToCheck.id then
+                        sourceMachine = machineToCheck
+                    end
+                end
+                if sourceMachine then
+                    endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
+                end
+                conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
+                conveyorBelt.startPosition = startPosition
+                conveyorBelt.endPosition = endPosition
+
+                Scene.instantiateConveyorBelt(conveyorBelt)
+                table.insert(conveyorBelts, conveyorBelt)
             end
         end
-        -- Scene.createConveyorBelt(startPosition, endPosition)
     end
+
+    
+    local conveyorBeltData = {}
+    for _,belt in conveyorBelts do
+        local distance = (belt.endPosition - belt.startPosition).Magnitude
+        local numPoints = distance * 3 --3 points per stud
+        local points = {}
+        for i = 1, numPoints, 1 do
+            local lerpedPosition = belt.startPosition:Lerp(belt.endPosition, i/numPoints)
+            local point = {}
+            point.position = {}
+            point.position.x = lerpedPosition.x
+            point.position.y = lerpedPosition.y
+            point.position.z = lerpedPosition.z
+            point.index = i - 1 --Original MapData json files are 0-indexed
+            table.insert(points, point)
+        end
+        local beltKey = ('["%s"]'):format(belt.name) --Format this so when we write to MapData Source the keys show up with quotes around them
+        conveyorBeltData[beltKey] = points
+    end
+        
+    MapData.write(conveyorBeltData)
 end
+
 
 
 return Scene

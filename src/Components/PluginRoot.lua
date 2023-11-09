@@ -208,7 +208,7 @@ function PluginRoot:setCurrentMap(mapIndex)
 
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
-    Scene.instantiateNewMapAssets(currentMap)
+    Scene.updateAllMapAssets(currentMap)
     self:updateDataset(self.state.dataset)
     self:setState({
         currentMapIndex = mapIndex, 
@@ -324,7 +324,7 @@ function PluginRoot:render()
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                     self:muteMachineDeletionConnection()
-                    Scene.instantiateNewMapAssets(currentMap)
+                    Scene.updateAllMapAssets(currentMap)
                     self:updateDataset(dataset)
                 end,
 

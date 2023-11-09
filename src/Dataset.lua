@@ -40,9 +40,6 @@ function Dataset:getMap(mapIndex:number)
     return self.dataset["maps"][mapIndex]
 end
 
-function Dataset:updateMap(map:table)
-    self.currentMap = map
-end
 
 function Dataset:changeItemId(itemKey, newName)
     --check for naming collisions
@@ -244,14 +241,14 @@ function Dataset:getCoordinatesFromAnchorName(name)
 end
 
 --returns the machine data in the dataset, based on the coordinates provided
-function Dataset:getMachineFromCoordinates(x, y)
-    local machine = nil
-    for _,v in self.machines do
-        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
-            machine = v
-        end
-    end
-    return machine
-end
+-- function Dataset:getMachineFromCoordinates(x, y)
+--     local machine = nil
+--     for _,v in self.machines do
+--         if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
+--             machine = v
+--         end
+--     end
+--     return machine
+-- end
 
 return Dataset
