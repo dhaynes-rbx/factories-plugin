@@ -84,7 +84,8 @@ function PluginRoot:init()
     local datasetIsLoaded = false
     local currentMap = nil
     --If the map index has been saved as an attribute, load this map when reloading the plugin.
-    local currentMapIndex = (game.Workspace:FindFirstChild("Dataset") and game.Workspace.Dataset:GetAttribute("CurrentMapIndex")) or 1
+    -- local currentMapIndex = (game.Workspace:FindFirstChild("Dataset") and game.Workspace.Dataset:GetAttribute("CurrentMapIndex")) or 1
+    local currentMapIndex = 2
     if DatasetInstance.checkIfDatasetInstanceExists() then
         dataset = Dataset:getDataset()
         if not dataset then
@@ -117,9 +118,11 @@ function PluginRoot:init()
     self.connections = {}    
 end
 
+--TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
+--and passed around. This could cause problems down the road.
 function PluginRoot:updateDataset(dataset)
-    
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
+    Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
@@ -328,11 +331,14 @@ function PluginRoot:render()
                     self:updateDataset(dataset)
                 end,
 
-                UpdateDataset = function(dataset) 
-                    self:updateDataset(dataset) 
+                UpdateDataset = function(dataset)
+                    self:updateDataset(dataset)
                 end,
 
-                
+                UpdateSceneName = function(name)
+                    self.state.dataset["maps"][self.state.currentMapIndex]["scene"] = name
+                    self:updateDataset(self.state.dataset)
+                end
             }),
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
@@ -526,14 +532,6 @@ function PluginRoot:render()
                 Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
                 HighlightedAnchor = self.state.highlightedMachineAnchor
             }),
-
-            -- ConveyorBelts = self.state.datasetIsLoaded and ConveyorBelts({
-            --     CurrentMap = self.state.currentMap,
-            -- }),
-
-            -- ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
-            --     CurrentMap = self.state.currentMap
-            -- }),
 
             ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
                 Title = self.state.modalTitle,

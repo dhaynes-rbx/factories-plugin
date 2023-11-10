@@ -40,6 +40,7 @@ local function MachineAnchorBillboardGuis(props:Props)
     
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
         local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
+        local machineIsInvalid = machine["type"] == Constants.MachineTypes.invalid
         if machine then
             local outputs = machine["outputs"]
             local icons = {}
@@ -82,7 +83,7 @@ local function MachineAnchorBillboardGuis(props:Props)
                         Text = machine["id"]
                     }),
                     Text2 = Text({
-                        Color = Color3.new(1,1,1),
+                        Color = machineIsInvalid and Color3.new(1,0,0) or Color3.new(1,1,1),
                         FontSize = 16,
                         LayoutOrder = 2,
                         Text = "Makes: "..outputsString,

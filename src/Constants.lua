@@ -15,6 +15,7 @@ return {
         maker = "maker",
         makerSeller = "makerSeller",
         purchaser = "purchaser",
+        invalid = "invalid"
     },
     MachineAssetPaths = {
         maker = "Assets.Machines.Machine-Default",
@@ -23,6 +24,7 @@ return {
     },
     Errors = {
         None = "None",
-        DuplicateCoordinatesError = "Duplicate Coordinates Error"
+        DuplicateCoordinatesError = "Duplicate Coordinates Error",
+        InvalidMachine = "Invalid machine: Machine has no source, yet outputs an item that has a value"
     }
 }

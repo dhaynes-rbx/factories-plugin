@@ -6,6 +6,7 @@ local Root = script.Parent
 local Packages = Root.Packages
 local Dash = require(Packages.Dash)
 local DatasetInstance = require(script.Parent.DatasetInstance)
+local Scene = require(script.Parent.Scene)
 local Dataset = {}
 
 Dataset.dataset = {}
@@ -13,12 +14,55 @@ Dataset.currentMap = {}
 Dataset.items = {}
 Dataset.machines = {}
 
+local function cleanMachines(machines:table, items:table)
+    --Clean the machine sources, make sure that its nil if there are no source ids. We do this because machines in Factories, "sources" might == nil.
+    for _,machine in machines do
+        if machine["sources"] and #machine["sources"] == 0 then
+            machine["sources"] = nil
+        end
+    end
+
+    for _,machine in machines do
+        local machineType = Constants.MachineTypes.maker
+        for _,itemId in machine["outputs"] do
+            if items[itemId]["value"] then
+                --If this machine has an output that has a value, then it's a makerSeller.
+                machineType = Constants.MachineTypes.makerSeller
+            end
+        end
+        if machine["sources"] == nil then
+            if machineType == Constants.MachineTypes.makerSeller then
+                machineType = Constants.MachineTypes.invalid
+            else
+                machineType = Constants.MachineTypes.purchaser
+            end
+        end
+        if machine["sources"] == nil and #machine["outputs"] == 0 then
+            machineType = Constants.MachineTypes.invalid
+        end
+        machine["type"] = machineType
+
+        if machineType == Constants.MachineTypes.makerSeller then
+            machine["asset"] = Constants.MachineAssetPaths.makerSeller
+        elseif machineType == Constants.MachineTypes.purchaser then
+            machine["asset"] = Constants.MachineAssetPaths.purchaser
+        else
+            machine["asset"] = Constants.MachineAssetPaths.maker
+        end
+    end
+end
+
 function Dataset:checkForErrors()
     local datasetError = Constants.Errors.None
     --Check for duplicate IDs
     for _,machine in self.machines do
         if self:duplicateCoordinatesExist(machine.coordinates) then
             datasetError = Constants.Errors.DuplicateCoordinatesError
+            warn(datasetError)
+        end
+        if machine["type"] == Constants.MachineTypes.invalid then
+            datasetError = Constants.Errors.InvalidMachine
+            warn(datasetError)
         end
     end
     return datasetError
@@ -34,6 +78,9 @@ function Dataset:updateDataset(dataset, currentMapIndex)
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
     self.machines = self.currentMap["machines"]
+
+    cleanMachines(self.machines, self.items)
+    Scene.updateAllConveyorBelts(self.currentMap)
 end
 
 function Dataset:getMap(mapIndex:number)
@@ -185,9 +232,9 @@ function Dataset:addMachine()
     -- check for duplicate id
     newMachine.id = self:resolveDuplicateId(newMachine.id, self.machines)
     newMachine.coordinates = self:resolveDuplicateCoordinates(newMachine.coordinates, self.machines)
-    
+
     table.insert(self.machines, newMachine)
-    
+
     return newMachine
 end
 
@@ -239,6 +286,8 @@ function Dataset:getCoordinatesFromAnchorName(name)
     y = tonumber(y)
     return x, y
 end
+
+
 
 --returns the machine data in the dataset, based on the coordinates provided
 -- function Dataset:getMachineFromCoordinates(x, y)

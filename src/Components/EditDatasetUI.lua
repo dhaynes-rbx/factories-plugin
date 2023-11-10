@@ -72,6 +72,13 @@ local function EditDatasetUI(props:Props)
                 props.SetCurrentMap(val)
             end
         }))
+        add(children, TextInput({
+            Label = "Scene Name",
+            LayoutOrder = incrementLayoutOrder(),
+            Size = UDim2.new(1, 0, 0, 50),
+            Value = map["scene"],
+            OnChanged = props.UpdateSceneName,
+        }))
         add(children, Button({
             Label = "Edit Factory",
             LayoutOrder = incrementLayoutOrder(),

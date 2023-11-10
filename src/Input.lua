@@ -41,7 +41,7 @@ function Input.listenForMachineDrag(map:table, callback:any)
         if selection then
             if Scene.isMachineAnchor(selection) then
                 --Register that the machine may have been moved.
-                local position = selection.PrimaryPart.CFrame.Position
+                local position = selection.CFrame.Position
 
                 local machine = Dataset:getMachineFromMachineAnchor(selection)
                 local worldPosition = Vector3.new()
