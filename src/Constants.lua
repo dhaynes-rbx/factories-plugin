@@ -26,5 +26,14 @@ return {
         None = "None",
         DuplicateCoordinatesError = "Duplicate Coordinates Error",
         InvalidMachine = "Invalid machine: Machine has no source, yet outputs an item that has a value"
+    },
+    Defaults = {
+        BoldFont = Font.new(
+            "rbxasset://fonts/families/GothamSSm.json",
+            Enum.FontWeight.Bold,
+            Enum.FontStyle.Normal
+        ),
+        
+        
     }
 }

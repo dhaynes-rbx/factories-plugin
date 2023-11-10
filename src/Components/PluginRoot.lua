@@ -233,12 +233,17 @@ function PluginRoot:render()
     local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
 
     return React.createElement("ScreenGui", {}, {
+        TopBar = Block({
+            BackgroundColor = Color3.fromRGB(32, 36, 42),
+            Size = UDim2.new(1,0,0,42),
+        }),
         PluginRoot = Block({
-            PaddingLeft = 20,
-            PaddingRight = 20,
-            PaddingTop = 20,
-            PaddingBottom = 20,
-            Size = UDim2.new(1, 0, 1, 0),
+            PaddingLeft = 10,
+            PaddingRight = 10,
+            PaddingTop = 10,
+            PaddingBottom = 10,
+            Size = UDim2.new(1, 0, 1, -42),
+            Position = UDim2.new(0,0,0,42),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
             InitializeFactoryUI = (self.state.currentPanel == Panels.InitializeFactoryUI) and React.createElement(InitializeFactoryUI, {
@@ -289,13 +294,13 @@ function PluginRoot:render()
                 Dataset = self.state.dataset,
                 Error = self.state.datasetError,
                 
-                Title = self.state.currentPanel..": "..mapName,
+                Title = self.state.currentPanel,
 
                 SetCurrentMap = function(mapIndex)
                     self:setCurrentMap(mapIndex)
                 end,
                 
-                ShowEditFactoryPanel = function()
+                ShowEditFactoryUI = function()
                     self:changePanel(Panels.EditFactoryUI)
                 end,
 
@@ -305,10 +310,6 @@ function PluginRoot:render()
 
                 ShowEditItemsListUI = function()
                     self:changePanel(Panels.EditItemsListUI)
-                end,
-
-                ShowEditPowerupsListUI = function()
-                    -- self:changePanel(Panels.EditPowerupsListUI)
                 end,
                 
                 ExportDataset = function()
@@ -352,6 +353,10 @@ function PluginRoot:render()
                 UpdateSceneName = function(name)
                     self.state.dataset["maps"][self.state.currentMapIndex]["scene"] = name
                     self:updateDataset(self.state.dataset)
+                end,
+
+                UpdateDatasetName = function(name)
+
                 end
             }),
 

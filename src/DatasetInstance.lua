@@ -60,6 +60,9 @@ function DatasetInstance.instantiateNewDatasetInstance()
     return DatasetInstance.read(), newDatasetInstance
 end
 
+function DatasetInstance.updateDatasetInstanceName(name:string)
+    DatasetInstance.getDatasetInstance().Name = "dataset_"..name
+end
 
 function DatasetInstance.getDatasetInstanceName()
     local dataset = DatasetInstance.getDatasetInstance()
