@@ -166,9 +166,10 @@ return function(props:Props)
     if datasetIsLoaded and machine then
         add(children, createTextChangingButton("id", machine))
         
-        add(children, createListModalButton("type", machine, Constants.MachineTypes, function(assetKey) 
-            machine["asset"] = Constants.MachineAssetPaths[assetKey]
-        end))
+        -- add(children, createListModalButton("type", machine, Constants.MachineTypes, function(assetKey) 
+        --     machine["asset"] = Constants.MachineAssetPaths[assetKey]
+        -- end))
+        add(Text({Text="type: "..machine["type"]}))
         
         add(children, createTextChangingButton("locName", machine))
         add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))

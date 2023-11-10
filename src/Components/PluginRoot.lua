@@ -17,7 +17,9 @@ local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 local Icon = FishBloxComponents.Icon
 local Row = FishBloxComponents.Row
+local Panel = FishBloxComponents.Panel
 local Button = FishBloxComponents.Button
+local TextInput = FishBloxComponents.TextInput
 
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -26,7 +28,6 @@ local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditItemUI = require(script.Parent.EditItemUI)
 local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
-local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
@@ -249,25 +250,38 @@ function PluginRoot:render()
             }, {}),
 
             AddMachineButton = self.state.datasetIsLoaded and Block({
-                Size = UDim2.new(0, 200,0, 50),
-                Position = UDim2.new(1, -25, 1, -50),
-                AnchorPoint = Vector2.new(1, 0),
-            }, {
-                Button({
-                Label = "Add Machine",
+                AnchorPoint = Vector2.new(1, 1),
                 AutomaticSize = Enum.AutomaticSize.XY,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                OnActivated = function()
-                    local newMachine = Dataset:addMachine()
-                    local anchor = Scene.instantiateMachineAnchor(newMachine)
-                    self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
-                    self:changePanel(Panels.EditMachineUI)
-                    Selection:Set({anchor})
-                    self:updateDataset(self.state.dataset)
-                end,
-                
-            })}),
-            
+                BackgroundColor = Color3.fromRGB(27, 42, 53),
+                Corner = UDim.new(0,24),
+                Padding = 12,
+                Position = UDim2.new(1, 0, 1, 0),
+                Size = UDim2.new(0, 200,0, 50),
+            }, {
+                -- UICorner = React.createElement("UICorner", {
+                --     CornerRadius = UDim.new(0,8),
+                --     BackgroundColor3 = Color3.fromRGB(27, 42, 53)
+                -- }, {}),
+
+                -- UIPadding = React.createElement("UIPadding", {
+                --     PaddingBottom = UDim.new(0, 8),
+                --     PaddingTop = UDim.new(0, 8),
+                --     PaddingLeft = UDim.new(0, 8),
+                --     PaddingRight = UDim.new(0, 8),
+                -- }),
+                Button = Button({
+                    Label = "Add Machine",
+                    TextXAlignment = Enum.TextXAlignment.Center,
+                    OnActivated = function()
+                        local newMachine = Dataset:addMachine()
+                        local anchor = Scene.instantiateMachineAnchor(newMachine)
+                        self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
+                        self:changePanel(Panels.EditMachineUI)
+                        Selection:Set({anchor})
+                        self:updateDataset(self.state.dataset)
+                    end,
+                })
+            }),
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
@@ -502,17 +516,6 @@ function PluginRoot:render()
                     self:updateDataset(dataset)
                 end,
             }),
-            
-            -- EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
-            --     CurrentMap = self.state.currentMap,
-            --     Dataset = self.state.dataset,
-            --     OnClosePanel = function()
-            --         self:showPreviousPanel()
-            --     end,
-            --     UpdateDataset = function(dataset)
-            --         self:updateDataset(dataset) 
-            --     end,
-            -- }),
             ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
                 OnClosePanel = function()
                     self:showPreviousPanel()
@@ -542,10 +545,6 @@ function PluginRoot:render()
                     self.state.modalCancellationCallback()
                 end,
             }),
-
-            -- TempPanel = Panel({
-            --     Position = UDim2.new(0, 500, 0, 0),
-            -- })
         })
     })
 end

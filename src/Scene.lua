@@ -185,6 +185,7 @@ function Scene.instantiateConveyorBelt(conveyorBelt:table)
     local part = Instance.new("Part")
     part.Anchored = true
     part.CanCollide = false
+    part.Locked = true
     local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
     local size = Vector3.new(1, 1, distance)
     part.Size = size
