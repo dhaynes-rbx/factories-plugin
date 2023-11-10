@@ -150,7 +150,7 @@ local function EditItemUI(props: Props)
             setCurrentFieldValue(nil)
             setCurrentFieldCallback(function()
                 return function(newValue)
-                    local newRequirementItem = {itemId = newValue, count = 0.2}
+                    local newRequirementItem = {itemId = newValue, count = 10}
                     table.insert(item["requirements"], newRequirementItem)
                     props.UpdateDataset(dataset)
                 end
