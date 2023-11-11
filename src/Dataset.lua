@@ -110,6 +110,17 @@ function Dataset:changeItemId(itemKey, newName)
             end
         end
     end
+
+    --Loop through all items. Make sure if this new item is a requirement for another item, to change its id there too.
+    for _,item in self.items do
+        if item["requirements"] then
+            for _,req in item["requirements"] do
+                if req["itemId"] == oldName then
+                    req["itemId"] = newName
+                end
+            end
+        end
+    end
     
     return newName
 end

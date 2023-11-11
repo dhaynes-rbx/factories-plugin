@@ -155,7 +155,6 @@ function Scene.instantiateMachineAnchor(machine:table)
 end
 
 function Scene.updateAllMapAssets(map:table)
-    print("Updating map assets...", map)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")

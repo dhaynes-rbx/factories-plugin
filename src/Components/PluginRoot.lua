@@ -77,7 +77,6 @@ function PluginRoot:showPreviousPanel()
 end
 
 function PluginRoot:init()
-    print("Plugin root init", self.state.dataset)
     Studio.setSelectionTool()
     
     local dataset = "NONE"
@@ -110,7 +109,6 @@ function PluginRoot:init()
         
         currentMap = templateDataset["maps"][currentMapIndex]
         self:muteMachineDeletionConnection()
-        print("Foo2")
         Scene.updateAllMapAssets(currentMap)
         self:setState({datasetIsLoaded = true})
         self:updateDataset(templateDataset)

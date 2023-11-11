@@ -178,24 +178,24 @@ local function EditDatasetUI(props:Props)
             Size = UDim2.new(.925,0,0,30),
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
-        -- add(children, SmallButton({
-        --     Label = "Print Machines to Console",
-        --     LayoutOrder = incrementLayoutOrder(),
-        --     OnActivated = function()
-        --         print(Dash.pretty(map["machines"], {multiline = true, indent = "\t"}))
-        --     end,
-        --     Size = UDim2.new(.925,0,0,30),
-        --     TextXAlignment = Enum.TextXAlignment.Center,
-        -- }))
-        -- add(children, SmallButton({
-        --     Label = "Print Items to Console",
-        --     LayoutOrder = incrementLayoutOrder(),
-        --     OnActivated = function()
-        --         print(Dash.pretty(map["items"], {multiline = true, indent = "\t"}))
-        --     end,
-        --     Size = UDim2.new(.925,0,0,30),
-        --     TextXAlignment = Enum.TextXAlignment.Center,
-        -- }))
+        add(children, SmallButton({
+            Label = "Print Machines to Console",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                print(Dash.pretty(map["machines"], {multiline = true, indent = "\t", depth = 10}))
+            end,
+            Size = UDim2.new(.925,0,0,30),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
+        add(children, SmallButton({
+            Label = "Print Items to Console",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                print(Dash.pretty(map["items"], {multiline = true, indent = "\t", depth = 10}))
+            end,
+            Size = UDim2.new(.925,0,0,30),
+            TextXAlignment = Enum.TextXAlignment.Center,
+        }))
     end
 
     return SidePanel({
