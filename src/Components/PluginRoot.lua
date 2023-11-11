@@ -77,9 +77,8 @@ function PluginRoot:showPreviousPanel()
 end
 
 function PluginRoot:init()
+    print("Plugin root init", self.state.dataset)
     Studio.setSelectionTool()
-
-    self.machinesAnchors = Scene.getMachineAnchors()
     
     local dataset = "NONE"
     local datasetIsLoaded = false
@@ -96,7 +95,27 @@ function PluginRoot:init()
             currentMap = dataset["maps"][currentMapIndex]
             Dataset:updateDataset(dataset, currentMapIndex)
         end
+    else
+        Scene.loadScene()
+        --if there's no scene and no dataset instance, then load everything.
+        local templateDataset, newDatasetInstance = DatasetInstance.loadTemplateDataset()
+        
+        if not newDatasetInstance then
+            return
+        end
+        --if for some reason the dataset is deleted, then make sure that the app state reflects that.
+        newDatasetInstance.AncestryChanged:Connect(function(_,_)
+            self:setState({dataset = "NONE", datasetIsLoaded = false})
+        end)
+        
+        currentMap = templateDataset["maps"][currentMapIndex]
+        self:muteMachineDeletionConnection()
+        print("Foo2")
+        Scene.updateAllMapAssets(currentMap)
+        self:setState({datasetIsLoaded = true})
+        self:updateDataset(templateDataset)
     end
+
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
         currentMap = currentMap, --TODO: remove this, use index instead
@@ -123,7 +142,7 @@ end
 --and passed around. This could cause problems down the road.
 function PluginRoot:updateDataset(dataset)
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
-    Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
+    -- Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
@@ -201,7 +220,7 @@ end
 
 function PluginRoot:muteMachineDeletionConnection()
     --mute the listener for the machine deletion.
-    if self.connections["MachineAnchorDeletion"] then
+    if self.connections and self.connections["MachineAnchorDeletion"] then
         self.connections["MachineAnchorDeletion"]:Disconnect()
         self.connections["MachineAnchorDeletion"] = nil
     end
@@ -228,16 +247,17 @@ end
 
 function PluginRoot:render()
     Studio.setSelectionTool()
-    self:updateConnections()
 
-    local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
+    if self.state.datasetIsLoaded then
+        self:updateConnections()
+    end
 
     return React.createElement("ScreenGui", {}, {
         TopBar = Block({
             BackgroundColor = Color3.fromRGB(32, 36, 42),
             Size = UDim2.new(1,0,0,42),
         }),
-        PluginRoot = Block({
+        PluginRoot = self.state.datasetIsLoaded and Block({
             PaddingLeft = 10,
             PaddingRight = 10,
             PaddingTop = 10,
@@ -254,7 +274,7 @@ function PluginRoot:render()
                 end
             }, {}),
 
-            AddMachineButton = self.state.datasetIsLoaded and Block({
+            AddMachineButton = Block({
                 AnchorPoint = Vector2.new(1, 1),
                 AutomaticSize = Enum.AutomaticSize.XY,
                 BackgroundColor = Color3.fromRGB(27, 42, 53),
@@ -304,9 +324,9 @@ function PluginRoot:render()
                     self:changePanel(Panels.EditFactoryUI)
                 end,
 
-                ShowEditMachinesListUI = function()
-                   self:changePanel(Panels.EditMachinesListUI)
-                end,
+                -- ShowEditMachinesListUI = function()
+                --    self:changePanel(Panels.EditMachinesListUI)
+                -- end,
 
                 ShowEditItemsListUI = function()
                     self:changePanel(Panels.EditItemsListUI)

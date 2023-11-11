@@ -112,13 +112,13 @@ local function EditDatasetUI(props:Props)
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         }))
-        add(children, Button({
-            Label = "Edit Machine List",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = props.ShowEditMachinesListUI,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
+        -- add(children, Button({
+        --     Label = "Edit Machine List",
+        --     LayoutOrder = incrementLayoutOrder(),
+        --     OnActivated = props.ShowEditMachinesListUI,
+        --     Size = buttonSize,
+        --     TextXAlignment = Enum.TextXAlignment.Center,
+        -- }))
         add(children, Button({
             Label = "Edit Items List",
             LayoutOrder = incrementLayoutOrder(),
@@ -134,6 +134,7 @@ local function EditDatasetUI(props:Props)
         -- }))
         if props.Error == Constants.Errors.None then
             add(children, Button({
+                Active = false,
                 Label = "Export Dataset",
                 LayoutOrder = incrementLayoutOrder(),
                 OnActivated = props.ExportDataset,

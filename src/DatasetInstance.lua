@@ -43,6 +43,17 @@ function DatasetInstance.checkIfDatasetInstanceExists()
     end
 end
 
+function DatasetInstance.loadTemplateDataset()
+    local template = require(script.Parent.Data["dataset_template"])
+
+    local newDatasetInstance = Instance.new("ModuleScript")
+    newDatasetInstance.Source = "return [["..HttpService:JSONEncode(template).."]]"
+    newDatasetInstance.Name = "dataset_template"
+
+    DatasetInstance.replaceDatasetInstance(newDatasetInstance)
+
+    return DatasetInstance.read(), newDatasetInstance
+end
 
 function DatasetInstance.instantiateNewDatasetInstance()
     local file = StudioService:PromptImportFile()
@@ -52,9 +63,8 @@ function DatasetInstance.instantiateNewDatasetInstance()
     
     local newDatasetInstance = Instance.new("ModuleScript")
     newDatasetInstance.Source = "return [["..file:GetBinaryContents().."]]"
-    
     newDatasetInstance.Name = file.Name:split(".")[1]
-    newDatasetInstance.Parent = game.Workspace
+
     DatasetInstance.replaceDatasetInstance(newDatasetInstance)
 
     return DatasetInstance.read(), newDatasetInstance
