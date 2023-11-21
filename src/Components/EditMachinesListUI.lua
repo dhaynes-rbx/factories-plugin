@@ -26,7 +26,6 @@ local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
@@ -34,7 +33,13 @@ local getTemplateMachine = require(script.Parent.Parent.Helpers.getTemplateMachi
 local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 type Props = {
-	OnMachineDeleteClicked:any
+	CurrentMap:table,
+	Dataset:table,
+	OnClosePanel:any,
+	UpdateDataset:any,
+	OnMachineEditClicked:any,
+	OnMachineDeleteClicked:any,
+	HighlightMachineAnchor:any,
 }
 
 local function EditMachinesListUI(props: Props)
@@ -110,28 +115,7 @@ local function EditMachinesListUI(props: Props)
 					Selection:Set({anchor})
 				end,
 			}))
-		end
-		
-		-- add(children, MachineListItem({
-		-- 	ButtonLabel = "Edit",
-		-- 	Label = i..": "..machine["id"],
-		-- 	Machine = machine,
-
-		-- 	FixMissingMachineAnchor = function(machineObj)
-		-- 		local anchor = Scene.instantiateMachineAnchor(machineObj)
-		-- 		props.UpdateDataset(dataset)
-        --         Selection:Set({anchor})
-		-- 	end,
-		-- 	OnDeleteMachineClicked = function(machineObj)
-		-- 		Dataset:removeMachine(machineObj["id"])
-		-- 		Scene.removeMachineAnchor(machineObj)
-		-- 		props.UpdateDataset(dataset)
-		-- 	end,
-		-- 	OnMachineEditClicked = function(machineObj, machineAnchor)
-		-- 		props.OnMachineEditClicked(machineObj, machineAnchor)
-		-- 	end
-		-- }))
-		
+		end		
 	end
 
 	return SidePanel({

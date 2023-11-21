@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "AssessmentUtils"
 version = "1.1.4"
-commit = "eee99b7660806e90775839f26d56356d7f4826db"
+commit = "fe42ef8f2b8c239a7effe1ef7789d2613b48b12d"
 source = "url+https://github.com/imbellus2/assessment-utils"
 dependencies = ["Dash Dash 0.1.9 url+https://github.com/roblox/dash"]
 
@@ -98,7 +98,7 @@ dependencies = [
 [[package]]
 name = "FishBlox"
 version = "0.0.1"
-commit = "531d8fd9cfad18ba91dd41f370cd8b20254395ec"
+commit = "1e3c672d5103ecf51cee6dcebcd2237910ebfff9"
 source = "url+https://github.com/imbellus2/fishblox"
 dependencies = [
     "BentoBlox BentoBlox 0.0.1 url+https://github.com/imbellus2/bentoblox",

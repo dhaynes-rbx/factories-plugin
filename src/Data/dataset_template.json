@@ -579,7 +579,7 @@
             "defaultInventory": {
                 "currency": 25000
             },
-            "scene": "Map04",
+            "scene": "Map05",
             "currentStep": 0,
             "id": "mapA",
             "locName": "Factory",

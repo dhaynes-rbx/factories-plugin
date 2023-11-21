@@ -8,17 +8,17 @@ local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Block = FishBloxComponents.Block
 local Button = FishBloxComponents.Button
+local Row = FishBloxComponents.Row
 local Column = FishBloxComponents.Column
 local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
-local TextInput = FishBloxComponents.TextInput
 
-local SmallButtonWithLabel = require(script.Parent.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SmallLabel)
-
-local Scene = require(script.Parent.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.Parent.SceneConfig)
+export type Props = {
+    OnClosePanel:any,
+    Title:string,
+    ShowClose:boolean,
+}
 
 return function(props, children)
     children = children or {}
@@ -27,28 +27,95 @@ return function(props, children)
         showClose = true
     end
 
-    return Panel({
-        AutomaticSize = Enum.AutomaticSize.Y,
-        OnClosePanel = props.OnClosePanel,
-        Title = props.Title,
-        ShowClose = showClose,
-        Size = UDim2.new(0, 400, 1, 0),
-    },{
-        ScrollingFrame = React.createElement("ScrollingFrame", {
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            -- AutomaticSize = Enum.AutomaticSize.Y,
-            CanvasSize = UDim2.new(0, 0, 1, 0),
-            Size = UDim2.fromScale(1, 1),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            ScrollingDirection = Enum.ScrollingDirection.Y,
-        },{
-            Content = Column({
-                AutomaticSize = Enum.AutomaticSize.Y,
-                Gaps = props.Gaps or 8,
-                PaddingHorizontal = 20,
-                PaddingTop = 5,
+    return Block({
+        AutomaticSize = Enum.AutomaticSize.None,
+        BackgroundColor = Color3.fromRGB(32, 36, 42),
+        Size = UDim2.new(0,300,1,0),
+        Padding = UDim.new(0,12),
+        Corner = UDim.new(0,12),
+        ClipsDescendants = true,
+    }, {
+        Column({
+            AutomaticSize = Enum.AutomaticSize.Y
+        }, {
+            TitleBlock = Block({
+                Size = UDim2.new(1,0,0,25)
+            }, {
+                Text = React.createElement("TextLabel", {
+                    AnchorPoint = Vector2.new(0,0),
+                    FontFace = Font.new(
+                        "rbxasset://fonts/families/GothamSSm.json",
+                        Enum.FontWeight.Bold,
+                        Enum.FontStyle.Normal
+                    ),
+                    Text = props.Title,
+                    TextColor3 = Color3.fromRGB(218, 218, 218),
+                    TextSize = 20,
+                    TextWrapped = true,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    TextYAlignment = Enum.TextYAlignment.Center,
+                    AutomaticSize = Enum.AutomaticSize.XY,
+                    BackgroundTransparency = 1,
+                    LayoutOrder = 1,
+                }),
+                CloseButtonBlock = Block({
+                    AnchorPoint = Vector2.new(1,0),
+                    Size = UDim2.fromOffset(20,20),
+                    Position = UDim2.new(1,0,0,0),
+                    LayoutOrder = 2,
+                }, {
+                    CloseButton = props.ShowClose and Button({
+                        Size = UDim2.fromScale(1,1),
+                        Padding = 4,
+                        Appearance = "Borderless",
+                        OnActivated = props.OnClosePanel,
+                        ZIndex = 1,
+                    }, {
+                        Image = Roact.createElement("ImageLabel", {
+                            Size = UDim2.fromOffset(10,10),
+                            AutomaticSize = Enum.AutomaticSize.None,
+                            BackgroundTransparency = 1,
+                            Image = "rbxassetid://6990919691",
+                            ImageColor3 = Color3.fromRGB(79, 159, 243),
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            Position = UDim2.fromScale(0.5, 0.5),
+                            ZIndex = props.ZIndex or 1,
+                        }),
+                    })
+                }),
+
+                
+            }),
+            Gap = Block({Size = UDim2.new(1,0,0,5)}),
+            ContentColumn = Column({
+                LayoutOrder = 2,
+                Gaps = 8,
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                Size = UDim2.new(1,0,1,0),
             }, children)
         })
     })
+    -- return Panel({
+    --     AutomaticSize = Enum.AutomaticSize.Y,
+    --     OnClosePanel = props.OnClosePanel,
+    --     Title = props.Title,
+    --     ShowClose = showClose,
+    --     Size = UDim2.new(0, 300, 1, 0),
+    -- },{
+    --     ScrollingFrame = React.createElement("ScrollingFrame", {
+    --         AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    --         -- CanvasSize = UDim2.new(0, 0, 1, 0),
+    --         Size = UDim2.fromScale(1, 1),
+    --         BackgroundTransparency = 1,
+    --         BorderSizePixel = 0,
+    --         ScrollingDirection = Enum.ScrollingDirection.Y,
+    --     },{
+    --         Content = Column({
+    --             AutomaticSize = Enum.AutomaticSize.Y,
+    --             Gaps = props.Gaps or 8,
+    --             PaddingHorizontal = 8,
+    --             PaddingTop = 5,
+    --         }, children)
+    --     })
+    -- })
 end

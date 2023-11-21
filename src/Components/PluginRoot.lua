@@ -17,7 +17,9 @@ local Column = FishBloxComponents.Column
 local Text = FishBloxComponents.Text
 local Icon = FishBloxComponents.Icon
 local Row = FishBloxComponents.Row
+local Panel = FishBloxComponents.Panel
 local Button = FishBloxComponents.Button
+local TextInput = FishBloxComponents.TextInput
 
 local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
@@ -26,7 +28,6 @@ local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditItemUI = require(script.Parent.EditItemUI)
 local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
-local EditPowerupsListUI = require(script.Parent.EditPowerupsListUI)
 local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
@@ -38,7 +39,7 @@ local Dataset = require(script.Parent.Parent.Dataset)
 local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
+local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
 local Studio = require(script.Parent.Parent.Studio)
 
 local PluginRoot = React.Component:extend("PluginGui")
@@ -77,15 +78,15 @@ end
 
 function PluginRoot:init()
     Studio.setSelectionTool()
-
-    self.machinesAnchors = Scene.getMachineAnchors()
     
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
-    local currentMapIndex = game.Workspace:GetAttribute("CurrentMapIndex") or 1 --Stash the index in an attribute for when you load/unload the plugin.
-    if SceneConfig.getDatasetInstance() then
-        dataset = SceneConfig.getDatasetInstanceAsTable()
+    --If the map index has been saved as an attribute, load this map when reloading the plugin.
+    -- local currentMapIndex = (game.Workspace:FindFirstChild("Dataset") and game.Workspace.Dataset:GetAttribute("CurrentMapIndex")) or 1
+    local currentMapIndex = 2
+    if DatasetInstance.checkIfDatasetInstanceExists() then
+        dataset = Dataset:getDataset()
         if not dataset then
             warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
         else
@@ -93,7 +94,26 @@ function PluginRoot:init()
             currentMap = dataset["maps"][currentMapIndex]
             Dataset:updateDataset(dataset, currentMapIndex)
         end
+    else
+        Scene.loadScene()
+        --if there's no scene and no dataset instance, then load everything.
+        local templateDataset, newDatasetInstance = DatasetInstance.loadTemplateDataset()
+        
+        if not newDatasetInstance then
+            return
+        end
+        --if for some reason the dataset is deleted, then make sure that the app state reflects that.
+        newDatasetInstance.AncestryChanged:Connect(function(_,_)
+            self:setState({dataset = "NONE", datasetIsLoaded = false})
+        end)
+        
+        currentMap = templateDataset["maps"][currentMapIndex]
+        self:muteMachineDeletionConnection()
+        Scene.updateAllMapAssets(currentMap)
+        self:setState({datasetIsLoaded = true})
+        self:updateDataset(templateDataset)
     end
+
     local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
     self:setState({
         currentMap = currentMap, --TODO: remove this, use index instead
@@ -116,13 +136,15 @@ function PluginRoot:init()
     self.connections = {}    
 end
 
+--TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
+--and passed around. This could cause problems down the road.
 function PluginRoot:updateDataset(dataset)
-    SceneConfig.updateDatasetInstance(dataset)
+    Dataset:updateDataset(dataset, self.state.currentMapIndex)
+    -- Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
     })
-    Dataset:updateDataset(dataset, self.state.currentMapIndex)
 end
 
 function PluginRoot:updateConnections()
@@ -196,7 +218,7 @@ end
 
 function PluginRoot:muteMachineDeletionConnection()
     --mute the listener for the machine deletion.
-    if self.connections["MachineAnchorDeletion"] then
+    if self.connections and self.connections["MachineAnchorDeletion"] then
         self.connections["MachineAnchorDeletion"]:Disconnect()
         self.connections["MachineAnchorDeletion"] = nil
     end
@@ -207,8 +229,7 @@ function PluginRoot:setCurrentMap(mapIndex)
 
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
-    Scene.instantiateMapMachineAnchors(currentMap)
-    game.Workspace:SetAttribute("CurrentMapIndex", mapIndex)
+    Scene.updateAllMapAssets(currentMap)
     self:updateDataset(self.state.dataset)
     self:setState({
         currentMapIndex = mapIndex, 
@@ -218,21 +239,29 @@ function PluginRoot:setCurrentMap(mapIndex)
         selectedMachineAnchor = nil,
         showModal = false
     })
+
+    game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
 end
 
 function PluginRoot:render()
     Studio.setSelectionTool()
-    self:updateConnections()
 
-    local mapName = self.state.currentMap and self.state.currentMap["id"] or ""
+    if self.state.datasetIsLoaded then
+        self:updateConnections()
+    end
 
     return React.createElement("ScreenGui", {}, {
-        PluginRoot = Block({
-            PaddingLeft = 20,
-            PaddingRight = 20,
-            PaddingTop = 20,
-            PaddingBottom = 20,
-            Size = UDim2.new(1, 0, 1, 0),
+        TopBar = Block({
+            BackgroundColor = Color3.fromRGB(32, 36, 42),
+            Size = UDim2.new(1,0,0,42),
+        }),
+        PluginRoot = self.state.datasetIsLoaded and Block({
+            PaddingLeft = 10,
+            PaddingRight = 10,
+            PaddingTop = 10,
+            PaddingBottom = 10,
+            Size = UDim2.new(1, 0, 1, -42),
+            Position = UDim2.new(0,0,0,42),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
             InitializeFactoryUI = (self.state.currentPanel == Panels.InitializeFactoryUI) and React.createElement(InitializeFactoryUI, {
@@ -243,26 +272,39 @@ function PluginRoot:render()
                 end
             }, {}),
 
-            AddMachineButton = (self.state.currentPanel ~= Panels.InitializeFactoryUI) and Block({
-                Size = UDim2.new(0, 200,0, 50),
-                Position = UDim2.new(1, -25, 1, -50),
-                AnchorPoint = Vector2.new(1, 0),
-            }, {
-                Button({
-                Label = "Add Machine",
+            AddMachineButton = Block({
+                AnchorPoint = Vector2.new(1, 1),
                 AutomaticSize = Enum.AutomaticSize.XY,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                OnActivated = function()
-                    local newMachine = Dataset:addMachine()
-                    local anchor = Scene.instantiateMachineAnchor(newMachine)
-                    self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
-                    self:changePanel(Panels.EditMachineUI)
-                    Selection:Set({anchor})
-                    self:updateDataset(self.state.dataset)
-                end,
-                
-            })}),
-            
+                BackgroundColor = Color3.fromRGB(27, 42, 53),
+                Corner = UDim.new(0,24),
+                Padding = 12,
+                Position = UDim2.new(1, 0, 1, 0),
+                Size = UDim2.new(0, 200,0, 50),
+            }, {
+                -- UICorner = React.createElement("UICorner", {
+                --     CornerRadius = UDim.new(0,8),
+                --     BackgroundColor3 = Color3.fromRGB(27, 42, 53)
+                -- }, {}),
+
+                -- UIPadding = React.createElement("UIPadding", {
+                --     PaddingBottom = UDim.new(0, 8),
+                --     PaddingTop = UDim.new(0, 8),
+                --     PaddingLeft = UDim.new(0, 8),
+                --     PaddingRight = UDim.new(0, 8),
+                -- }),
+                Button = Button({
+                    Label = "Add Machine",
+                    TextXAlignment = Enum.TextXAlignment.Center,
+                    OnActivated = function()
+                        local newMachine = Dataset:addMachine()
+                        local anchor = Scene.instantiateMachineAnchor(newMachine)
+                        self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
+                        self:changePanel(Panels.EditMachineUI)
+                        Selection:Set({anchor})
+                        self:updateDataset(self.state.dataset)
+                    end,
+                })
+            }),
 
             EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
                 CurrentMap = self.state.currentMap,
@@ -270,31 +312,27 @@ function PluginRoot:render()
                 Dataset = self.state.dataset,
                 Error = self.state.datasetError,
                 
-                Title = self.state.currentPanel..": "..mapName,
+                Title = self.state.currentPanel,
 
                 SetCurrentMap = function(mapIndex)
                     self:setCurrentMap(mapIndex)
                 end,
                 
-                ShowEditFactoryPanel = function()
+                ShowEditFactoryUI = function()
                     self:changePanel(Panels.EditFactoryUI)
                 end,
 
-                ShowEditMachinesListUI = function()
-                   self:changePanel(Panels.EditMachinesListUI)
-                end,
+                -- ShowEditMachinesListUI = function()
+                --    self:changePanel(Panels.EditMachinesListUI)
+                -- end,
 
                 ShowEditItemsListUI = function()
                     self:changePanel(Panels.EditItemsListUI)
                 end,
-
-                ShowEditPowerupsListUI = function()
-                    -- self:changePanel(Panels.EditPowerupsListUI)
-                end,
                 
                 ExportDataset = function()
-                    SceneConfig.updateDatasetInstance(self.state.dataset)
-                    local datasetInstance = SceneConfig.getDatasetInstance()
+                    DatasetInstance.write(self.state.dataset)
+                    local datasetInstance = DatasetInstance.getDatasetInstance()
                     local saveFile = datasetInstance:Clone()
                     saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
                     saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
@@ -309,7 +347,7 @@ function PluginRoot:render()
                 end,
 
                 ImportDataset = function()
-                    local dataset, newDatasetInstance = SceneConfig.instantiateNewDatasetInstance()
+                    local dataset, newDatasetInstance = DatasetInstance.instantiateNewDatasetInstance()
                     
                     if not newDatasetInstance then
                         return
@@ -322,15 +360,22 @@ function PluginRoot:render()
                     local currentMap = dataset["maps"][self.state.currentMapIndex]
                     self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
                     self:muteMachineDeletionConnection()
-                    Scene.instantiateMapMachineAnchors(currentMap)
+                    Scene.updateAllMapAssets(currentMap)
                     self:updateDataset(dataset)
                 end,
 
-                UpdateDataset = function(dataset) 
-                    self:updateDataset(dataset) 
+                UpdateDataset = function(dataset)
+                    self:updateDataset(dataset)
                 end,
 
-                
+                UpdateSceneName = function(name)
+                    self.state.dataset["maps"][self.state.currentMapIndex]["scene"] = name
+                    self:updateDataset(self.state.dataset)
+                end,
+
+                UpdateDatasetName = function(name)
+
+                end
             }),
 
             EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
@@ -494,17 +539,6 @@ function PluginRoot:render()
                     self:updateDataset(dataset)
                 end,
             }),
-            
-            -- EditPowerupsListUI = self.state.currentPanel == Panels.EditPowerupsListUI and EditPowerupsListUI({
-            --     CurrentMap = self.state.currentMap,
-            --     Dataset = self.state.dataset,
-            --     OnClosePanel = function()
-            --         self:showPreviousPanel()
-            --     end,
-            --     UpdateDataset = function(dataset)
-            --         self:updateDataset(dataset) 
-            --     end,
-            -- }),
             ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
                 OnClosePanel = function()
                     self:showPreviousPanel()
@@ -525,10 +559,6 @@ function PluginRoot:render()
                 HighlightedAnchor = self.state.highlightedMachineAnchor
             }),
 
-            ConnectionGizmos = self.state.datasetIsLoaded and ConnectionGizmos({
-                CurrentMap = self.state.currentMap
-            }),
-
             ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
                 Title = self.state.modalTitle,
                 OnConfirm = function()
@@ -538,10 +568,6 @@ function PluginRoot:render()
                     self.state.modalCancellationCallback()
                 end,
             }),
-
-            -- TempPanel = Panel({
-            --     Position = UDim2.new(0, 500, 0, 0),
-            -- })
         })
     })
 end

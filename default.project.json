@@ -31,15 +31,7 @@
                 "$className": "Folder",
                 "$path": "Packages"
               }
-              
           }
-      },
-      "ReplicatedStorage": {
-        "$className": "ReplicatedStorage",
-        "Packages": {
-          "$className": "Folder",
-          "$path": "Packages"
-        }
       }
   }
 }

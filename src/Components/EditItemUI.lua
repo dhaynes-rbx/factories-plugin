@@ -26,7 +26,6 @@ local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 local Dataset = require(script.Parent.Parent.Dataset)
 local Manifest = require(script.Parent.Parent.Manifest)
 local Scene = require(script.Parent.Parent.Scene)
-local SceneConfig = require(script.Parent.Parent.SceneConfig)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
@@ -151,7 +150,7 @@ local function EditItemUI(props: Props)
             setCurrentFieldValue(nil)
             setCurrentFieldCallback(function()
                 return function(newValue)
-                    local newRequirementItem = {itemId = newValue, count = 0.2}
+                    local newRequirementItem = {itemId = newValue, count = 10}
                     table.insert(item["requirements"], newRequirementItem)
                     props.UpdateDataset(dataset)
                 end
