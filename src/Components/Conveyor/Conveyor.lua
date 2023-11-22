@@ -17,8 +17,8 @@ type Props = {
 	Editing:boolean,
     Name:string,
 	Subdivisions:number,
-	Machine:Types.Machine,
-	SourceMachine:Types.Machine
+	StartPosition:Types.Machine,
+	EndPosition:Types.Machine
 }
 
 type ControlPoint = {
@@ -105,10 +105,10 @@ function Conveyor(props:Props)
 			controlPoints["ControlPoint1"] = {}
 			controlPoints["ControlPoint1"].Name = "ControlPoint1"
 			-- controlPoints["ControlPoint1"].Position = Vector3.new(-10, 0, 25)
-			controlPoints["ControlPoint1"].Position = worldPositionToVector3(props.Machine.worldPosition)
+			controlPoints["ControlPoint1"].Position = props.StartPosition
 			controlPoints["ControlPoint2"] = {}
 			controlPoints["ControlPoint2"].Name = "ControlPoint2"
-			controlPoints["ControlPoint2"].Position = props.SourceMachine and worldPositionToVector3(props.SourceMachine.worldPosition) or Vector3.new(10, 0, -25)
+			controlPoints["ControlPoint2"].Position = props.EndPosition
         end
 
 		local controlPointsFolder = model:FindFirstChild("ControlPoints")

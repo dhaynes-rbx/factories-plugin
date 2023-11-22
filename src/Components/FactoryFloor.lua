@@ -7,6 +7,8 @@ local Dash = require(Packages.Dash)
 local Machine = require(script.Parent.Machine)
 local Constants = require(script.Parent.Parent.Constants)
 local Conveyor = require(script.Parent.Conveyor.Conveyor)
+local worldPositionToVector3 = require(script.Parent.Parent.Helpers.worldPositionToVector3)
+local Utilities = require(script.Parent.Parent.Packages.Utilities)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -21,7 +23,7 @@ local FactoryFloor = function(props:Props)
     React.useEffect(function()
         --Get the existing machine anchors.
     end, {})
-
+    
     --Create machine components
     local machineComponents = {}
     local conveyorComponents = {}
@@ -29,7 +31,8 @@ local FactoryFloor = function(props:Props)
         table.insert(machineComponents, Machine({
             MachineData = machine
         }))
-
+        
+        local machineType = machine["type"]
         if machine["sources"] then
             for _,sourceId in machine["sources"] do
                 -- local conveyorData = {}
@@ -47,8 +50,8 @@ local FactoryFloor = function(props:Props)
 
                 table.insert(conveyorComponents, Conveyor({
                     Name = "Conveyor-"..machine.id.."-"..sourceId,
-                    Machine = machine,
-                    SourceMachine = sourceMachine
+                    StartPosition = worldPositionToVector3(machine.worldPosition),
+                    EndPosition = worldPositionToVector3(sourceMachine.worldPosition)
                 }))
                 
                 -- -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
@@ -59,11 +62,14 @@ local FactoryFloor = function(props:Props)
                 -- Scene.instantiateConveyorBelt(conveyorBelt)
                 -- table.insert(conveyorBelts, conveyorBelt)
             end
-        end
-
-        local machineType = machine["type"]
-        if machineType == Constants.MachineTypes.purchaser then
-            print("Do that")
+        else
+            print("No sources")
+            local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+            table.insert(conveyorComponents, Conveyor({
+                Name = "Conveyor-"..machine.id,
+                StartPosition = worldPositionToVector3(machine.worldPosition),
+                EndPosition = beltEntryPart.Attachment1.WorldCFrame.Position
+            }))
             -- for _,beltEntryPoint in beltEntryPoints do
                 
             --     if beltEntryPoint.inUse then
@@ -82,8 +88,16 @@ local FactoryFloor = function(props:Props)
             --     table.insert(conveyorBelts, conveyorBelt)
             --     break
             -- end
-        elseif machineType == Constants.MachineTypes.makerSeller then
-            print("Then that")
+        end
+
+        if machineType == Constants.MachineTypes.makerSeller then
+            print("MakerSeller")
+            local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+            table.insert(conveyorComponents, Conveyor({
+                Name = "Conveyor-"..machine.id,
+                StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
+                EndPosition = worldPositionToVector3(machine.worldPosition),
+            }))
             -- for _,beltExitPoint in beltExitPoints do
             --     if beltExitPoint.inUse then
             --         continue
