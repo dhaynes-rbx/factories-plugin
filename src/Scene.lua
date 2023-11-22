@@ -167,7 +167,7 @@ function Scene.updateAllMapAssets(map:table)
         Scene.instantiateMachineAnchor(machine)
     end
 
-    Scene.updateAllConveyorBelts(map)
+    -- Scene.updateAllConveyorBelts(map)
 end
 
 function Scene.removeMachineAnchor(machine:table)
@@ -198,131 +198,131 @@ function Scene.instantiateConveyorBelt(conveyorBelt:table)
 end
 
 function Scene.updateAllConveyorBelts(map:table)
-    local machines = map["machines"]
-    local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
-    folder:ClearAllChildren()
-    
-    local conveyorBelts = {}
-    
-    local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-    local beltEntryPoints = {}
-    for _,child in beltEntryPart:GetChildren() do
-        local index = tonumber(child.Name:match("%d"))
-        local t = {}
-        t["attachment"] = child
-        t["inUse"] = false
-        beltEntryPoints[index] = t
-    end
-    local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-    local beltExitPoints = {}
-    for _,child in beltExitPart:GetChildren() do
-        local index = tonumber(child.Name:match("%d"))
-        local t = {}
-        t["attachment"] = child
-        t["inUse"] = false
-        beltExitPoints[index] = t
-    end
-
-    for _,machine in machines do
-        if machine["sources"] then
-            for _,sourceId in machine["sources"] do
-                local conveyorBelt = {}
-                local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-                local endPosition = Vector3.new()
-                local sourceMachine = nil
-                for _,machineToCheck in machines do
-                    if sourceId == machineToCheck.id then
-                        sourceMachine = machineToCheck
-                    end
-                end
-                if sourceMachine then
-                    endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
-                end
-                -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
-                conveyorBelt.name = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
-                conveyorBelt.startPosition = startPosition
-                conveyorBelt.endPosition = endPosition
-
-                Scene.instantiateConveyorBelt(conveyorBelt)
-                table.insert(conveyorBelts, conveyorBelt)
-            end
-        end 
-
-        local machineType = machine["type"]
-        if machineType == Constants.MachineTypes.purchaser then
-            for _,beltEntryPoint in beltEntryPoints do
-                
-                if beltEntryPoint.inUse then
-                    continue
-                end
-                
-                local conveyorBelt = {}
-                local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-                local endPosition = beltEntryPoint.attachment.WorldCFrame.Position
-                beltEntryPoint.inUse = true
-                conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-                conveyorBelt.startPosition = startPosition
-                conveyorBelt.endPosition = endPosition
-
-                Scene.instantiateConveyorBelt(conveyorBelt)
-                table.insert(conveyorBelts, conveyorBelt)
-                break
-            end
-        elseif machineType == Constants.MachineTypes.makerSeller then
-            for _,beltExitPoint in beltExitPoints do
-                if beltExitPoint.inUse then
-                    continue
-                end
-                
-                local conveyorBelt = {}
-                local startPosition = beltExitPoint.attachment.WorldCFrame.Position
-                local endPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-                beltExitPoint.inUse = true
-                conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-                conveyorBelt.startPosition = startPosition
-                conveyorBelt.endPosition = endPosition
-
-                Scene.instantiateConveyorBelt(conveyorBelt)
-                table.insert(conveyorBelts, conveyorBelt)
-                break
-            end
-        end
-    end
-
-    local conveyorBeltData = {}
-    -- local folder = getOrCreateFolder("Debug", game.Workspace)
+    -- local machines = map["machines"]
+    -- local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
     -- folder:ClearAllChildren()
-    for _,belt in conveyorBelts do
-        local distance = (belt.endPosition - belt.startPosition).Magnitude
-        local numPoints = distance * 3 --3 points per stud
+    
+    -- local conveyorBelts = {}
+    
+    -- local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+    -- local beltEntryPoints = {}
+    -- for _,child in beltEntryPart:GetChildren() do
+    --     local index = tonumber(child.Name:match("%d"))
+    --     local t = {}
+    --     t["attachment"] = child
+    --     t["inUse"] = false
+    --     beltEntryPoints[index] = t
+    -- end
+    -- local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+    -- local beltExitPoints = {}
+    -- for _,child in beltExitPart:GetChildren() do
+    --     local index = tonumber(child.Name:match("%d"))
+    --     local t = {}
+    --     t["attachment"] = child
+    --     t["inUse"] = false
+    --     beltExitPoints[index] = t
+    -- end
 
-        -- local beltFolder = getOrCreateFolder(belt.name, folder)
-        -- beltFolder:ClearAllChildren()
+    -- for _,machine in machines do
+    --     if machine["sources"] then
+    --         for _,sourceId in machine["sources"] do
+    --             local conveyorBelt = {}
+    --             local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
+    --             local endPosition = Vector3.new()
+    --             local sourceMachine = nil
+    --             for _,machineToCheck in machines do
+    --                 if sourceId == machineToCheck.id then
+    --                     sourceMachine = machineToCheck
+    --                 end
+    --             end
+    --             if sourceMachine then
+    --                 endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
+    --             end
+    --             -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
+    --             conveyorBelt.name = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
+    --             conveyorBelt.startPosition = startPosition
+    --             conveyorBelt.endPosition = endPosition
 
-        local points = {}
-        for i = 1, numPoints, 1 do
-            local lerpedPosition = belt.endPosition:Lerp(belt.startPosition, i/numPoints)
-            local point = {}
-            point.position = {}
-            --Match the orientation of the original blender plugin
-            point.position.x = -lerpedPosition.x
-            point.position.y = lerpedPosition.z
-            point.position.z = lerpedPosition.y
-            point.index = i - 1 --Original MapData json files are 0-indexed
-            table.insert(points, point)
+    --             Scene.instantiateConveyorBelt(conveyorBelt)
+    --             table.insert(conveyorBelts, conveyorBelt)
+    --         end
+    --     end 
 
-            -- local part = Instance.new("Part")
-            -- part.Size = Vector3.new(0.25, 0.25, 0.25)
-            -- part.Color = Color3.new(1,0,0)
-            -- part.Anchored = true
-            -- part.CFrame = CFrame.new(lerpedPosition + Vector3.new(0,0.5,0))
-            -- part.Parent = beltFolder
-        end
-        local beltKey = ('["%s"]'):format(belt.name) --Format this so when we write to MapData Source the keys show up with quotes around them
-        conveyorBeltData[beltKey] = points
-    end
+    --     local machineType = machine["type"]
+    --     if machineType == Constants.MachineTypes.purchaser then
+    --         for _,beltEntryPoint in beltEntryPoints do
+                
+    --             if beltEntryPoint.inUse then
+    --                 continue
+    --             end
+                
+    --             local conveyorBelt = {}
+    --             local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
+    --             local endPosition = beltEntryPoint.attachment.WorldCFrame.Position
+    --             beltEntryPoint.inUse = true
+    --             conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
+    --             conveyorBelt.startPosition = startPosition
+    --             conveyorBelt.endPosition = endPosition
 
-    MapData.write(conveyorBeltData, map.scene)
+    --             Scene.instantiateConveyorBelt(conveyorBelt)
+    --             table.insert(conveyorBelts, conveyorBelt)
+    --             break
+    --         end
+    --     elseif machineType == Constants.MachineTypes.makerSeller then
+    --         for _,beltExitPoint in beltExitPoints do
+    --             if beltExitPoint.inUse then
+    --                 continue
+    --             end
+                
+    --             local conveyorBelt = {}
+    --             local startPosition = beltExitPoint.attachment.WorldCFrame.Position
+    --             local endPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
+    --             beltExitPoint.inUse = true
+    --             conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
+    --             conveyorBelt.startPosition = startPosition
+    --             conveyorBelt.endPosition = endPosition
+
+    --             Scene.instantiateConveyorBelt(conveyorBelt)
+    --             table.insert(conveyorBelts, conveyorBelt)
+    --             break
+    --         end
+    --     end
+    -- end
+
+    -- local conveyorBeltData = {}
+    -- -- local folder = getOrCreateFolder("Debug", game.Workspace)
+    -- -- folder:ClearAllChildren()
+    -- for _,belt in conveyorBelts do
+    --     local distance = (belt.endPosition - belt.startPosition).Magnitude
+    --     local numPoints = distance * 3 --3 points per stud
+
+    --     -- local beltFolder = getOrCreateFolder(belt.name, folder)
+    --     -- beltFolder:ClearAllChildren()
+
+    --     local points = {}
+    --     for i = 1, numPoints, 1 do
+    --         local lerpedPosition = belt.endPosition:Lerp(belt.startPosition, i/numPoints)
+    --         local point = {}
+    --         point.position = {}
+    --         --Match the orientation of the original blender plugin
+    --         point.position.x = -lerpedPosition.x
+    --         point.position.y = lerpedPosition.z
+    --         point.position.z = lerpedPosition.y
+    --         point.index = i - 1 --Original MapData json files are 0-indexed
+    --         table.insert(points, point)
+
+    --         -- local part = Instance.new("Part")
+    --         -- part.Size = Vector3.new(0.25, 0.25, 0.25)
+    --         -- part.Color = Color3.new(1,0,0)
+    --         -- part.Anchored = true
+    --         -- part.CFrame = CFrame.new(lerpedPosition + Vector3.new(0,0.5,0))
+    --         -- part.Parent = beltFolder
+    --     end
+    --     local beltKey = ('["%s"]'):format(belt.name) --Format this so when we write to MapData Source the keys show up with quotes around them
+    --     conveyorBeltData[beltKey] = points
+    -- end
+
+    -- MapData.write(conveyorBeltData, map.scene)
 end
 
 

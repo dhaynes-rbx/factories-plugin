@@ -1,9 +1,7 @@
 return {
     Panels = {
-        InitializeFactoryUI = "InitializeFactoryUI",
         EditDatasetUI = "Edit Dataset",
         EditFactoryUI = "Edit Factory",
-        EditMachinesListUI = "Edit Machines List",
         EditMachineUI = "Edit Machine",
         EditItemsListUI = "Edit Items List",
         EditItemUI = "Edit Item",

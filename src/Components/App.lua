@@ -26,9 +26,7 @@ local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditItemUI = require(script.Parent.EditItemUI)
-local EditMachinesListUI = require(script.Parent.EditMachinesListUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
-local InitializeFactoryUI = require(script.Parent.InitializeFactoryUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
 local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
@@ -42,13 +40,14 @@ local Scene = require(script.Parent.Parent.Scene)
 local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
 local Studio = require(script.Parent.Parent.Studio)
 
-local PluginRoot = React.Component:extend("PluginGui")
+local App = React.Component:extend("PluginGui")
 
 local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
+local FactoryFloor = require(script.Parent.FactoryFloor)
 
 
-function PluginRoot:setPanel()
+function App:setPanel()
     Studio.setSelectionTool()
     self:setState({
         currentPanel = self.state.panelStack[#self.state.panelStack],
@@ -57,7 +56,7 @@ function PluginRoot:setPanel()
     })
 end
 
-function PluginRoot:changePanel(panelId)
+function App:changePanel(panelId)
 
     Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
@@ -70,13 +69,13 @@ function PluginRoot:changePanel(panelId)
     self:setPanel()
 end
 
-function PluginRoot:showPreviousPanel()
+function App:showPreviousPanel()
     local stack = self.state.panelStack
     table.remove(stack, #stack)
     self:setPanel()
 end
 
-function PluginRoot:init()
+function App:init()
     Studio.setSelectionTool()
     
     local dataset = "NONE"
@@ -114,7 +113,7 @@ function PluginRoot:init()
         self:updateDataset(templateDataset)
     end
 
-    local currentPanel = not Scene.isLoaded() and Panels.InitializeFactoryUI or Panels.EditDatasetUI
+    local currentPanel = Panels.EditDatasetUI
     self:setState({
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
@@ -138,7 +137,7 @@ end
 
 --TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
 --and passed around. This could cause problems down the road.
-function PluginRoot:updateDataset(dataset)
+function App:updateDataset(dataset)
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
     -- Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
     self:setState({
@@ -147,7 +146,7 @@ function PluginRoot:updateDataset(dataset)
     })
 end
 
-function PluginRoot:updateConnections()
+function App:updateConnections()
     if not self.state.datasetIsLoaded then return end
     if self.connections["Selection"] then
         self.connections["Selection"]:Disconnect()
@@ -216,7 +215,7 @@ function PluginRoot:updateConnections()
     )
 end
 
-function PluginRoot:muteMachineDeletionConnection()
+function App:muteMachineDeletionConnection()
     --mute the listener for the machine deletion.
     if self.connections and self.connections["MachineAnchorDeletion"] then
         self.connections["MachineAnchorDeletion"]:Disconnect()
@@ -224,7 +223,7 @@ function PluginRoot:muteMachineDeletionConnection()
     end
 end
 
-function PluginRoot:setCurrentMap(mapIndex)
+function App:setCurrentMap(mapIndex)
     self:muteMachineDeletionConnection()
 
     local currentMap = self.state.dataset["maps"][mapIndex]
@@ -243,7 +242,7 @@ function PluginRoot:setCurrentMap(mapIndex)
     game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
 end
 
-function PluginRoot:render()
+function App:render()
     Studio.setSelectionTool()
 
     if self.state.datasetIsLoaded then
@@ -264,13 +263,6 @@ function PluginRoot:render()
             Position = UDim2.new(0,0,0,42),
             AutomaticSize = Enum.AutomaticSize.X
         }, {
-            InitializeFactoryUI = (self.state.currentPanel == Panels.InitializeFactoryUI) and React.createElement(InitializeFactoryUI, {
-                Dataset = self.state.dataset,
-                OnInitializeScene = function()
-                    Scene.loadScene()
-                    self:changePanel(Panels.EditDatasetUI)
-                end
-            }, {}),
 
             AddMachineButton = Block({
                 AnchorPoint = Vector2.new(1, 1),
@@ -281,17 +273,6 @@ function PluginRoot:render()
                 Position = UDim2.new(1, 0, 1, 0),
                 Size = UDim2.new(0, 200,0, 50),
             }, {
-                -- UICorner = React.createElement("UICorner", {
-                --     CornerRadius = UDim.new(0,8),
-                --     BackgroundColor3 = Color3.fromRGB(27, 42, 53)
-                -- }, {}),
-
-                -- UIPadding = React.createElement("UIPadding", {
-                --     PaddingBottom = UDim.new(0, 8),
-                --     PaddingTop = UDim.new(0, 8),
-                --     PaddingLeft = UDim.new(0, 8),
-                --     PaddingRight = UDim.new(0, 8),
-                -- }),
                 Button = Button({
                     Label = "Add Machine",
                     TextXAlignment = Enum.TextXAlignment.Center,
@@ -321,10 +302,6 @@ function PluginRoot:render()
                 ShowEditFactoryUI = function()
                     self:changePanel(Panels.EditFactoryUI)
                 end,
-
-                -- ShowEditMachinesListUI = function()
-                --    self:changePanel(Panels.EditMachinesListUI)
-                -- end,
 
                 ShowEditItemsListUI = function()
                     self:changePanel(Panels.EditItemsListUI)
@@ -387,56 +364,56 @@ function PluginRoot:render()
                 UpdateDataset = function(dataset) self:updateDataset(dataset) end,
             }, {}),
 
-            EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
-                CurrentMap = self.state.currentMap,
-                Dataset = self.state.dataset,
+            -- EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
+            --     CurrentMap = self.state.currentMap,
+            --     Dataset = self.state.dataset,
 
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-                OnMachineEditClicked = function(machine:table, machineAnchor:Instance)
-                    self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
-                    self:changePanel(Panels.EditMachineUI)
-                    Selection:Set({machineAnchor})
-                end,
-                OnMachineDeleteClicked = function(machineId:string)
-                    local machineObj = Dataset:getMachineFromId(machineId)
-                    self:setState({
-                        showModal = true,
-                        selectedMachine = Dataset:getMachineFromId(machineId),
-                        modalConfirmationCallback = function()
-                            if self.connections["MachineAnchorDeletion"] then
-                                self.connections["MachineAnchorDeletion"]:Disconnect()
-                            end
+            --     OnClosePanel = function()
+            --         self:showPreviousPanel()
+            --     end,
+            --     UpdateDataset = function(dataset)
+            --         self:updateDataset(dataset)
+            --     end,
+            --     OnMachineEditClicked = function(machine:table, machineAnchor:Instance)
+            --         self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
+            --         self:changePanel(Panels.EditMachineUI)
+            --         Selection:Set({machineAnchor})
+            --     end,
+            --     OnMachineDeleteClicked = function(machineId:string)
+            --         local machineObj = Dataset:getMachineFromId(machineId)
+            --         self:setState({
+            --             showModal = true,
+            --             selectedMachine = Dataset:getMachineFromId(machineId),
+            --             modalConfirmationCallback = function()
+            --                 if self.connections["MachineAnchorDeletion"] then
+            --                     self.connections["MachineAnchorDeletion"]:Disconnect()
+            --                 end
                             
-                            Scene.removeMachineAnchor(machineObj)
-                            Dataset:removeMachine(machineId)
-                            self:setState({showModal = false})
-                            self:updateDataset(self.state.dataset)
-                        end,
-                        modalCancellationCallback = function()
-                            self:setState({
-                                showModal = false,
-                                selectedMachine = nil,
-                                selectedMachineAnchor = nil,
-                            })
-                        end,
-                        modalTitle = "Would you like to delete "..machineObj["id"].."?"
-                    })
-                end,
-                HighlightMachineAnchor = function(machine:table)
-                    if machine then
-                        local anchor = machine and Scene.getAnchorFromMachine(machine) or nil
-                        self:setState({highlightedMachineAnchor = anchor})
-                    else
-                        self:setState({highlightedMachineAnchor = React.None})
-                    end
+            --                 Scene.removeMachineAnchor(machineObj)
+            --                 Dataset:removeMachine(machineId)
+            --                 self:setState({showModal = false})
+            --                 self:updateDataset(self.state.dataset)
+            --             end,
+            --             modalCancellationCallback = function()
+            --                 self:setState({
+            --                     showModal = false,
+            --                     selectedMachine = nil,
+            --                     selectedMachineAnchor = nil,
+            --                 })
+            --             end,
+            --             modalTitle = "Would you like to delete "..machineObj["id"].."?"
+            --         })
+            --     end,
+            --     HighlightMachineAnchor = function(machine:table)
+            --         if machine then
+            --             local anchor = machine and Scene.getAnchorFromMachine(machine) or nil
+            --             self:setState({highlightedMachineAnchor = anchor})
+            --         else
+            --             self:setState({highlightedMachineAnchor = React.None})
+            --         end
                     
-                end,
-            }),
+            --     end,
+            -- }),
             
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 CurrentMap = self.state.currentMap,
@@ -568,11 +545,15 @@ function PluginRoot:render()
                     self.state.modalCancellationCallback()
                 end,
             }),
+
+            FactoryFloor = FactoryFloor({
+                Machines = self.state.dataset.maps[self.state.currentMapIndex].machines
+            }),
         })
     })
 end
 
-function PluginRoot:componentWillUnmount()
+function App:componentWillUnmount()
     for _,v in self.connections do
         v:Disconnect()
         v = nil
@@ -580,4 +561,4 @@ function PluginRoot:componentWillUnmount()
     table.clear(self.connections)
 end
 
-return PluginRoot
+return App

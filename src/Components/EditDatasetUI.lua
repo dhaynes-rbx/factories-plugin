@@ -36,7 +36,7 @@ type Props = {
     UpdateDatasetName:any,
     UpdateSceneName:any,
     ShowEditFactoryUI:any,
-    ShowEditMachinesListUI:any,
+    -- ShowEditMachinesListUI:any,
     ShowEditItemsListUI:any,
     ExportDataset:any,
     ImportDataset:any,
@@ -134,7 +134,7 @@ local function EditDatasetUI(props:Props)
         -- }))
         if props.Error == Constants.Errors.None then
             add(children, Button({
-                Active = false,
+                -- Active = false,
                 Label = "Export Dataset",
                 LayoutOrder = incrementLayoutOrder(),
                 OnActivated = props.ExportDataset,

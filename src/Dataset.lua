@@ -15,7 +15,7 @@ Dataset.items = {}
 Dataset.machines = {}
 
 local function cleanMachines(machines:table, items:table)
-    --Clean the machine sources, make sure that its nil if there are no source ids. We do this because machines in Factories, "sources" might == nil.
+    --Clean the machine sources, make sure that it is nil if there are no source ids. We do this because machines in Factories, "sources" might == nil.
     for _,machine in machines do
         if machine["sources"] and #machine["sources"] == 0 then
             machine["sources"] = nil
@@ -80,7 +80,7 @@ function Dataset:updateDataset(dataset, currentMapIndex)
     self.machines = self.currentMap["machines"]
 
     cleanMachines(self.machines, self.items)
-    Scene.updateAllConveyorBelts(self.currentMap)
+    -- Scene.updateAllConveyorBelts(self.currentMap)
 end
 
 function Dataset:getMap(mapIndex:number)
