@@ -26,7 +26,7 @@ local FactoryFloor = function(props:Props)
     
     --Create machine components
     local machineComponents = {}
-    local conveyorComponents = {}
+    local conveyorData = {}
     for _,machine in props.Machines do
         table.insert(machineComponents, Machine({
             MachineData = machine
@@ -48,11 +48,11 @@ local FactoryFloor = function(props:Props)
                 --     endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
                 -- end
 
-                table.insert(conveyorComponents, Conveyor({
+                table.insert(conveyorData, {
                     Name = "Conveyor-"..machine.id.."-"..sourceId,
                     StartPosition = worldPositionToVector3(machine.worldPosition),
                     EndPosition = worldPositionToVector3(sourceMachine.worldPosition)
-                }))
+                })
                 
                 -- -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
                 -- conveyorBelt.name = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
@@ -65,11 +65,11 @@ local FactoryFloor = function(props:Props)
         else
             print("No sources")
             local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-            table.insert(conveyorComponents, Conveyor({
+            table.insert(conveyorData, { 
                 Name = "Conveyor-"..machine.id,
                 StartPosition = worldPositionToVector3(machine.worldPosition),
                 EndPosition = beltEntryPart.Attachment1.WorldCFrame.Position
-            }))
+            })
             -- for _,beltEntryPoint in beltEntryPoints do
                 
             --     if beltEntryPoint.inUse then
@@ -93,11 +93,11 @@ local FactoryFloor = function(props:Props)
         if machineType == Constants.MachineTypes.makerSeller then
             print("MakerSeller")
             local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-            table.insert(conveyorComponents, Conveyor({
+            table.insert(conveyorData, {
                 Name = "Conveyor-"..machine.id,
                 StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
                 EndPosition = worldPositionToVector3(machine.worldPosition),
-            }))
+            })
             -- for _,beltExitPoint in beltExitPoints do
             --     if beltExitPoint.inUse then
             --         continue
@@ -116,6 +116,15 @@ local FactoryFloor = function(props:Props)
             --     break
             -- end
         end
+    end
+
+    local conveyorComponents = {}
+    for _,conveyor in conveyorData do
+        table.insert(conveyorComponents, Conveyor({
+            Name = conveyor.Name,
+            StartPosition = conveyor.StartPosition,
+            EndPosition = conveyor.EndPosition,
+        }))
     end
 
 
