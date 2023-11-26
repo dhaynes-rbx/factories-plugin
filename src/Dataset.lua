@@ -28,6 +28,7 @@ local function cleanMachines(machines:table, items:table)
             if items[itemId]["value"] then
                 --If this machine has an output that has a value, then it's a makerSeller.
                 machineType = Constants.MachineTypes.makerSeller
+                --TODO: Check other machines to see if they use this machine as a source. If so, something is wrong.
             end
         end
         if machine["sources"] == nil then

@@ -9,6 +9,8 @@ local Constants = require(script.Parent.Parent.Constants)
 local Conveyor = require(script.Parent.Conveyor.Conveyor)
 local worldPositionToVector3 = require(script.Parent.Parent.Helpers.worldPositionToVector3)
 local Utilities = require(script.Parent.Parent.Packages.Utilities)
+local Types = require(script.Parent.Parent.Types)
+local Dataset = require(script.Parent.Parent.Dataset)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -16,7 +18,6 @@ type Props = {
 }
 
 local FactoryFloor = function(props:Props)
-    print("Factory Floor", props.Machines)
     local children = {}
 
     --Instantiation Hook
@@ -31,104 +32,107 @@ local FactoryFloor = function(props:Props)
         table.insert(machineComponents, Machine({
             MachineData = machine
         }))
-        
+
+        conveyorData[machine.id] = {}
         local machineType = machine["type"]
         if machine["sources"] then
             for _,sourceId in machine["sources"] do
-                -- local conveyorData = {}
-                -- local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-                -- local endPosition = Vector3.new()
+
                 local sourceMachine = nil
                 for _,machineToCheck in props.Machines do
                     if sourceId == machineToCheck.id then
                         sourceMachine = machineToCheck
                     end
                 end
-                -- if sourceMachine then
-                --     endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
-                -- end
 
-                table.insert(conveyorData, {
-                    Name = "Conveyor-"..machine.id.."-"..sourceId,
-                    StartPosition = worldPositionToVector3(machine.worldPosition),
-                    EndPosition = worldPositionToVector3(sourceMachine.worldPosition)
+                table.insert(conveyorData[machine.id], {
+                    name = "Conveyor-"..machine.id.."-"..sourceId,
+                    sourceId = sourceId,
+                    startPosition = worldPositionToVector3(machine.worldPosition),
+                    endPosition = worldPositionToVector3(sourceMachine.worldPosition)
                 })
-                
-                -- -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
-                -- conveyorBelt.name = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
-                -- conveyorBelt.startPosition = startPosition
-                -- conveyorBelt.endPosition = endPosition
 
-                -- Scene.instantiateConveyorBelt(conveyorBelt)
-                -- table.insert(conveyorBelts, conveyorBelt)
             end
         else
-            print("No sources")
-            local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-            table.insert(conveyorData, { 
-                Name = "Conveyor-"..machine.id,
-                StartPosition = worldPositionToVector3(machine.worldPosition),
-                EndPosition = beltEntryPart.Attachment1.WorldCFrame.Position
-            })
-            -- for _,beltEntryPoint in beltEntryPoints do
-                
-            --     if beltEntryPoint.inUse then
-            --         continue
-            --     end
-                
-            --     local conveyorBelt = {}
-            --     local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-            --     local endPosition = beltEntryPoint.attachment.WorldCFrame.Position
-            --     beltEntryPoint.inUse = true
-            --     conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-            --     conveyorBelt.startPosition = startPosition
-            --     conveyorBelt.endPosition = endPosition
-
-            --     Scene.instantiateConveyorBelt(conveyorBelt)
-            --     table.insert(conveyorBelts, conveyorBelt)
-            --     break
-            -- end
+            
+            -- local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+            -- conveyorData[machine.id] = {
+            --     Name = "Conveyor-"..machine.id,
+            --     StartPosition = worldPositionToVector3(machine.worldPosition),
+            --     EndPosition = beltEntryPart.Attachment1.WorldCFrame.Position
+            -- }
+            
         end
 
+        
         if machineType == Constants.MachineTypes.makerSeller then
-            print("MakerSeller")
-            local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-            table.insert(conveyorData, {
-                Name = "Conveyor-"..machine.id,
-                StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
-                EndPosition = worldPositionToVector3(machine.worldPosition),
-            })
-            -- for _,beltExitPoint in beltExitPoints do
-            --     if beltExitPoint.inUse then
-            --         continue
-            --     end
-                
-            --     local conveyorBelt = {}
-            --     local startPosition = beltExitPoint.attachment.WorldCFrame.Position
-            --     local endPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-            --     beltExitPoint.inUse = true
-            --     conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-            --     conveyorBelt.startPosition = startPosition
-            --     conveyorBelt.endPosition = endPosition
-
-            --     Scene.instantiateConveyorBelt(conveyorBelt)
-            --     table.insert(conveyorBelts, conveyorBelt)
-            --     break
-            -- end
+            print("")
+            -- local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+            -- conveyorData[machine.id] = {
+                --     Name = "Conveyor-"..machine.id,
+                --     StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
+                --     EndPosition = worldPositionToVector3(machine.worldPosition),
+                -- }
         end
     end
 
+    --Sort conveyors start and end positions. Offset them so they don't overlap.
+    for _,machine in props.Machines do
+        table.sort(conveyorData[machine.id], function(a,b) 
+            return a.endPosition.X < b.endPosition.X
+        end)
+        
+        for i,conveyor in conveyorData[machine.id] do
+            local numBelts = #conveyorData[machine.id]
+            local offsetAmt = 3
+            local offset = (i - 1) * offsetAmt - (offsetAmt * (numBelts-1)) / 2
+            local newStart = conveyor.startPosition + Vector3.new(offset, 0, -5)
+            conveyor.startPosition = newStart
+            
+            local otherMachinesUsingSameSource = {}
+            local machineSource = Dataset:getMachineFromId(conveyor.sourceId)
+            if machineSource then
+                --Check to see if other machines consider this machine a source
+                for _,otherMachine in props.Machines do
+                    if otherMachine.sources then
+                        for _,otherMachineSource in otherMachine.sources do
+                            if otherMachineSource == machineSource.id then
+                                table.insert(otherMachinesUsingSameSource, otherMachine)
+                            end
+                        end
+                    end
+                end
+            end
+            table.sort(otherMachinesUsingSameSource, function(a,b)
+                return a.worldPosition.X < b.worldPosition.X
+            end)
+                        
+            local numSourceBelts = #otherMachinesUsingSameSource
+            for j,otherMachine in ipairs(otherMachinesUsingSameSource) do
+                if otherMachine.id == machine.id then
+                    local sourceOffsetAmt = 3
+                    local sourceOffset = (j - 1) * sourceOffsetAmt - (sourceOffsetAmt * (numSourceBelts-1)) / 2
+                    local newEnd = conveyor.endPosition + Vector3.new(sourceOffset, 0, 5)
+                    conveyor.endPosition = newEnd
+                end
+            end
+        end
+    end
+        
+        
     local conveyorComponents = {}
-    for _,conveyor in conveyorData do
-        table.insert(conveyorComponents, Conveyor({
-            Name = conveyor.Name,
-            StartPosition = conveyor.StartPosition,
-            EndPosition = conveyor.EndPosition,
-        }))
+    for _,machineConveyorsArray in conveyorData do
+        for _,conveyor in machineConveyorsArray do
+            table.insert(conveyorComponents, Conveyor({
+                Name = conveyor.name,
+                StartPosition = conveyor.startPosition,
+                EndPosition = conveyor.endPosition,
+            }))
+        end
     end
 
 
-    children = Dash.join(children, machineComponents, conveyorComponents)
+    children = Dash.append(children, machineComponents, conveyorComponents)
 
     return React.createElement(React.Fragment, {}, children)
 end

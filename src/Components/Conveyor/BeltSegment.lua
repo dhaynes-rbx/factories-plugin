@@ -3,8 +3,8 @@ local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 
 local PathGenerator = require(script.Parent.Parent.Parent.PathGenerator)
-local thickness = 1
-local width = 2
+local thickness = 0.5
+local width = 1.5
 
 type Props = {
     Parent:Model,

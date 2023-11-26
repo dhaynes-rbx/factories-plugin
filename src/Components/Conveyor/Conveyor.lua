@@ -93,7 +93,7 @@ function Conveyor(props:Props)
 
     React.useEffect(function()
         --Create a model to hold the control points
-        local folder = getOrCreateFolder("ConveyorBelts", game.Workspace)
+        local folder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
 		local model:Model = folder:FindFirstChild(props.Name)
 		if model then
 			controlPoints = refreshControlPoints(model)
@@ -104,7 +104,6 @@ function Conveyor(props:Props)
 
 			controlPoints["ControlPoint1"] = {}
 			controlPoints["ControlPoint1"].Name = "ControlPoint1"
-			-- controlPoints["ControlPoint1"].Position = Vector3.new(-10, 0, 25)
 			controlPoints["ControlPoint1"].Position = props.StartPosition
 			controlPoints["ControlPoint2"] = {}
 			controlPoints["ControlPoint2"].Name = "ControlPoint2"

@@ -34,7 +34,7 @@ local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
-local Input = require(script.Parent.Parent.Input)
+-- local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
 local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
@@ -147,80 +147,80 @@ function App:updateDataset(dataset)
 end
 
 function App:updateConnections()
-    if not self.state.datasetIsLoaded then return end
-    if self.connections["Selection"] then
-        self.connections["Selection"]:Disconnect()
-    end
-    self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
-        self:setState({
-            selectedMachineAnchor = selectedObj,
-            selectedMachine = machine,
-        })
-        if machine then
-            self:changePanel(Panels.EditMachineUI)
-        end
-    end)
+    -- if not self.state.datasetIsLoaded then return end
+    -- if self.connections["Selection"] then
+    --     self.connections["Selection"]:Disconnect()
+    -- end
+    -- self.connections["Selection"] = Input.listenForMachineSelection(self.state.currentMap, function(machine, selectedObj)
+    --     self:setState({
+    --         selectedMachineAnchor = selectedObj,
+    --         selectedMachine = machine,
+    --     })
+    --     if machine then
+    --         self:changePanel(Panels.EditMachineUI)
+    --     end
+    -- end)
 
-    if self.connections["MachineInput"] then
-        self.connections["MachineInput"]:Disconnect()
-    end
-    self.connections["MachineInput"] = Input.listenForMachineDrag(
-        self.state.currentMap,
-        function()
-            self:updateDataset(self.state.dataset)
-        end
-    )
+    -- if self.connections["MachineInput"] then
+    --     self.connections["MachineInput"]:Disconnect()
+    -- end
+    -- self.connections["MachineInput"] = Input.listenForMachineDrag(
+    --     self.state.currentMap,
+    --     function()
+    --         self:updateDataset(self.state.dataset)
+    --     end
+    -- )
 
-    if self.connections["MachineAnchorDeletion"] then
-        self.connections["MachineAnchorDeletion"]:Disconnect()
-    end
-    self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
-        function()
-            self:setState({
-                showModal = true,
-                modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
-                modalConfirmationCallback = function()
-                    Dataset:removeMachine(self.state.selectedMachine["id"])
-                    Scene.removeMachineAnchor(self.state.selectedMachine)
-                    self:showPreviousPanel()
-                    self:setState({showModal = false})
-                    self:updateDataset(self.state.dataset)
-                end,
-                modalCancellationCallback = function()
-                    Scene.instantiateMachineAnchor(self.state.selectedMachine)
-                    self:setState({showModal = false})
-                    self:updateDataset(self.state.dataset)
-                end
-            })
-        end
-    )
+    -- if self.connections["MachineAnchorDeletion"] then
+    --     self.connections["MachineAnchorDeletion"]:Disconnect()
+    -- end
+    -- self.connections["MachineAnchorDeletion"] = Input.listenForMachineAnchorDeletion(
+    --     function()
+    --         self:setState({
+    --             showModal = true,
+    --             modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
+    --             modalConfirmationCallback = function()
+    --                 Dataset:removeMachine(self.state.selectedMachine["id"])
+    --                 Scene.removeMachineAnchor(self.state.selectedMachine)
+    --                 self:showPreviousPanel()
+    --                 self:setState({showModal = false})
+    --                 self:updateDataset(self.state.dataset)
+    --             end,
+    --             modalCancellationCallback = function()
+    --                 Scene.instantiateMachineAnchor(self.state.selectedMachine)
+    --                 self:setState({showModal = false})
+    --                 self:updateDataset(self.state.dataset)
+    --             end
+    --         })
+    --     end
+    -- )
 
-    if self.connections["MachineAnchorDuplication"] then
-        self.connections["MachineAnchorDuplication"]:Disconnect()
-    end
-    self.connections["MachineAnchorDuplication"] = Input.listenForMachineDuplication(
-        function(machineObj:table, selectedObj:Instance)
-            if self.connections["Selection"] then
-                self.connections["Selection"]:Disconnect()
-            end
+    -- if self.connections["MachineAnchorDuplication"] then
+    --     self.connections["MachineAnchorDuplication"]:Disconnect()
+    -- end
+    -- self.connections["MachineAnchorDuplication"] = Input.listenForMachineDuplication(
+    --     function(machineObj:table, selectedObj:Instance)
+    --         if self.connections["Selection"] then
+    --             self.connections["Selection"]:Disconnect()
+    --         end
 
-            self:setState({
-                selectedMachine = machineObj,
-                selectedMachineAnchor = selectedObj,
-            })
-            self:changePanel(Constants.EditDatasetUI)
-            Selection:Set({selectedObj})
-            Studio.setSelectionTool()
-        end
-    )
+    --         self:setState({
+    --             selectedMachine = machineObj,
+    --             selectedMachineAnchor = selectedObj,
+    --         })
+    --         self:changePanel(Constants.EditDatasetUI)
+    --         Selection:Set({selectedObj})
+    --         Studio.setSelectionTool()
+    --     end
+    -- )
 end
 
 function App:muteMachineDeletionConnection()
     --mute the listener for the machine deletion.
-    if self.connections and self.connections["MachineAnchorDeletion"] then
-        self.connections["MachineAnchorDeletion"]:Disconnect()
-        self.connections["MachineAnchorDeletion"] = nil
-    end
+    -- if self.connections and self.connections["MachineAnchorDeletion"] then
+    --     self.connections["MachineAnchorDeletion"]:Disconnect()
+    --     self.connections["MachineAnchorDeletion"] = nil
+    -- end
 end
 
 function App:setCurrentMap(mapIndex)
