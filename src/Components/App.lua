@@ -547,7 +547,26 @@ function App:render()
             }),
 
             FactoryFloor = FactoryFloor({
-                Machines = self.state.dataset.maps[self.state.currentMapIndex].machines
+                Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
+                OnMachineSelect = function(machine, selectedObj)
+                        self:setState({
+                            selectedMachineAnchor = selectedObj,
+                            selectedMachine = machine,
+                        })
+                        if machine then
+                            self:changePanel(Panels.EditMachineUI)
+                        end
+                    end,
+                OnClearSelection = function()
+                    self:setState({
+                        selectedMachineAnchor = nil,
+                        selectedMachine = nil,
+                    })
+                    self:changePanel(Panels.EditDatasetUI)
+                end,
+                UpdateMachinePositions = function()
+                    self:updateDataset(self.state.dataset)
+                end,
             }),
         })
     })

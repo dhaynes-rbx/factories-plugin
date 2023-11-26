@@ -12,7 +12,7 @@ local Types = require(script.Parent.Parent.Parent.Types)
 
 type Props = {
     ClickRect:Rect,
-	CornerRadius:number,
+	-- CornerRadius:number,
     Creating:boolean,
 	Editing:boolean,
     Name:string,
@@ -87,20 +87,20 @@ function Conveyor(props:Props)
     local conveyorModel: Model, setConveyorModel: (Model) -> nil = React.useState(nil)
     local controlPoints: {ControlPoint}, setControlPoints: ({ControlPoint}) -> nil = React.useState({})
 
-	props.CornerRadius = props.CornerRadius or 0
+	-- props.CornerRadius = props.CornerRadius or 0
 
 	local children = {}
 
     React.useEffect(function()
         --Create a model to hold the control points
-        local folder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
-		local model:Model = folder:FindFirstChild(props.Name)
+        local beltMeshFolder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
+		local model:Model = beltMeshFolder:FindFirstChild(props.Name)
 		if model then
 			controlPoints = refreshControlPoints(model)
 		else
 			model = Instance.new("Model")
             model.Name = props.Name
-            model.Parent = folder
+            model.Parent = beltMeshFolder
 
 			controlPoints["ControlPoint1"] = {}
 			controlPoints["ControlPoint1"].Name = "ControlPoint1"
@@ -110,19 +110,8 @@ function Conveyor(props:Props)
 			controlPoints["ControlPoint2"].Position = props.EndPosition
         end
 
-		local controlPointsFolder = model:FindFirstChild("ControlPoints")
-		if not controlPointsFolder then
-			controlPointsFolder = Instance.new("Folder")
-			controlPointsFolder.Name = "ControlPoints"
-			controlPointsFolder.Parent = model
-		end
-
-		local beltsFolder = model:FindFirstChild("BeltSegments")
-		if not beltsFolder then
-			beltsFolder = Instance.new("Folder")
-			beltsFolder.Name = "BeltSegments"
-			beltsFolder.Parent = model
-		end
+		getOrCreateFolder("ControlPoints", model)
+		getOrCreateFolder("BeltSegments", model)
 
 		setConveyorModel(model)
 		setControlPoints(controlPoints)
@@ -159,10 +148,28 @@ function Conveyor(props:Props)
 		end
 
 		conveyorModel:FindFirstChild("BeltSegments"):ClearAllChildren()
-
 		setControlPoints(newControlPoints)
 		
 	end, { props.Subdivisions })
+
+	React.useEffect(function()
+
+		local keys:table = Dash.keys(controlPoints)
+		table.sort(keys, function(a,b)
+			return a < b
+		end)
+
+		if #keys > 1 then
+			local startPoint = controlPoints[keys[1]]
+			startPoint.Position = props.StartPosition
+			local endPoint = controlPoints[keys[#keys]]
+			endPoint.Position = props.EndPosition
+	
+			setControlPoints(table.clone(controlPoints))
+		end
+
+
+	end, { props.StartPosition, props.EndPosition })
 
     local controlPointComponents = {}
 	for _,point in controlPoints do
@@ -180,9 +187,10 @@ function Conveyor(props:Props)
 	end
 
 	local beltSegmentComponents = {}
-	for _,segment in refreshBeltSegments(controlPoints) do
+	local beltSegments = refreshBeltSegments(controlPoints)
+	for _,segment in beltSegments do
 		beltSegmentComponents[segment.Name] = BeltSegment({
-			CornerRadius = props.CornerRadius,
+			-- CornerRadius = props.CornerRadius,
 			Name = segment.Name,
 			Parent = conveyorModel.BeltSegments,
 			StartPoint = table.clone(segment.StartPoint),

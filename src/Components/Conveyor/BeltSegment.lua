@@ -22,12 +22,18 @@ function BeltSegment(props:Props)
 
         local part = PathGenerator.GenerateBasicPath(props.StartPoint.Position, props.EndPoint.Position, width, thickness)
         if part then
+            part.Name = props.Name
             part.Parent = props.Parent
             setBeltPart(part)
         else
             print("Belt Segment part is invalid. Check to see if the segment length was too short.")
         end
 
+        return function()
+            if part then
+                part:Destroy()
+            end
+        end
 
     end, {})
 
@@ -36,6 +42,7 @@ function BeltSegment(props:Props)
             beltPart:Destroy()
 
             local newPart = PathGenerator.GenerateBasicPath(props.StartPoint.Position, props.EndPoint.Position, width, thickness)
+            newPart.Name = props.Name
             newPart.Parent = props.Parent
             setBeltPart(newPart)
         end

@@ -1,5 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local StudioService = game:GetService("StudioService")
+local Selection = game:GetService("Selection")
+local InputService = game:GetService("UserInputService")
 local Packages = script.Parent.Parent.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
@@ -11,10 +13,14 @@ local worldPositionToVector3 = require(script.Parent.Parent.Helpers.worldPositio
 local Utilities = require(script.Parent.Parent.Packages.Utilities)
 local Types = require(script.Parent.Parent.Types)
 local Dataset = require(script.Parent.Parent.Dataset)
+local Scene = require(script.Parent.Parent.Scene)
+local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
     Machines:table,
+    OnMachineSelect:(Types.Machine, Instance) -> nil,
+    OnClearSelection:() -> nil,
 }
 
 local FactoryFloor = function(props:Props)
@@ -22,15 +28,77 @@ local FactoryFloor = function(props:Props)
 
     --Instantiation Hook
     React.useEffect(function()
-        --Get the existing machine anchors.
+        local folder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
     end, {})
+
+    --Connections Hook
+    React.useEffect(function()
+        local connections:{ RBXScriptConnection } = {}
+        
+        connections["ClearSelection"] =  Selection.SelectionChanged:Connect(function()
+            if #Selection:Get() == 0 then
+                props.OnClearSelection()
+            end
+        end)
+
+        connections["Selection"] =  Selection.SelectionChanged:Connect(function()
+            local selection = Selection:Get()
+            if #selection >= 1 then
+                local selectedObj = selection[1]
+                if Scene.isMachineAnchor(selectedObj) then
+                    local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
+                    props.OnMachineSelect(machine, selectedObj)
+                end
+            end
+        end)
+
+        connections["DragMachine"] = InputService.InputEnded:Connect(function(input:InputObject)
+            if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                return
+            end
+        
+            local selectedObj = Selection:Get()[1]
+            if selectedObj then
+                if Scene.isMachineAnchor(selectedObj) then
+                    --Register that the machine may have been moved.
+                    local position = selectedObj.CFrame.Position
+    
+                    local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
+                    local worldPosition = Vector3.new()
+                    if machine["worldPosition"] then
+                        worldPosition = Vector3.new(
+                            machine["worldPosition"]["X"],
+                            machine["worldPosition"]["Y"],
+                            machine["worldPosition"]["Z"]
+                        )
+                    end
+                    if position ~= worldPosition then
+                        machine["worldPosition"]["X"] = position.X
+                        machine["worldPosition"]["Y"] = position.Y
+                        machine["worldPosition"]["Z"] = position.Z
+                        -- callback()
+                        props.UpdateMachinePositions()
+                    end
+                end
+            end
+        end)
+
+        return function()
+            for _,connection in connections do
+                connection:Disconnect()
+            end
+        end
+    end, { props.OnClearSelection })
     
     --Create machine components
     local machineComponents = {}
     local conveyorData = {}
     for _,machine in props.Machines do
         table.insert(machineComponents, Machine({
-            MachineData = machine
+            Id = machine.id,
+            OnHover = function(machine, selectedObj)
+                props.OnMachineSelect(machine, selectedObj)
+            end,
         }))
 
         conveyorData[machine.id] = {}
@@ -45,8 +113,9 @@ local FactoryFloor = function(props:Props)
                     end
                 end
 
+                local conveyorName = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
                 table.insert(conveyorData[machine.id], {
-                    name = "Conveyor-"..machine.id.."-"..sourceId,
+                    name = conveyorName,
                     sourceId = sourceId,
                     startPosition = worldPositionToVector3(machine.worldPosition),
                     endPosition = worldPositionToVector3(sourceMachine.worldPosition)
@@ -119,7 +188,7 @@ local FactoryFloor = function(props:Props)
         end
     end
         
-        
+    
     local conveyorComponents = {}
     for _,machineConveyorsArray in conveyorData do
         for _,conveyor in machineConveyorsArray do

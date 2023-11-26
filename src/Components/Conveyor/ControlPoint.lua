@@ -24,11 +24,6 @@ function ControlPoint(props:Props)
         
         setControlPart(part)
         
-        return function()
-            if part then
-                part:Destroy()
-            end
-        end
     end, {})
 
     React.useEffect(function()

@@ -1,17 +1,20 @@
 local HttpService = game:GetService("HttpService")
 local StudioService = game:GetService("StudioService")
+local Selection = game:GetService("Selection")
 local Packages = script.Parent.Parent.Packages
 local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local Dash = require(Packages.Dash)
 local Scene = require(script.Parent.Parent.Scene)
 local Dataset = require(script.Parent.Parent.Dataset)
+local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
 local FishBloxComponents = FishBlox.Components
 local Types = script.Parent.Parent.Types
 
 type Props = {
-    MachineData:Types.Machine,
-    OtherMachines:{[number]:Types.Machine},
+    Id:string,
+    OnHover:(Types.Machine, Instance) -> nil,
+    OnClearSelection:() -> nil,
 }
 
 local Machine = function(props:Props)
@@ -19,7 +22,7 @@ local Machine = function(props:Props)
     local machinePart: Part, setMachinePart: (Part) -> nil = React.useState(nil)
 
     local children = {}
-    local machine = props.MachineData
+    local machine = Dataset:getMachineFromId(props.Id)
 
     --Instantiation Hook
     React.useEffect(function()
@@ -51,6 +54,26 @@ local Machine = function(props:Props)
         --     end
         -- end
     end, {})
+
+    React.useEffect(function()
+        local connections: { RBXScriptConnection } = {}
+
+        -- connections["Selection"] =  Selection.SelectionChanged:Connect(function()
+        --     if #Selection:Get() >= 1 then
+        --         if Selection:Get()[1] == machinePart then
+        --             props.OnHover(machine, machinePart)
+        --         end
+        --     end
+        -- end)
+
+        return function()
+            for _,connection in connections do
+                connection:Disconnect()
+            end
+            table.clear(connections)
+        end
+
+    end, { machinePart, props.OnHover })
 
     return React.createElement(React.Fragment, {}, children)
 end
