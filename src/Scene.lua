@@ -181,6 +181,10 @@ function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
 end
 
+function Scene.getConveyorBeltName(machine1, machine2)
+    return Scene.getAnchorFromMachine(machine1).Name.."-"..Scene.getAnchorFromMachine(machine2).Name
+end
+
 -- function Scene.instantiateConveyorBelt(conveyorBelt:table)
     -- local part = Instance.new("Part")
     -- part.Anchored = true

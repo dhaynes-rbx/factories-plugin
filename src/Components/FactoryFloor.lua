@@ -31,7 +31,8 @@ local FactoryFloor = function(props:Props)
         local folder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
     end, {})
 
-    --Connections Hook
+    --Connections Hook.
+    --Listen for machine selection and machine drag.
     React.useEffect(function()
         local connections:{ RBXScriptConnection } = {}
         
@@ -76,7 +77,6 @@ local FactoryFloor = function(props:Props)
                         machine["worldPosition"]["X"] = position.X
                         machine["worldPosition"]["Y"] = position.Y
                         machine["worldPosition"]["Z"] = position.Z
-                        -- callback()
                         props.UpdateMachinePositions()
                     end
                 end
@@ -113,7 +113,7 @@ local FactoryFloor = function(props:Props)
                     end
                 end
 
-                local conveyorName = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
+                local conveyorName = Scene.getConveyorBeltName(sourceMachine, machine)
                 table.insert(conveyorData[machine.id], {
                     name = conveyorName,
                     sourceId = sourceId,
@@ -135,13 +135,13 @@ local FactoryFloor = function(props:Props)
 
         
         if machineType == Constants.MachineTypes.makerSeller then
-            print("")
+            
             -- local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
             -- conveyorData[machine.id] = {
-                --     Name = "Conveyor-"..machine.id,
-                --     StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
-                --     EndPosition = worldPositionToVector3(machine.worldPosition),
-                -- }
+            --         Name = "Conveyor-"..machine.id,
+            --         StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
+            --         EndPosition = worldPositionToVector3(machine.worldPosition),
+            --     }
         end
     end
 

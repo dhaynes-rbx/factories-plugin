@@ -12,7 +12,6 @@ local Types = require(script.Parent.Parent.Parent.Types)
 
 type Props = {
     ClickRect:Rect,
-	-- CornerRadius:number,
     Creating:boolean,
 	Editing:boolean,
     Name:string,
@@ -43,7 +42,7 @@ local function getPreviousIndex(name): number
 	if prevIndex == 0 then
 		return nil
 	end
-	
+
 	return prevIndex
 end
 
@@ -86,8 +85,6 @@ end
 function Conveyor(props:Props)
     local conveyorModel: Model, setConveyorModel: (Model) -> nil = React.useState(nil)
     local controlPoints: {ControlPoint}, setControlPoints: ({ControlPoint}) -> nil = React.useState({})
-
-	-- props.CornerRadius = props.CornerRadius or 0
 
 	local children = {}
 
@@ -192,7 +189,7 @@ function Conveyor(props:Props)
 		beltSegmentComponents[segment.Name] = BeltSegment({
 			-- CornerRadius = props.CornerRadius,
 			Name = segment.Name,
-			Parent = conveyorModel.BeltSegments,
+			Conveyor = conveyorModel,
 			StartPoint = table.clone(segment.StartPoint),
 			EndPoint = table.clone(segment.EndPoint),
 		})
