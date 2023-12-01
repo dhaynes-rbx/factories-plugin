@@ -181,21 +181,21 @@ function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
 end
 
-function Scene.instantiateConveyorBelt(conveyorBelt:table)
-    local part = Instance.new("Part")
-    part.Anchored = true
-    part.CanCollide = false
-    part.Locked = true
-    local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
-    local size = Vector3.new(1, 1, distance)
-    part.Size = size
-    part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
-    part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
-    part.Name = conveyorBelt.name
-    part.Parent = Scene.getBeltsFolder()
+-- function Scene.instantiateConveyorBelt(conveyorBelt:table)
+    -- local part = Instance.new("Part")
+    -- part.Anchored = true
+    -- part.CanCollide = false
+    -- part.Locked = true
+    -- local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
+    -- local size = Vector3.new(1, 1, distance)
+    -- part.Size = size
+    -- part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
+    -- part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
+    -- part.Name = conveyorBelt.name
+    -- part.Parent = Scene.getBeltsFolder()
     
-    return part
-end
+    -- return part
+-- end
 
 function Scene.updateAllConveyorBelts(map:table)
     -- local machines = map["machines"]
