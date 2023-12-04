@@ -90,14 +90,14 @@ local FactoryFloor = function(props:Props)
         end
     end, { props.OnClearSelection })
     
-    --Create machine components
+    --Create machine and conveyor components
     local machineComponents = {}
     local conveyorData = {}
     for _,machine in props.Machines do
         table.insert(machineComponents, Machine({
             Id = machine.id,
-            OnHover = function(machine, selectedObj)
-                props.OnMachineSelect(machine, selectedObj)
+            OnHover = function(hoveredMachine, selectedObj)
+                props.OnMachineSelect(hoveredMachine, selectedObj)
             end,
         }))
 
@@ -118,39 +118,44 @@ local FactoryFloor = function(props:Props)
                     name = conveyorName,
                     sourceId = sourceId,
                     startPosition = worldPositionToVector3(machine.worldPosition),
-                    endPosition = worldPositionToVector3(sourceMachine.worldPosition)
+                    endPosition = worldPositionToVector3(sourceMachine.worldPosition),
                 })
 
             end
         else
-            
-            -- local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-            -- conveyorData[machine.id] = {
-            --     Name = "Conveyor-"..machine.id,
-            --     StartPosition = worldPositionToVector3(machine.worldPosition),
-            --     EndPosition = beltEntryPart.Attachment1.WorldCFrame.Position
-            -- }
-            
+            if machine["type"] ~= Constants.MachineTypes.invalid then
+                --This is a purchaser, which means it doesn't have a source machine. Its conveyor comes in from offscreen.
+                local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+                table.insert(conveyorData[machine.id], {
+                    sourceId = "enter",
+                    name = "Conveyor-"..machine.id,
+                    startPosition = worldPositionToVector3(machine.worldPosition),
+                    endPosition = beltEntryPart.Attachment1.WorldCFrame.Position,
+                })
+            end
         end
 
         
         if machineType == Constants.MachineTypes.makerSeller then
-            
-            -- local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-            -- conveyorData[machine.id] = {
-            --         Name = "Conveyor-"..machine.id,
-            --         StartPosition = beltExitPart.Attachment1.WorldCFrame.Position,
-            --         EndPosition = worldPositionToVector3(machine.worldPosition),
-            --     }
+            local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+            table.insert(conveyorData[machine.id], {
+                sourceId = "exit",
+                name = "Conveyor-"..machine.id,
+                startPosition = beltExitPart.Attachment1.WorldCFrame.Position,
+                endPosition = worldPositionToVector3(machine.worldPosition),
+            })
         end
-    end
 
+        print(machine.id, conveyorData[machine.id])
+    end
+    
     --Sort conveyors start and end positions. Offset them so they don't overlap.
     for _,machine in props.Machines do
-        table.sort(conveyorData[machine.id], function(a,b) 
+        table.sort(conveyorData[machine.id], function(a,b)
             return a.endPosition.X < b.endPosition.X
         end)
         
+        local conveyorXOffsetAmount = 3
         for i,conveyor in conveyorData[machine.id] do
             local numBelts = #conveyorData[machine.id]
             local offsetAmt = 3
@@ -159,14 +164,30 @@ local FactoryFloor = function(props:Props)
             conveyor.startPosition = newStart
             
             local otherMachinesUsingSameSource = {}
-            local machineSource = Dataset:getMachineFromId(conveyor.sourceId)
-            if machineSource then
-                --Check to see if other machines consider this machine a source
+            if conveyor.sourceId == "enter" then
+                conveyorXOffsetAmount = 6
                 for _,otherMachine in props.Machines do
-                    if otherMachine.sources then
-                        for _,otherMachineSource in otherMachine.sources do
-                            if otherMachineSource == machineSource.id then
-                                table.insert(otherMachinesUsingSameSource, otherMachine)
+                    if otherMachine.type == Constants.MachineTypes.purchaser then
+                        table.insert(otherMachinesUsingSameSource, otherMachine)
+                    end
+                end
+            elseif conveyor.sourceId == "exit" then
+                conveyorXOffsetAmount = 6
+                for _,otherMachine in props.Machines do
+                    if otherMachine.type == Constants.MachineTypes.makerSeller then
+                        table.insert(otherMachinesUsingSameSource, otherMachine)
+                    end
+                end
+            else
+                local machineSource = Dataset:getMachineFromId(conveyor.sourceId)
+                if machineSource then
+                    --Check to see if other machines consider this machine a source
+                    for _,otherMachine in props.Machines do
+                        if otherMachine.sources then
+                            for _,otherMachineSource in otherMachine.sources do
+                                if otherMachineSource == machineSource.id then
+                                    table.insert(otherMachinesUsingSameSource, otherMachine)
+                                end
                             end
                         end
                     end
@@ -179,8 +200,7 @@ local FactoryFloor = function(props:Props)
             local numSourceBelts = #otherMachinesUsingSameSource
             for j,otherMachine in ipairs(otherMachinesUsingSameSource) do
                 if otherMachine.id == machine.id then
-                    local sourceOffsetAmt = 3
-                    local sourceOffset = (j - 1) * sourceOffsetAmt - (sourceOffsetAmt * (numSourceBelts-1)) / 2
+                    local sourceOffset = (j - 1) * conveyorXOffsetAmount - (conveyorXOffsetAmount * (numSourceBelts-1)) / 2
                     local newEnd = conveyor.endPosition + Vector3.new(sourceOffset, 0, 5)
                     conveyor.endPosition = newEnd
                 end

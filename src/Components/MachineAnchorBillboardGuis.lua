@@ -39,9 +39,9 @@ local function MachineAnchorBillboardGuis(props:Props)
     for _,machineAnchor in Scene.getMachineAnchors() do
     
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
-        local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
-        local machineIsInvalid = machine["type"] == Constants.MachineTypes.invalid
         if machine then
+            local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
+            local machineIsInvalid = machine["type"] == Constants.MachineTypes.invalid
             local outputs = machine["outputs"]
             local icons = {}
             if outputs then

@@ -20,9 +20,10 @@ function BeltSegment(props:Props)
 
     React.useEffect(function()
 
-        local existingPart = props.Conveyor.BeltSegments:FindFirstChild(props.Name)
-        if existingPart then
-            existingPart:Destroy()
+        for _,child in props.Conveyor.BeltSegments:GetChildren() do
+            if child.Name == props.Name then
+                child:Destroy()
+            end
         end
 
         local part = PathGenerator.GenerateBasicPath(props.StartPoint.Position, props.EndPoint.Position, width, thickness)
@@ -33,12 +34,6 @@ function BeltSegment(props:Props)
         else
             print("Belt Segment part is invalid. Check to see if the segment length was too short.")
         end
-
-        -- return function()
-        --     if part then
-        --         part:Destroy()
-        --     end
-        -- end
 
     end, {})
 

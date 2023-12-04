@@ -23,9 +23,9 @@ return function()
         },
         supportsPowerup = true,
         worldPosition = {
-            X = -52.049,
-            Y = 0.802,
-            Z = 47.449,
+            X = -54.614,
+            Y = 1.05,
+            Z = 21.419,
         },
         machineAnchor = -1
     }

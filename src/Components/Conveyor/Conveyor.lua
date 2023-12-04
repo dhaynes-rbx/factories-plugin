@@ -88,16 +88,17 @@ function Conveyor(props:Props)
 
 	local children = {}
 
+
     React.useEffect(function()
         --Create a model to hold the control points
-        local beltMeshFolder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
-		local model:Model = beltMeshFolder:FindFirstChild(props.Name)
+        local beltDataFolder = getOrCreateFolder("BeltData", game.Workspace)
+		local model:Model = beltDataFolder:FindFirstChild(props.Name)
 		if model then
 			controlPoints = refreshControlPoints(model)
 		else
 			model = Instance.new("Model")
             model.Name = props.Name
-            model.Parent = beltMeshFolder
+            model.Parent = beltDataFolder
 
 			controlPoints["ControlPoint1"] = {}
 			controlPoints["ControlPoint1"].Name = "ControlPoint1"
@@ -108,7 +109,7 @@ function Conveyor(props:Props)
         end
 
 		getOrCreateFolder("ControlPoints", model)
-		getOrCreateFolder("BeltSegments", model)
+		getOrCreateFolder("BeltSegments", model):ClearAllChildren()
 
 		setConveyorModel(model)
 		setControlPoints(controlPoints)
@@ -172,7 +173,7 @@ function Conveyor(props:Props)
 	for _,point in controlPoints do
 		controlPointComponents[point.Name] = ControlPoint({
 			Name = point.Name,
-            Parent = conveyorModel.ControlPoints,
+            Conveyor = conveyorModel,
 			PartRef = point.PartRef,
 			Position = point.Position,
 			UpdatePosition = function(controlPointName:string, position:Vector3)
@@ -187,7 +188,6 @@ function Conveyor(props:Props)
 	local beltSegments = refreshBeltSegments(controlPoints)
 	for _,segment in beltSegments do
 		beltSegmentComponents[segment.Name] = BeltSegment({
-			-- CornerRadius = props.CornerRadius,
 			Name = segment.Name,
 			Conveyor = conveyorModel,
 			StartPoint = table.clone(segment.StartPoint),
