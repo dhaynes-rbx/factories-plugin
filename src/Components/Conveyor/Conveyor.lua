@@ -83,7 +83,7 @@ local function refreshBeltSegments(controlPoints): { BeltSegment }
 end
 
 function Conveyor(props:Props)
-    local conveyorModel: Model, setConveyorModel: (Model) -> nil = React.useState(nil)
+    local conveyorFolder: Model, setConveyorFolder: (Model) -> nil = React.useState(nil)
     local controlPoints: {ControlPoint}, setControlPoints: ({ControlPoint}) -> nil = React.useState({})
 
 	local children = {}
@@ -92,13 +92,13 @@ function Conveyor(props:Props)
     React.useEffect(function()
         --Create a model to hold the control points
         local beltDataFolder = getOrCreateFolder("BeltData", game.Workspace)
-		local model:Model = beltDataFolder:FindFirstChild(props.Name)
-		if model then
-			controlPoints = refreshControlPoints(model)
+		local folder:Folder = beltDataFolder:FindFirstChild(props.Name)
+		if folder then
+			controlPoints = refreshControlPoints(folder)
 		else
-			model = Instance.new("Model")
-            model.Name = props.Name
-            model.Parent = beltDataFolder
+			folder = Instance.new("Model")
+            folder.Name = props.Name
+            folder.Parent = beltDataFolder
 
 			controlPoints["ControlPoint1"] = {}
 			controlPoints["ControlPoint1"].Name = "ControlPoint1"
@@ -108,10 +108,10 @@ function Conveyor(props:Props)
 			controlPoints["ControlPoint2"].Position = props.EndPosition
         end
 
-		getOrCreateFolder("ControlPoints", model)
-		getOrCreateFolder("BeltSegments", model):ClearAllChildren()
+		getOrCreateFolder("ControlPoints", folder)
+		getOrCreateFolder("BeltSegments", folder):ClearAllChildren()
 
-		setConveyorModel(model)
+		setConveyorFolder(folder)
 		setControlPoints(controlPoints)
 		
     end, {})

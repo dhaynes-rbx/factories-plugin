@@ -106,7 +106,7 @@ local function MachineAnchorBillboardGuis(props:Props)
     end
 
     return React.createElement("Folder", {
-        Name = "BillboardGUIs"
+        ["Name"] = "BillboardGUIs",
     }, billboardGuis)
 end
 

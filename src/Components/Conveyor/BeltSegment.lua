@@ -46,7 +46,7 @@ function BeltSegment(props:Props)
             newPart.Parent = props.Conveyor.BeltSegments
             setBeltPart(newPart)
         end
-    end, {props.StartPoint, props.EndPoint})
+    end, {props.StartPoint.Position.X, props.StartPoint.Position.Y, props.EndPoint.Position.X, props.EndPoint.Position.Y})
 
     return React.createElement(React.Fragment, {}, children)
 end
