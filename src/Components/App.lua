@@ -20,7 +20,6 @@ local Panel = FishBloxComponents.Panel
 local Button = FishBloxComponents.Button
 local TextInput = FishBloxComponents.TextInput
 
-local ConnectionGizmos = require(script.Parent.ConnectionGizmos)
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
 local EditItemsListUI = require(script.Parent.EditItemsListUI)
@@ -131,8 +130,6 @@ function App:init()
         selectedMachineAnchor = nil,
         showModal = false,
     })
-    
-    self.connections = {}
 end
 
 --TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
@@ -466,11 +463,7 @@ function App:render()
 end
 
 function App:componentWillUnmount()
-    for _,v in self.connections do
-        v:Disconnect()
-        v = nil
-    end
-    table.clear(self.connections)
+    --Nothing
 end
 
 return App
