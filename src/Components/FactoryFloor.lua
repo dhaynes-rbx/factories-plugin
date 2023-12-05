@@ -85,10 +85,8 @@ local FactoryFloor = function(props:Props)
             end
 
             connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
-                if not child:GetAttribute("debugId") then
-                    return
-                end
                 local machine = Dataset:getMachineFromMachineAnchor(child)
+                print("Machine deletion:", machine)
                 if machine then
                     props.DeleteMachine(machine, child)
                 end

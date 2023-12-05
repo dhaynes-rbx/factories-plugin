@@ -225,14 +225,14 @@ local function EditItemUI(props: Props)
             Label = "Add Value",
             LayoutOrder = incrementLayoutOrder(),
             OnActivated = function()
-                item["value"] = {itemId = "currency", count = 0.2}
+                item["value"] = {itemId = "currency", count = 10}
                 props.UpdateDataset(dataset)
             end
         }))
     end
 
     return React.createElement(React.Fragment, nil, {
-        SidePanel({
+        Panel = SidePanel({
             Title = "Edit Item: "..props.Item["id"],
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,

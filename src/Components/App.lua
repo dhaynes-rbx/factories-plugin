@@ -238,18 +238,12 @@ function App:deleteMachine(machine:Types.Machine, anchor)
 
         modalConfirmationCallback = function()
             Dataset:removeMachine(self.state.selectedMachine["id"])
-
-            -- Scene.removeMachineAnchor(self.state.selectedMachine)
-
             self:showPreviousPanel()
             self:setState({showModal = false})
             self:updateDataset(self.state.dataset)
         end,
         modalCancellationCallback = function()
-            -- Scene.instantiateMachineAnchor(self.state.selectedMachine)
-            -- if anchor then
-            --     anchor.Parent = game.Workspace
-            -- end
+            Scene.instantiateMachineAnchor(self.state.selectedMachine)
             self:setState({showModal = false})
             self:updateDataset(self.state.dataset)
         end
@@ -398,60 +392,6 @@ function App:render()
                 end,
                 UpdateDataset = function(dataset) self:updateDataset(dataset) end,
             }, {}),
-
-            -- EditMachinesListUI = self.state.currentPanel == Panels.EditMachinesListUI and EditMachinesListUI({
-            --     CurrentMap = self.state.currentMap,
-            --     Dataset = self.state.dataset,
-
-            --     OnClosePanel = function()
-            --         self:showPreviousPanel()
-            --     end,
-            --     UpdateDataset = function(dataset)
-            --         self:updateDataset(dataset)
-            --     end,
-            --     OnMachineEditClicked = function(machine:table, machineAnchor:Instance)
-            --         self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
-
-            --         self:changePanel(Panels.EditMachineUI)
-            --         Selection:Set({machineAnchor})
-            --     end,
-            --     OnMachineDeleteClicked = function(machineId:string)
-            --         local machineObj = Dataset:getMachineFromId(machineId)
-            --         self:setState({
-            --             showModal = true,
-            --             selectedMachine = Dataset:getMachineFromId(machineId),
-
-            --             modalConfirmationCallback = function()
-            --                 if self.connections["MachineAnchorDeletion"] then
-            --                     self.connections["MachineAnchorDeletion"]:Disconnect()
-            --                 end
-                            
-            --                 Scene.removeMachineAnchor(machineObj)
-            --                 Dataset:removeMachine(machineId)
-            --                 self:setState({showModal = false})
-            --                 self:updateDataset(self.state.dataset)
-            --             end,
-            --             modalCancellationCallback = function()
-            --                 self:setState({
-            --                     showModal = false,
-            --                     selectedMachine = nil,
-
-            --                     selectedMachineAnchor = nil,
-            --                 })
-            --             end,
-            --             modalTitle = "Would you like to delete "..machineObj["id"].."?"
-            --         })
-            --     end,
-            --     HighlightMachineAnchor = function(machine:table)
-            --         if machine then
-            --             local anchor = machine and Scene.getAnchorFromMachine(machine) or nil
-            --             self:setState({highlightedMachineAnchor = anchor})
-            --         else
-            --             self:setState({highlightedMachineAnchor = React.None})
-            --         end
-                    
-            --     end,
-            -- }),
             
             EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
                 CurrentMap = self.state.currentMap,
