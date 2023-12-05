@@ -2,7 +2,7 @@ local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 
 type Props = {
-    Conveyor:Model,
+    Conveyor:Folder,
     Name:string,
     Position:Vector3,
     UpdatePosition:any,
@@ -12,7 +12,7 @@ function ControlPoint(props:Props)
     local controlPart:Part, setControlPart = React.useState()
     
     React.useEffect(function()
-
+        
         local existingPart = props.Conveyor.ControlPoints:FindFirstChild(props.Name)
         if existingPart then
             existingPart:Destroy()

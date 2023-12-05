@@ -21,6 +21,7 @@ type Props = {
     Machines:table,
     OnMachineSelect:(Types.Machine, Instance) -> nil,
     OnClearSelection:() -> nil,
+    UpdateDataset:() -> nil,
 }
 
 local FactoryFloor = function(props:Props)
@@ -66,21 +67,32 @@ local FactoryFloor = function(props:Props)
     
                     local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
                     local worldPosition = Vector3.new()
-                    if machine["worldPosition"] then
+                    if machine and machine["worldPosition"] then
                         worldPosition = Vector3.new(
                             machine["worldPosition"]["X"],
                             machine["worldPosition"]["Y"],
                             machine["worldPosition"]["Z"]
                         )
-                    end
-                    if position ~= worldPosition then
-                        machine["worldPosition"]["X"] = position.X
-                        machine["worldPosition"]["Y"] = position.Y
-                        machine["worldPosition"]["Z"] = position.Z
-                        props.UpdateMachinePositions()
+
+                        if position ~= worldPosition then
+                            machine["worldPosition"]["X"] = position.X
+                            machine["worldPosition"]["Y"] = position.Y
+                            machine["worldPosition"]["Z"] = position.Z
+                            props.UpdateDataset()
+                        end
                     end
                 end
             end
+
+            connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
+                if not child:GetAttribute("debugId") then
+                    return
+                end
+                local machine = Dataset:getMachineFromMachineAnchor(child)
+                if machine then
+                    props.DeleteMachine(machine, child)
+                end
+            end)
         end)
 
         return function()
@@ -99,6 +111,10 @@ local FactoryFloor = function(props:Props)
             OnHover = function(hoveredMachine, selectedObj)
                 props.OnMachineSelect(hoveredMachine, selectedObj)
             end,
+            MachineData = machine,
+            UpdateDataset = function()
+                props.UpdateDataset()
+            end
         }))
 
         conveyorData[machine.id] = {}
@@ -114,12 +130,16 @@ local FactoryFloor = function(props:Props)
                 end
 
                 local conveyorName = Scene.getConveyorBeltName(sourceMachine, machine)
-                table.insert(conveyorData[machine.id], {
-                    name = conveyorName,
-                    sourceId = sourceId,
-                    startPosition = worldPositionToVector3(machine.worldPosition),
-                    endPosition = worldPositionToVector3(sourceMachine.worldPosition),
-                })
+                if conveyorName then
+                    table.insert(conveyorData[machine.id], {
+                        name = conveyorName,
+                        sourceId = sourceId,
+                        startPosition = worldPositionToVector3(machine.worldPosition),
+                        endPosition = worldPositionToVector3(sourceMachine.worldPosition),
+                    })
+                else
+                    print("No conveyor name! Likely related to an error in the machine data.")
+                end
 
             end
         else

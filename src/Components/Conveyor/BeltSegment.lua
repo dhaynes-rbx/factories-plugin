@@ -7,7 +7,7 @@ local thickness = 0.5
 local width = 1.5
 
 type Props = {
-    Conveyor:Model,
+    Conveyor:Folder,
     Name:string,
     EndPoint:table,
     StartPoint:table,

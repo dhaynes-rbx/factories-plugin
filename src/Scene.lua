@@ -182,7 +182,13 @@ function Scene.getBeltsFolder()
 end
 
 function Scene.getConveyorBeltName(machine1, machine2)
-    return Scene.getAnchorFromMachine(machine1).Name.."-"..Scene.getAnchorFromMachine(machine2).Name
+    local machine1Anchor = Scene.getAnchorFromMachine(machine1)
+    local machine2Anchor = Scene.getAnchorFromMachine(machine2)
+    if machine1Anchor and machine2Anchor then
+        return Scene.getAnchorFromMachine(machine1).Name.."-"..Scene.getAnchorFromMachine(machine2).Name
+    else 
+        return nil
+    end
 end
 
 -- function Scene.instantiateConveyorBelt(conveyorBelt:table)

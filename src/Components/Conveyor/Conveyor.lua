@@ -96,7 +96,7 @@ function Conveyor(props:Props)
 		if folder then
 			controlPoints = refreshControlPoints(folder)
 		else
-			folder = Instance.new("Model")
+			folder = Instance.new("Folder")
             folder.Name = props.Name
             folder.Parent = beltDataFolder
 
@@ -118,7 +118,7 @@ function Conveyor(props:Props)
 
 	--Subdivide hook
 	React.useEffect(function()
-		if not conveyorModel then
+		if not conveyorFolder then
 			return
 		end
 
@@ -145,7 +145,7 @@ function Conveyor(props:Props)
 			}
 		end
 
-		conveyorModel:FindFirstChild("BeltSegments"):ClearAllChildren()
+		conveyorFolder:FindFirstChild("BeltSegments"):ClearAllChildren()
 		setControlPoints(newControlPoints)
 		
 	end, { props.Subdivisions })
@@ -173,7 +173,7 @@ function Conveyor(props:Props)
 	for _,point in controlPoints do
 		controlPointComponents[point.Name] = ControlPoint({
 			Name = point.Name,
-            Conveyor = conveyorModel,
+            Conveyor = conveyorFolder,
 			PartRef = point.PartRef,
 			Position = point.Position,
 			UpdatePosition = function(controlPointName:string, position:Vector3)
@@ -189,7 +189,7 @@ function Conveyor(props:Props)
 	for _,segment in beltSegments do
 		beltSegmentComponents[segment.Name] = BeltSegment({
 			Name = segment.Name,
-			Conveyor = conveyorModel,
+			Conveyor = conveyorFolder,
 			StartPoint = table.clone(segment.StartPoint),
 			EndPoint = table.clone(segment.EndPoint),
 		})

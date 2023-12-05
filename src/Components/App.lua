@@ -46,6 +46,8 @@ local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
 local FactoryFloor = require(script.Parent.FactoryFloor)
 
+local Types = require(script.Parent.Parent.Types)
+
 
 function App:setPanel()
     Studio.setSelectionTool()
@@ -132,7 +134,7 @@ function App:init()
         showModal = false,
     })
     
-    self.connections = {}    
+    self.connections = {}
 end
 
 --TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
@@ -155,6 +157,7 @@ function App:updateConnections()
     --     self:setState({
     --         selectedMachineAnchor = selectedObj,
     --         selectedMachine = machine,
+
     --     })
     --     if machine then
     --         self:changePanel(Panels.EditMachineUI)
@@ -179,15 +182,19 @@ function App:updateConnections()
     --         self:setState({
     --             showModal = true,
     --             modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
+
     --             modalConfirmationCallback = function()
     --                 Dataset:removeMachine(self.state.selectedMachine["id"])
+
     --                 Scene.removeMachineAnchor(self.state.selectedMachine)
+
     --                 self:showPreviousPanel()
     --                 self:setState({showModal = false})
     --                 self:updateDataset(self.state.dataset)
     --             end,
     --             modalCancellationCallback = function()
     --                 Scene.instantiateMachineAnchor(self.state.selectedMachine)
+
     --                 self:setState({showModal = false})
     --                 self:updateDataset(self.state.dataset)
     --             end
@@ -206,6 +213,7 @@ function App:updateConnections()
 
     --         self:setState({
     --             selectedMachine = machineObj,
+
     --             selectedMachineAnchor = selectedObj,
     --         })
     --         self:changePanel(Constants.EditDatasetUI)
@@ -223,6 +231,31 @@ function App:muteMachineDeletionConnection()
     -- end
 end
 
+function App:deleteMachine(machine:Types.Machine, anchor)
+    self:setState({
+        showModal = true,
+        modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
+
+        modalConfirmationCallback = function()
+            Dataset:removeMachine(self.state.selectedMachine["id"])
+
+            -- Scene.removeMachineAnchor(self.state.selectedMachine)
+
+            self:showPreviousPanel()
+            self:setState({showModal = false})
+            self:updateDataset(self.state.dataset)
+        end,
+        modalCancellationCallback = function()
+            -- Scene.instantiateMachineAnchor(self.state.selectedMachine)
+            -- if anchor then
+            --     anchor.Parent = game.Workspace
+            -- end
+            self:setState({showModal = false})
+            self:updateDataset(self.state.dataset)
+        end
+    })
+end
+
 function App:setCurrentMap(mapIndex)
     self:muteMachineDeletionConnection()
 
@@ -235,6 +268,7 @@ function App:setCurrentMap(mapIndex)
         currentMap = currentMap,
         selectedItem = nil,
         selectedMachine = nil,
+
         selectedMachineAnchor = nil,
         showModal = false
     })
@@ -280,6 +314,7 @@ function App:render()
                         local newMachine = Dataset:addMachine()
                         local anchor = Scene.instantiateMachineAnchor(newMachine)
                         self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
+
                         self:changePanel(Panels.EditMachineUI)
                         Selection:Set({anchor})
                         self:updateDataset(self.state.dataset)
@@ -376,6 +411,7 @@ function App:render()
             --     end,
             --     OnMachineEditClicked = function(machine:table, machineAnchor:Instance)
             --         self:setState({selectedMachine = machine, selectedMachineAnchor = machineAnchor})
+
             --         self:changePanel(Panels.EditMachineUI)
             --         Selection:Set({machineAnchor})
             --     end,
@@ -384,6 +420,7 @@ function App:render()
             --         self:setState({
             --             showModal = true,
             --             selectedMachine = Dataset:getMachineFromId(machineId),
+
             --             modalConfirmationCallback = function()
             --                 if self.connections["MachineAnchorDeletion"] then
             --                     self.connections["MachineAnchorDeletion"]:Disconnect()
@@ -398,6 +435,7 @@ function App:render()
             --                 self:setState({
             --                     showModal = false,
             --                     selectedMachine = nil,
+
             --                     selectedMachineAnchor = nil,
             --                 })
             --             end,
@@ -419,6 +457,7 @@ function App:render()
                 CurrentMap = self.state.currentMap,
                 Dataset = self.state.dataset,
                 Machine = self.state.selectedMachine,
+
                 MachineAnchor = self.state.selectedMachineAnchor,
 
                 AddMachineAnchor = function(machineObj)
@@ -537,6 +576,7 @@ function App:render()
             }),
 
             ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
+
                 Title = self.state.modalTitle,
                 OnConfirm = function()
                     self.state.modalConfirmationCallback()
@@ -561,12 +601,16 @@ function App:render()
                     self:setState({
                         selectedMachineAnchor = nil,
                         selectedMachine = nil,
+
                     })
                     self:changePanel(Panels.EditDatasetUI)
                 end,
-                UpdateMachinePositions = function()
+                UpdateDataset = function()
                     self:updateDataset(self.state.dataset)
                 end,
+                DeleteMachine = function(machine:Types.Machine)
+                    self:deleteMachine(machine)
+                end
             }),
         })
     })
