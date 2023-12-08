@@ -112,6 +112,12 @@ function Conveyor(props: Props)
 
         setConveyorFolder(folder)
         setControlPoints(controlPoints)
+
+        return function()
+            if folder then
+                folder:Destroy()
+            end
+        end
     end, {})
 
     --Subdivide hook

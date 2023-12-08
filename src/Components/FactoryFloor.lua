@@ -103,7 +103,6 @@ local FactoryFloor = function(props: Props)
     local machineComponents = {}
     local conveyorData = {}
     for _, machine in props.Machines do
-        -- table.insert(
         machineComponents[machine.id] = Machine({
             Id = machine.id,
             OnHover = function(hoveredMachine, selectedObj)
@@ -114,8 +113,6 @@ local FactoryFloor = function(props: Props)
                 props.UpdateDataset()
             end,
         })
-        -- })
-        -- )
 
         conveyorData[machine.id] = {}
         local machineType = machine["type"]
@@ -173,27 +170,25 @@ local FactoryFloor = function(props: Props)
             return a.endPosition.X < b.endPosition.X
         end)
 
-        local conveyorXOffsetAmount = 3
         for i, conveyor in conveyorData[machine.id] do
             local numBelts = #conveyorData[machine.id]
             local offsetAmt = 3
             local offset = (i - 1) * offsetAmt - (offsetAmt * (numBelts - 1)) / 2
-            local newStart = conveyor.startPosition + Vector3.new(offset, 0, -5)
-            conveyor.startPosition = newStart
+            local startPos = conveyor.startPosition + Vector3.new(offset, 0, -5)
+            conveyor.startPosition = startPos
 
             local otherMachinesUsingSameSource = {}
+            local makerSellerMachines = {}
             if conveyor.sourceId == "enter" then
-                conveyorXOffsetAmount = 6
                 for _, otherMachine in props.Machines do
                     if otherMachine.type == Constants.MachineTypes.purchaser then
                         table.insert(otherMachinesUsingSameSource, otherMachine)
                     end
                 end
             elseif conveyor.sourceId == "exit" then
-                conveyorXOffsetAmount = 6
                 for _, otherMachine in props.Machines do
                     if otherMachine.type == Constants.MachineTypes.makerSeller then
-                        table.insert(otherMachinesUsingSameSource, otherMachine)
+                        table.insert(makerSellerMachines, otherMachine)
                     end
                 end
             else
@@ -214,15 +209,29 @@ local FactoryFloor = function(props: Props)
             table.sort(otherMachinesUsingSameSource, function(a, b)
                 return a.worldPosition.X < b.worldPosition.X
             end)
+            table.sort(makerSellerMachines, function(a, b)
+                return a.worldPosition.X < b.worldPosition.X
+            end)
 
+            local conveyorXOffsetAmount = 3
             local numSourceBelts = #otherMachinesUsingSameSource
             for j, otherMachine in ipairs(otherMachinesUsingSameSource) do
                 if otherMachine.id == machine.id then
                     local sourceOffset = (j - 1) * conveyorXOffsetAmount
                         - (conveyorXOffsetAmount * (numSourceBelts - 1)) / 2
+
+                    -- print(conveyor.sourceId, machine.id, j, sourceOffset)
                     local newEnd = conveyor.endPosition + Vector3.new(sourceOffset, 0, 5)
                     conveyor.endPosition = newEnd
                 end
+            end
+
+            local numExitBelts = #makerSellerMachines
+            for j, makerSeller in ipairs(makerSellerMachines) do
+                local sourceOffset = (j - 1) * conveyorXOffsetAmount - (conveyorXOffsetAmount * (numExitBelts - 1)) / 2
+                -- print(conveyor.sourceId, machine.id, j, sourceOffset)
+                local newStart = conveyor.startPosition + Vector3.new(sourceOffset, 0, 1)
+                conveyor.startPosition = newStart
             end
         end
     end
@@ -230,18 +239,14 @@ local FactoryFloor = function(props: Props)
     local conveyorComponents = {}
     for _, machineConveyorsArray in conveyorData do
         for _, conveyor in machineConveyorsArray do
-            -- table.insert(
-            -- conveyorComponents,
             conveyorComponents[conveyor.name] = Conveyor({
                 Name = conveyor.name,
                 StartPosition = conveyor.startPosition,
                 EndPosition = conveyor.endPosition,
             })
-            -- )
         end
     end
 
-    -- children = Dash.append(children, machineComponents, conveyorComponents)
     children = Dash.join(children, machineComponents, conveyorComponents)
 
     return React.createElement(React.Fragment, {}, children)
