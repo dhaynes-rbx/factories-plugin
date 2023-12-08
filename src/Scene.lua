@@ -7,7 +7,7 @@ local MapData = require(script.Parent.MapData)
 local Constants = require(script.Parent.Constants)
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 
-local function registerDebugId(instance:Instance)
+local function registerDebugId(instance: Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
 end
 
@@ -26,7 +26,20 @@ function Scene.setCamera()
     local Camera = game.Workspace.Camera
     Camera.FieldOfView = 25.676
     Camera.CameraType = Enum.CameraType.Scriptable
-    local cf = CFrame.new(-128.214401, 206.470215, -6.83965349, -4.37113883e-08, 0.855725706, -0.51742965, 0, 0.51742965, 0.855725706, 1, 3.74049591e-08, -2.26175683e-08)
+    local cf = CFrame.new(
+        -128.214401,
+        206.470215,
+        -6.83965349,
+        -4.37113883e-08,
+        0.855725706,
+        -0.51742965,
+        0,
+        0.51742965,
+        0.855725706,
+        1,
+        3.74049591e-08,
+        -2.26175683e-08
+    )
     Camera.CFrame = cf
     Camera.CameraType = Enum.CameraType.Custom
 end
@@ -51,11 +64,11 @@ end
 --     return nil
 -- end
 
-function Scene.getMachineAnchor(machine:table)
+function Scene.getMachineAnchor(machine: table)
     local result = nil
     local machineAnchors = Scene.getMachineAnchors()
     local machineAnchorId = machine["machineAnchor"]
-    for _,machineAnchor in machineAnchors do
+    for _, machineAnchor in machineAnchors do
         local debugId = machineAnchor:GetAttribute("debugId")
         if debugId == machineAnchorId then
             result = machineAnchor
@@ -83,12 +96,12 @@ function Scene.loadScene()
 
     --Update the lighting and camera
     local Lighting = game:GetService("Lighting")
-    Lighting.Ambient = Color3.fromRGB(70,70,70)
+    Lighting.Ambient = Color3.fromRGB(70, 70, 70)
     Lighting.Brightness = 5
     Lighting.EnvironmentDiffuseScale = 1
     Lighting.EnvironmentSpecularScale = 1
     Lighting.GlobalShadows = true
-    Lighting.OutdoorAmbient = Color3.fromRGB(70,70,70)
+    Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
     Lighting.ShadowSoftness = 0.2
     -- Lighting.Technology = Enum.Technology.ShadowMap --Not scriptable
     Lighting.ClockTime = 14.5
@@ -109,10 +122,10 @@ function Scene.isMachineAnchor(obj)
     return false
 end
 
-function Scene.getAnchorFromMachine(machine:table)
+function Scene.getAnchorFromMachine(machine: table)
     local anchor = nil
     if machine["machineAnchor"] then
-        for _,anchorInScene in Scene.getMachineAnchors() do
+        for _, anchorInScene in Scene.getMachineAnchors() do
             local debugId = anchorInScene:GetAttribute("debugId")
             if debugId == machine["machineAnchor"] then
                 anchor = anchorInScene
@@ -122,28 +135,28 @@ function Scene.getAnchorFromMachine(machine:table)
     return anchor
 end
 
-function Scene.instantiateMachineAnchor(machine:table)
+function Scene.instantiateMachineAnchor(machine: table)
     local folder = Scene.getMachinesFolder()
 
     -- local assetPath = string.split(machine["asset"], ".")[3]
     local position = Vector3.new()
     if machine["worldPosition"] then
-        position = Vector3.new(
-            machine["worldPosition"]["X"],
-            machine["worldPosition"]["Y"],
-            machine["worldPosition"]["Z"]
-        )
+        position =
+            Vector3.new(machine["worldPosition"]["X"], machine["worldPosition"]["Y"], machine["worldPosition"]["Z"])
     end
     -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
     --TODO: Figure out why mesh machines are not importing correctly
     local anchor = Scene.getAnchorFromMachine(machine)
     if not anchor then
-        anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
-        anchor.Color = Color3.new(0.1,0.1,0.1)
+        -- anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
+        anchor = Instance.new("Part")
+        anchor.Anchored = true
+        anchor.Size = Vector3.new(8, 2, 12)
+        anchor.Color = Color3.new(0.1, 0.1, 0.1)
         anchor.Transparency = 0.1
         local cframe = CFrame.new(position)
         anchor:PivotTo(cframe)
-        anchor.Name = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
+        anchor.Name = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
         anchor.Parent = folder
     end
 
@@ -154,7 +167,7 @@ function Scene.instantiateMachineAnchor(machine:table)
     return anchor
 end
 
-function Scene.updateAllMapAssets(map:table)
+function Scene.updateAllMapAssets(map: table)
     local folder = Scene.getMachinesFolder()
     if not folder then
         folder = Instance.new("Folder")
@@ -163,14 +176,14 @@ function Scene.updateAllMapAssets(map:table)
     end
     folder:ClearAllChildren()
 
-    for _,machine in map["machines"] do
+    for _, machine in map["machines"] do
         Scene.instantiateMachineAnchor(machine)
     end
 
     -- Scene.updateAllConveyorBelts(map)
 end
 
-function Scene.removeMachineAnchor(machine:table)
+function Scene.removeMachineAnchor(machine: table)
     local anchor = Scene.getMachineAnchor(machine)
     if anchor then
         anchor:Destroy()
@@ -185,35 +198,35 @@ function Scene.getConveyorBeltName(machine1, machine2)
     local machine1Anchor = Scene.getAnchorFromMachine(machine1)
     local machine2Anchor = Scene.getAnchorFromMachine(machine2)
     if machine1Anchor and machine2Anchor then
-        return Scene.getAnchorFromMachine(machine1).Name.."-"..Scene.getAnchorFromMachine(machine2).Name
-    else 
+        return Scene.getAnchorFromMachine(machine1).Name .. "-" .. Scene.getAnchorFromMachine(machine2).Name
+    else
         return nil
     end
 end
 
 -- function Scene.instantiateConveyorBelt(conveyorBelt:table)
-    -- local part = Instance.new("Part")
-    -- part.Anchored = true
-    -- part.CanCollide = false
-    -- part.Locked = true
-    -- local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
-    -- local size = Vector3.new(1, 1, distance)
-    -- part.Size = size
-    -- part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
-    -- part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
-    -- part.Name = conveyorBelt.name
-    -- part.Parent = Scene.getBeltsFolder()
-    
-    -- return part
+-- local part = Instance.new("Part")
+-- part.Anchored = true
+-- part.CanCollide = false
+-- part.Locked = true
+-- local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
+-- local size = Vector3.new(1, 1, distance)
+-- part.Size = size
+-- part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
+-- part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
+-- part.Name = conveyorBelt.name
+-- part.Parent = Scene.getBeltsFolder()
+
+-- return part
 -- end
 
-function Scene.updateAllConveyorBelts(map:table)
+function Scene.updateAllConveyorBelts(map: table)
     -- local machines = map["machines"]
     -- local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
     -- folder:ClearAllChildren()
-    
+
     -- local conveyorBelts = {}
-    
+
     -- local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
     -- local beltEntryPoints = {}
     -- for _,child in beltEntryPart:GetChildren() do
@@ -256,16 +269,16 @@ function Scene.updateAllConveyorBelts(map:table)
     --             Scene.instantiateConveyorBelt(conveyorBelt)
     --             table.insert(conveyorBelts, conveyorBelt)
     --         end
-    --     end 
+    --     end
 
     --     local machineType = machine["type"]
     --     if machineType == Constants.MachineTypes.purchaser then
     --         for _,beltEntryPoint in beltEntryPoints do
-                
+
     --             if beltEntryPoint.inUse then
     --                 continue
     --             end
-                
+
     --             local conveyorBelt = {}
     --             local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
     --             local endPosition = beltEntryPoint.attachment.WorldCFrame.Position
@@ -283,7 +296,7 @@ function Scene.updateAllConveyorBelts(map:table)
     --             if beltExitPoint.inUse then
     --                 continue
     --             end
-                
+
     --             local conveyorBelt = {}
     --             local startPosition = beltExitPoint.attachment.WorldCFrame.Position
     --             local endPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
@@ -334,7 +347,5 @@ function Scene.updateAllConveyorBelts(map:table)
 
     -- MapData.write(conveyorBeltData, map.scene)
 end
-
-
 
 return Scene

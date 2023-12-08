@@ -18,13 +18,13 @@ local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
-    Machines:table,
-    OnMachineSelect:(Types.Machine, Instance) -> nil,
-    OnClearSelection:() -> nil,
-    UpdateDataset:() -> nil,
+    Machines: table,
+    OnMachineSelect: (Types.Machine, Instance) -> nil,
+    OnClearSelection: () -> nil,
+    UpdateDataset: () -> nil,
 }
 
-local FactoryFloor = function(props:Props)
+local FactoryFloor = function(props: Props)
     local children = {}
 
     --Instantiation Hook
@@ -35,15 +35,15 @@ local FactoryFloor = function(props:Props)
     --Connections Hook.
     --Listen for machine selection and machine drag.
     React.useEffect(function()
-        local connections:{ RBXScriptConnection } = {}
-        
-        connections["ClearSelection"] =  Selection.SelectionChanged:Connect(function()
+        local connections: { RBXScriptConnection } = {}
+
+        connections["ClearSelection"] = Selection.SelectionChanged:Connect(function()
             if #Selection:Get() == 0 then
                 props.OnClearSelection()
             end
         end)
 
-        connections["Selection"] =  Selection.SelectionChanged:Connect(function()
+        connections["Selection"] = Selection.SelectionChanged:Connect(function()
             local selection = Selection:Get()
             if #selection >= 1 then
                 local selectedObj = selection[1]
@@ -54,17 +54,17 @@ local FactoryFloor = function(props:Props)
             end
         end)
 
-        connections["DragMachine"] = InputService.InputEnded:Connect(function(input:InputObject)
+        connections["DragMachine"] = InputService.InputEnded:Connect(function(input: InputObject)
             if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
                 return
             end
-        
+
             local selectedObj = Selection:Get()[1]
             if selectedObj then
                 if Scene.isMachineAnchor(selectedObj) then
                     --Register that the machine may have been moved.
                     local position = selectedObj.CFrame.Position
-    
+
                     local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
                     local worldPosition = Vector3.new()
                     if machine and machine["worldPosition"] then
@@ -94,34 +94,36 @@ local FactoryFloor = function(props:Props)
         end)
 
         return function()
-            for _,connection in connections do
+            for _, connection in connections do
                 connection:Disconnect()
             end
         end
     end, { props.OnClearSelection })
-    
+
     --Create machine and conveyor components
     local machineComponents = {}
     local conveyorData = {}
-    for _,machine in props.Machines do
-        table.insert(machineComponents, Machine({
-            Id = machine.id,
-            OnHover = function(hoveredMachine, selectedObj)
-                props.OnMachineSelect(hoveredMachine, selectedObj)
-            end,
-            MachineData = machine,
-            UpdateDataset = function()
-                props.UpdateDataset()
-            end
-        }))
+    for _, machine in props.Machines do
+        table.insert(
+            machineComponents,
+            Machine({
+                Id = machine.id,
+                OnHover = function(hoveredMachine, selectedObj)
+                    props.OnMachineSelect(hoveredMachine, selectedObj)
+                end,
+                MachineData = machine,
+                UpdateDataset = function()
+                    props.UpdateDataset()
+                end,
+            })
+        )
 
         conveyorData[machine.id] = {}
         local machineType = machine["type"]
         if machine["sources"] then
-            for _,sourceId in machine["sources"] do
-
+            for _, sourceId in machine["sources"] do
                 local sourceMachine = nil
-                for _,machineToCheck in props.Machines do
+                for _, machineToCheck in props.Machines do
                     if sourceId == machineToCheck.id then
                         sourceMachine = machineToCheck
                     end
@@ -138,60 +140,59 @@ local FactoryFloor = function(props:Props)
                 else
                     print("No conveyor name! Likely related to an error in the machine data.")
                 end
-
             end
         else
             if machine["type"] ~= Constants.MachineTypes.invalid then
                 --This is a purchaser, which means it doesn't have a source machine. Its conveyor comes in from offscreen.
-                local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+                local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+                local beltEntryPart =
+                    Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
                 table.insert(conveyorData[machine.id], {
                     sourceId = "enter",
-                    name = "Conveyor-"..machine.id,
+                    name = conveyorName,
                     startPosition = worldPositionToVector3(machine.worldPosition),
                     endPosition = beltEntryPart.Attachment1.WorldCFrame.Position,
                 })
             end
         end
 
-        
         if machineType == Constants.MachineTypes.makerSeller then
+            local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
             local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
             table.insert(conveyorData[machine.id], {
                 sourceId = "exit",
-                name = "Conveyor-"..machine.id,
+                name = conveyorName,
                 startPosition = beltExitPart.Attachment1.WorldCFrame.Position,
                 endPosition = worldPositionToVector3(machine.worldPosition),
             })
         end
-
-        print(machine.id, conveyorData[machine.id])
     end
-    
+
     --Sort conveyors start and end positions. Offset them so they don't overlap.
-    for _,machine in props.Machines do
-        table.sort(conveyorData[machine.id], function(a,b)
+    for _, machine in props.Machines do
+        table.sort(conveyorData[machine.id], function(a, b)
             return a.endPosition.X < b.endPosition.X
         end)
-        
+
         local conveyorXOffsetAmount = 3
-        for i,conveyor in conveyorData[machine.id] do
+        for i, conveyor in conveyorData[machine.id] do
             local numBelts = #conveyorData[machine.id]
             local offsetAmt = 3
-            local offset = (i - 1) * offsetAmt - (offsetAmt * (numBelts-1)) / 2
+            local offset = (i - 1) * offsetAmt - (offsetAmt * (numBelts - 1)) / 2
             local newStart = conveyor.startPosition + Vector3.new(offset, 0, -5)
             conveyor.startPosition = newStart
-            
+
             local otherMachinesUsingSameSource = {}
             if conveyor.sourceId == "enter" then
                 conveyorXOffsetAmount = 6
-                for _,otherMachine in props.Machines do
+                for _, otherMachine in props.Machines do
                     if otherMachine.type == Constants.MachineTypes.purchaser then
                         table.insert(otherMachinesUsingSameSource, otherMachine)
                     end
                 end
             elseif conveyor.sourceId == "exit" then
                 conveyorXOffsetAmount = 6
-                for _,otherMachine in props.Machines do
+                for _, otherMachine in props.Machines do
                     if otherMachine.type == Constants.MachineTypes.makerSeller then
                         table.insert(otherMachinesUsingSameSource, otherMachine)
                     end
@@ -200,9 +201,9 @@ local FactoryFloor = function(props:Props)
                 local machineSource = Dataset:getMachineFromId(conveyor.sourceId)
                 if machineSource then
                     --Check to see if other machines consider this machine a source
-                    for _,otherMachine in props.Machines do
+                    for _, otherMachine in props.Machines do
                         if otherMachine.sources then
-                            for _,otherMachineSource in otherMachine.sources do
+                            for _, otherMachineSource in otherMachine.sources do
                                 if otherMachineSource == machineSource.id then
                                     table.insert(otherMachinesUsingSameSource, otherMachine)
                                 end
@@ -211,39 +212,41 @@ local FactoryFloor = function(props:Props)
                     end
                 end
             end
-            table.sort(otherMachinesUsingSameSource, function(a,b)
+            table.sort(otherMachinesUsingSameSource, function(a, b)
                 return a.worldPosition.X < b.worldPosition.X
             end)
-                        
+
             local numSourceBelts = #otherMachinesUsingSameSource
-            for j,otherMachine in ipairs(otherMachinesUsingSameSource) do
+            for j, otherMachine in ipairs(otherMachinesUsingSameSource) do
                 if otherMachine.id == machine.id then
-                    local sourceOffset = (j - 1) * conveyorXOffsetAmount - (conveyorXOffsetAmount * (numSourceBelts-1)) / 2
+                    local sourceOffset = (j - 1) * conveyorXOffsetAmount
+                        - (conveyorXOffsetAmount * (numSourceBelts - 1)) / 2
                     local newEnd = conveyor.endPosition + Vector3.new(sourceOffset, 0, 5)
                     conveyor.endPosition = newEnd
                 end
             end
         end
     end
-        
-    
+
     local conveyorComponents = {}
-    for _,machineConveyorsArray in conveyorData do
-        for _,conveyor in machineConveyorsArray do
-            table.insert(conveyorComponents, Conveyor({
-                Name = conveyor.name,
-                StartPosition = conveyor.startPosition,
-                EndPosition = conveyor.endPosition,
-            }))
+    for _, machineConveyorsArray in conveyorData do
+        for _, conveyor in machineConveyorsArray do
+            table.insert(
+                conveyorComponents,
+                Conveyor({
+                    Name = conveyor.name,
+                    StartPosition = conveyor.startPosition,
+                    EndPosition = conveyor.endPosition,
+                })
+            )
         end
     end
-
 
     children = Dash.append(children, machineComponents, conveyorComponents)
 
     return React.createElement(React.Fragment, {}, children)
 end
 
-return function(props:Props)
+return function(props: Props)
     return React.createElement(FactoryFloor, props)
 end

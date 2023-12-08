@@ -81,7 +81,7 @@ function Dataset:updateDataset(dataset, currentMapIndex)
     self.machines = self.currentMap["machines"]
 
     cleanMachines(self.machines, self.items)
-    -- Scene.updateAllConveyorBelts(self.currentMap)
+
 end
 
 function Dataset:getMap(mapIndex:number)

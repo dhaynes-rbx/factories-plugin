@@ -29,7 +29,6 @@ local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
 local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
 
-
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
 local Panels = Constants.Panels
@@ -45,7 +44,6 @@ local FactoryFloor = require(script.Parent.FactoryFloor)
 
 local Types = require(script.Parent.Parent.Types)
 
-
 function App:setPanel()
     Studio.setSelectionTool()
     self:setState({
@@ -56,7 +54,6 @@ function App:setPanel()
 end
 
 function App:changePanel(panelId)
-
     Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
         return
@@ -76,7 +73,7 @@ end
 
 function App:init()
     Studio.setSelectionTool()
-    
+
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
@@ -96,19 +93,18 @@ function App:init()
         Scene.loadScene()
         --if there's no scene and no dataset instance, then load everything.
         local templateDataset, newDatasetInstance = DatasetInstance.loadTemplateDataset()
-        
+
         if not newDatasetInstance then
             return
         end
         --if for some reason the dataset is deleted, then make sure that the app state reflects that.
-        newDatasetInstance.AncestryChanged:Connect(function(_,_)
-            self:setState({dataset = "NONE", datasetIsLoaded = false})
+        newDatasetInstance.AncestryChanged:Connect(function(_, _)
+            self:setState({ dataset = "NONE", datasetIsLoaded = false })
         end)
-        
+
         currentMap = templateDataset["maps"][currentMapIndex]
-        -- self:muteMachineDeletionConnection()
         Scene.updateAllMapAssets(currentMap)
-        self:setState({datasetIsLoaded = true})
+        self:setState({ datasetIsLoaded = true })
         self:updateDataset(templateDataset)
     end
 
@@ -124,7 +120,7 @@ function App:init()
         modalCancellationCallback = Dash.noop(),
         modalConfirmationCallback = Dash.noop(),
         modalTitle = "",
-        panelStack = {currentPanel},
+        panelStack = { currentPanel },
         selectedItem = nil,
         selectedMachine = nil,
         selectedMachineAnchor = nil,
@@ -136,46 +132,44 @@ end
 --and passed around. This could cause problems down the road.
 function App:updateDataset(dataset)
     Dataset:updateDataset(dataset, self.state.currentMapIndex)
-    -- Scene.updateAllConveyorBelts(dataset["maps"][self.state.currentMapIndex])
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
     })
 end
 
-function App:deleteMachine(machine:Types.Machine, anchor)
+function App:deleteMachine(machine: Types.Machine, anchor)
     self:setState({
         showModal = true,
-        modalTitle = "Would you like to delete "..self.state.selectedMachine["id"].."from the dataset?",
+        modalTitle = "Would you like to delete " .. self.state.selectedMachine["id"] .. "from the dataset?",
 
         modalConfirmationCallback = function()
             Dataset:removeMachine(self.state.selectedMachine["id"])
             self:showPreviousPanel()
-            self:setState({showModal = false})
+            self:setState({ showModal = false })
             self:updateDataset(self.state.dataset)
         end,
         modalCancellationCallback = function()
             Scene.instantiateMachineAnchor(self.state.selectedMachine)
-            self:setState({showModal = false})
+            self:setState({ showModal = false })
             self:updateDataset(self.state.dataset)
-        end
+        end,
     })
 end
 
 function App:setCurrentMap(mapIndex)
-
     local currentMap = self.state.dataset["maps"][mapIndex]
     self.state.currentMapIndex = mapIndex
     Scene.updateAllMapAssets(currentMap)
     self:updateDataset(self.state.dataset)
     self:setState({
-        currentMapIndex = mapIndex, 
+        currentMapIndex = mapIndex,
         currentMap = currentMap,
         selectedItem = nil,
         selectedMachine = nil,
 
         selectedMachineAnchor = nil,
-        showModal = false
+        showModal = false,
     })
 
     game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
@@ -183,258 +177,274 @@ end
 
 function App:render()
     Studio.setSelectionTool()
-
+    -- print("Rerender:", self.state.dataset)
     return React.createElement("ScreenGui", {}, {
         TopBar = Block({
             BackgroundColor = Color3.fromRGB(32, 36, 42),
-            Size = UDim2.new(1,0,0,42),
+            Size = UDim2.new(1, 0, 0, 42),
         }),
-        PluginRoot = self.state.datasetIsLoaded and Block({
-            PaddingLeft = 10,
-            PaddingRight = 10,
-            PaddingTop = 10,
-            PaddingBottom = 10,
-            Size = UDim2.new(1, 0, 1, -42),
-            Position = UDim2.new(0,0,0,42),
-            AutomaticSize = Enum.AutomaticSize.X
-        }, {
-
-            AddMachineButton = Block({
-                AnchorPoint = Vector2.new(1, 1),
-                AutomaticSize = Enum.AutomaticSize.XY,
-                BackgroundColor = Color3.fromRGB(27, 42, 53),
-                Corner = UDim.new(0,24),
-                Padding = 12,
-                Position = UDim2.new(1, 0, 1, 0),
-                Size = UDim2.new(0, 200,0, 50),
+        PluginRoot = self.state.datasetIsLoaded
+            and Block({
+                PaddingLeft = 10,
+                PaddingRight = 10,
+                PaddingTop = 10,
+                PaddingBottom = 10,
+                Size = UDim2.new(1, 0, 1, -42),
+                Position = UDim2.new(0, 0, 0, 42),
+                AutomaticSize = Enum.AutomaticSize.X,
             }, {
-                Button = Button({
-                    Label = "Add Machine",
-                    TextXAlignment = Enum.TextXAlignment.Center,
-                    OnActivated = function()
-                        local newMachine = Dataset:addMachine()
-                        local anchor = Scene.instantiateMachineAnchor(newMachine)
-                        self:setState({selectedMachine = newMachine, selectedMachineAnchor = anchor})
 
-                        self:changePanel(Panels.EditMachineUI)
-                        Selection:Set({anchor})
-                        self:updateDataset(self.state.dataset)
-                    end,
-                })
-            }),
+                AddMachineButton = Block({
+                    AnchorPoint = Vector2.new(1, 1),
+                    AutomaticSize = Enum.AutomaticSize.XY,
+                    BackgroundColor = Color3.fromRGB(27, 42, 53),
+                    Corner = UDim.new(0, 24),
+                    Padding = 12,
+                    Position = UDim2.new(1, 0, 1, 0),
+                    Size = UDim2.new(0, 200, 0, 50),
+                }, {
+                    Button = Button({
+                        Label = "Add Machine",
+                        TextXAlignment = Enum.TextXAlignment.Center,
+                        OnActivated = function()
+                            local newMachine = Dataset:addMachine()
+                            local anchor = Scene.instantiateMachineAnchor(newMachine)
+                            self:setState({ selectedMachine = newMachine, selectedMachineAnchor = anchor })
 
-            EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI) and React.createElement(EditDatasetUI, {
-                CurrentMap = self.state.currentMap,
-                CurrentMapIndex = self.state.currentMapIndex,
-                Dataset = self.state.dataset,
-                Error = self.state.datasetError,
-                
-                Title = self.state.currentPanel,
-
-                SetCurrentMap = function(mapIndex)
-                    self:setCurrentMap(mapIndex)
-                end,
-                
-                ShowEditFactoryUI = function()
-                    self:changePanel(Panels.EditFactoryUI)
-                end,
-
-                ShowEditItemsListUI = function()
-                    self:changePanel(Panels.EditItemsListUI)
-                end,
-                
-                ExportDataset = function()
-                    DatasetInstance.write(self.state.dataset)
-                    local datasetInstance = DatasetInstance.getDatasetInstance()
-                    local saveFile = datasetInstance:Clone()
-                    saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
-                    saveFile.Name = saveFile.Name.."_TEMP_SAVE_FILE"
-                    saveFile.Parent = datasetInstance.Parent
-                    Selection:Set({saveFile})
-                    local fileSaved = getfenv(0).plugin:PromptSaveSelection()
-                    if fileSaved then
-                        print("File saved")
-                    end
-                    Selection:Set({})
-                    saveFile:Destroy()
-                end,
-
-                ImportDataset = function()
-                    local dataset, newDatasetInstance = DatasetInstance.instantiateNewDatasetInstance()
-                    
-                    if not newDatasetInstance then
-                        return
-                    end
-                    --if for some reason the dataset is deleted, then make sure that the app state reflects that.
-                    newDatasetInstance.AncestryChanged:Connect(function(_,_)
-                        self:setState({dataset = "NONE", datasetIsLoaded = false})
-                    end)
-                    
-                    local currentMap = dataset["maps"][self.state.currentMapIndex]
-                    self:setState({dataset = dataset, datasetIsLoaded = true, currentMap = currentMap})
-                    Scene.updateAllMapAssets(currentMap)
-                    self:updateDataset(dataset)
-                end,
-
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-
-                UpdateSceneName = function(name)
-                    self.state.dataset["maps"][self.state.currentMapIndex]["scene"] = name
-                    self:updateDataset(self.state.dataset)
-                end,
-
-                UpdateDatasetName = function(name)
-
-                end
-            }),
-
-            EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI and React.createElement(EditFactoryUI, {
-                CurrentMap = self.state.currentMap,
-                Dataset = self.state.dataset,
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                end,
-                UpdateDataset = function(dataset) self:updateDataset(dataset) end,
-            }, {}),
-            
-            EditMachineUI = self.state.currentPanel == Panels.EditMachineUI and React.createElement(EditMachineUI, {
-                CurrentMap = self.state.currentMap,
-                Dataset = self.state.dataset,
-                Machine = self.state.selectedMachine,
-
-                MachineAnchor = self.state.selectedMachineAnchor,
-
-                AddMachineAnchor = function(machineObj)
-                    Scene.addMachineAnchor(machineObj)
-                end,
-                OnClosePanel = function()
-                    Selection:Set({})
-                    self:showPreviousPanel()
-                end,
-                OnDeleteButtonClicked = function(title, callback)
-                    self:setState({
-                        showModal = true,
-                        modalConfirmationCallback = function()
-                            self:setState({showModal = false})
-                            callback()
-                        end,
-                        modalCancellationCallback = function()
-                            self:setState({showModal = false})
-                        end,
-                        modalTitle = title,
-                    })
-                end,
-                OnOutputItemEditClicked = function(itemKey)
-                    self:changePanel(Panels.EditItemUI)
-                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-            }, {}),
-
-            EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI and EditItemsListUI({
-                CurrentMapIndex = self.state.currentMapIndex,
-                Dataset = self.state.dataset,
-
-                ShowEditItemPanel = function(itemKey)
-                    self:changePanel(Panels.EditItemUI)
-                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
-                end,
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-                OnItemDeleteClicked = function(itemKey)
-                    self:setState({
-                        showModal = true,
-                        selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                        modalConfirmationCallback = function()
-                            Dataset:removeItem(itemKey)
-                            self:setState({showModal = false})
+                            self:changePanel(Panels.EditMachineUI)
+                            Selection:Set({ anchor })
                             self:updateDataset(self.state.dataset)
                         end,
-                        modalCancellationCallback = function()
-                            self:setState({showModal = false})
-                        end,
-                        modalTitle = "Do you want to remove "..itemKey.." from the dataset?"
-                    })
-                end
-            }),
+                    }),
+                }),
 
-            EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
-                CurrentMapIndex = self.state.currentMapIndex,
-                Dataset = self.state.dataset,
-                Item = self.state.selectedItem,
-                
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                    self:setState({selectedItem = nil})
-                end,
-                OnDeleteRequirementClicked = function(title, callback)
-                    self:setState({
-                        showModal = true,
-                        modalConfirmationCallback = function()
-                            callback()
+                EditDatasetUI = (self.state.currentPanel == Panels.EditDatasetUI)
+                    and React.createElement(EditDatasetUI, {
+                        CurrentMap = self.state.currentMap,
+                        CurrentMapIndex = self.state.currentMapIndex,
+                        Dataset = self.state.dataset,
+                        Error = self.state.datasetError,
+
+                        Title = self.state.currentPanel,
+
+                        SetCurrentMap = function(mapIndex)
+                            self:setCurrentMap(mapIndex)
+                        end,
+
+                        ShowEditFactoryUI = function()
+                            self:changePanel(Panels.EditFactoryUI)
+                        end,
+
+                        ShowEditItemsListUI = function()
+                            self:changePanel(Panels.EditItemsListUI)
+                        end,
+
+                        ExportDataset = function()
+                            DatasetInstance.write(self.state.dataset)
+                            local datasetInstance = DatasetInstance.getDatasetInstance()
+                            local saveFile = datasetInstance:Clone()
+                            saveFile.Source = string.sub(saveFile.Source, #"return [[" + 1, #saveFile.Source - 2)
+                            saveFile.Name = saveFile.Name .. "_TEMP_SAVE_FILE"
+                            saveFile.Parent = datasetInstance.Parent
+                            Selection:Set({ saveFile })
+                            local fileSaved = getfenv(0).plugin:PromptSaveSelection()
+                            if fileSaved then
+                                print("File saved")
+                            end
+                            Selection:Set({})
+                            saveFile:Destroy()
+                        end,
+
+                        ImportDataset = function()
+                            local dataset, newDatasetInstance = DatasetInstance.instantiateNewDatasetInstance()
+
+                            if not newDatasetInstance then
+                                return
+                            end
+                            --if for some reason the dataset is deleted, then make sure that the app state reflects that.
+                            newDatasetInstance.AncestryChanged:Connect(function(_, _)
+                                self:setState({ dataset = "NONE", datasetIsLoaded = false })
+                            end)
+
+                            local currentMap = dataset["maps"][self.state.currentMapIndex]
+                            self:setState({ dataset = dataset, datasetIsLoaded = true, currentMap = currentMap })
+                            Scene.updateAllMapAssets(currentMap)
+                            self:updateDataset(dataset)
+                        end,
+
+                        UpdateDataset = function(dataset)
+                            self:updateDataset(dataset)
+                        end,
+
+                        UpdateSceneName = function(name)
+                            self.state.dataset["maps"][self.state.currentMapIndex]["scene"] = name
+                            self:updateDataset(self.state.dataset)
+                        end,
+
+                        UpdateDatasetName = function(name) end,
+                    }),
+
+                EditFactoryUI = self.state.currentPanel == Panels.EditFactoryUI
+                    and React.createElement(EditFactoryUI, {
+                        CurrentMap = self.state.currentMap,
+                        Dataset = self.state.dataset,
+                        OnClosePanel = function()
+                            self:showPreviousPanel()
+                        end,
+                        UpdateDataset = function(dataset)
+                            self:updateDataset(dataset)
+                        end,
+                    }, {}),
+
+                EditMachineUI = self.state.currentPanel == Panels.EditMachineUI
+                    and React.createElement(EditMachineUI, {
+                        CurrentMap = self.state.currentMap,
+                        Dataset = self.state.dataset,
+                        Machine = self.state.selectedMachine,
+
+                        MachineAnchor = self.state.selectedMachineAnchor,
+
+                        AddMachineAnchor = function(machineObj)
+                            Scene.addMachineAnchor(machineObj)
+                        end,
+                        OnClosePanel = function()
+                            Selection:Set({})
+                            self:showPreviousPanel()
+                        end,
+                        OnDeleteButtonClicked = function(title, callback)
                             self:setState({
-                                showModal = false,
+                                showModal = true,
+                                modalConfirmationCallback = function()
+                                    self:setState({ showModal = false })
+                                    callback()
+                                end,
+                                modalCancellationCallback = function()
+                                    self:setState({ showModal = false })
+                                end,
+                                modalTitle = title,
                             })
                         end,
-                        modalCancellationCallback = function()
-                            self:setState({showModal = false})
+                        OnOutputItemEditClicked = function(itemKey)
+                            self:changePanel(Panels.EditItemUI)
+                            self:setState({
+                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                            })
                         end,
-                        modalTitle = title,
-                    })
-                end,
-                ShowEditItemPanel = function(itemKey)
-                    self:changePanel(Panels.EditItemUI)
-                    self:setState({selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey]})
-                end,
-                ShowImageSelector = function()
-                    self:changePanel(Panels.ImageSelectorUI)
-                end,
-                UpdateDataset = function(dataset)
-                    self:updateDataset(dataset)
-                end,
-            }),
-            ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
-                OnClosePanel = function()
-                    self:showPreviousPanel()
-                    self:setState({selectedItem = nil})
-                end,
-                OnClick = function(imageKey)
-                    local item = self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
-                    item["thumb"] = imageKey
-                    self:updateDataset(self.state.dataset)
-                    self:showPreviousPanel()
-                end,
-            }),
-            
-            EditPowerupUI = nil,
+                        UpdateDataset = function(dataset)
+                            self:updateDataset(dataset)
+                        end,
+                    }, {}),
 
-            MachineBillboardGUIs = self.state.datasetIsLoaded and MachineAnchorBillboardGuis({
-                Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
-                HighlightedAnchor = self.state.highlightedMachineAnchor
-            }),
+                EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
+                    and EditItemsListUI({
+                        CurrentMapIndex = self.state.currentMapIndex,
+                        Dataset = self.state.dataset,
 
-            ConfirmationModal = self.state.showModal and (self.state.selectedMachine or self.state.selectedItem) and ConfirmationModal({
+                        ShowEditItemPanel = function(itemKey)
+                            self:changePanel(Panels.EditItemUI)
+                            self:setState({
+                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                            })
+                        end,
+                        OnClosePanel = function()
+                            self:showPreviousPanel()
+                        end,
+                        UpdateDataset = function(dataset)
+                            self:updateDataset(dataset)
+                        end,
+                        OnItemDeleteClicked = function(itemKey)
+                            self:setState({
+                                showModal = true,
+                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                                modalConfirmationCallback = function()
+                                    Dataset:removeItem(itemKey)
+                                    self:setState({ showModal = false })
+                                    self:updateDataset(self.state.dataset)
+                                end,
+                                modalCancellationCallback = function()
+                                    self:setState({ showModal = false })
+                                end,
+                                modalTitle = "Do you want to remove " .. itemKey .. " from the dataset?",
+                            })
+                        end,
+                    }),
 
-                Title = self.state.modalTitle,
-                OnConfirm = function()
-                    self.state.modalConfirmationCallback()
-                end,
-                OnCancel = function()
-                    self.state.modalCancellationCallback()
-                end,
-            }),
+                EditItemUI = self.state.currentPanel == Panels.EditItemUI
+                    and EditItemUI({
+                        CurrentMapIndex = self.state.currentMapIndex,
+                        Dataset = self.state.dataset,
+                        Item = self.state.selectedItem,
 
-            FactoryFloor = FactoryFloor({
-                Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
-                OnMachineSelect = function(machine, selectedObj)
+                        OnClosePanel = function()
+                            self:showPreviousPanel()
+                            self:setState({ selectedItem = nil })
+                        end,
+                        OnDeleteRequirementClicked = function(title, callback)
+                            self:setState({
+                                showModal = true,
+                                modalConfirmationCallback = function()
+                                    callback()
+                                    self:setState({
+                                        showModal = false,
+                                    })
+                                end,
+                                modalCancellationCallback = function()
+                                    self:setState({ showModal = false })
+                                end,
+                                modalTitle = title,
+                            })
+                        end,
+                        ShowEditItemPanel = function(itemKey)
+                            self:changePanel(Panels.EditItemUI)
+                            self:setState({
+                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                            })
+                        end,
+                        ShowImageSelector = function()
+                            self:changePanel(Panels.ImageSelectorUI)
+                        end,
+                        UpdateDataset = function(dataset)
+                            self:updateDataset(dataset)
+                        end,
+                    }),
+                ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
+                    OnClosePanel = function()
+                        self:showPreviousPanel()
+                        self:setState({ selectedItem = nil })
+                    end,
+                    OnClick = function(imageKey)
+                        local item =
+                            self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                        item["thumb"] = imageKey
+                        self:updateDataset(self.state.dataset)
+                        self:showPreviousPanel()
+                    end,
+                }),
+
+                EditPowerupUI = nil,
+
+                MachineBillboardGUIs = self.state.datasetIsLoaded
+                    and MachineAnchorBillboardGuis({
+                        Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
+                        HighlightedAnchor = self.state.highlightedMachineAnchor,
+                    }),
+
+                ConfirmationModal = self.state.showModal
+                    and (self.state.selectedMachine or self.state.selectedItem)
+                    and ConfirmationModal({
+
+                        Title = self.state.modalTitle,
+                        OnConfirm = function()
+                            self.state.modalConfirmationCallback()
+                        end,
+                        OnCancel = function()
+                            self.state.modalCancellationCallback()
+                        end,
+                    }),
+
+                FactoryFloor = FactoryFloor({
+                    Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
+                    OnMachineSelect = function(machine, selectedObj)
                         self:setState({
                             selectedMachineAnchor = selectedObj,
                             selectedMachine = machine,
@@ -443,22 +453,21 @@ function App:render()
                             self:changePanel(Panels.EditMachineUI)
                         end
                     end,
-                OnClearSelection = function()
-                    self:setState({
-                        selectedMachineAnchor = nil,
-                        selectedMachine = nil,
-
-                    })
-                    self:changePanel(Panels.EditDatasetUI)
-                end,
-                UpdateDataset = function()
-                    self:updateDataset(self.state.dataset)
-                end,
-                DeleteMachine = function(machine:Types.Machine)
-                    self:deleteMachine(machine)
-                end
+                    OnClearSelection = function()
+                        self:setState({
+                            selectedMachineAnchor = nil,
+                            selectedMachine = nil,
+                        })
+                        self:changePanel(Panels.EditDatasetUI)
+                    end,
+                    UpdateDataset = function()
+                        self:updateDataset(self.state.dataset)
+                    end,
+                    DeleteMachine = function(machine: Types.Machine)
+                        self:deleteMachine(machine)
+                    end,
+                }),
             }),
-        })
     })
 end
 

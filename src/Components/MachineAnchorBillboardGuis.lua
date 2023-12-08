@@ -20,7 +20,6 @@ local Row = FishBloxComponents.Row
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
-local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
