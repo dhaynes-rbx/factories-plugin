@@ -113,7 +113,7 @@ function App:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
-        datasetError = Constants.Errors.None,
+        datasetError = Dataset:checkForErrors(),
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
         highlightedMachineAnchor = nil,
@@ -144,7 +144,7 @@ function App:deleteMachine(machine: Types.Machine, anchor)
         modalTitle = "Would you like to delete " .. self.state.selectedMachine["id"] .. "from the dataset?",
 
         modalConfirmationCallback = function()
-            Dataset:removeMachine(self.state.selectedMachine["id"])
+            Dataset:removeMachine(self.state.selectedMachine)
             self:showPreviousPanel()
             self:setState({ showModal = false })
             self:updateDataset(self.state.dataset)

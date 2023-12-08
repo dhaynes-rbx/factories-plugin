@@ -6,6 +6,7 @@ local Utilities = require(script.Parent.Packages.Utilities)
 local MapData = require(script.Parent.MapData)
 local Constants = require(script.Parent.Constants)
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
+local Types = require(script.Parent.Types)
 
 local function registerDebugId(instance: Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
@@ -183,7 +184,7 @@ function Scene.updateAllMapAssets(map: table)
     -- Scene.updateAllConveyorBelts(map)
 end
 
-function Scene.removeMachineAnchor(machine: table)
+function Scene.removeMachineAnchor(machine: Types.Machine)
     local anchor = Scene.getMachineAnchor(machine)
     if anchor then
         anchor:Destroy()
@@ -201,6 +202,20 @@ function Scene.getConveyorBeltName(machine1, machine2)
         return Scene.getAnchorFromMachine(machine1).Name .. "-" .. Scene.getAnchorFromMachine(machine2).Name
     else
         return nil
+    end
+end
+
+function Scene.removeConveyors(machine: Types.Machine)
+    local folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
+    local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+    for _, conveyor: Folder in folder:GetChildren() do
+        local splitName = conveyor.Name:split("-")
+        if splitName[1] == conveyorName then
+            conveyor:Destroy()
+        end
+        if #splitName > 1 and splitName[2] == conveyorName then
+            conveyor:Destroy()
+        end
     end
 end
 

@@ -86,7 +86,6 @@ local FactoryFloor = function(props: Props)
 
             connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
                 local machine = Dataset:getMachineFromMachineAnchor(child)
-                print("Machine deletion:", machine)
                 if machine then
                     props.DeleteMachine(machine, child)
                 end
@@ -104,19 +103,19 @@ local FactoryFloor = function(props: Props)
     local machineComponents = {}
     local conveyorData = {}
     for _, machine in props.Machines do
-        table.insert(
-            machineComponents,
-            Machine({
-                Id = machine.id,
-                OnHover = function(hoveredMachine, selectedObj)
-                    props.OnMachineSelect(hoveredMachine, selectedObj)
-                end,
-                MachineData = machine,
-                UpdateDataset = function()
-                    props.UpdateDataset()
-                end,
-            })
-        )
+        -- table.insert(
+        machineComponents[machine.id] = Machine({
+            Id = machine.id,
+            OnHover = function(hoveredMachine, selectedObj)
+                props.OnMachineSelect(hoveredMachine, selectedObj)
+            end,
+            MachineData = machine,
+            UpdateDataset = function()
+                props.UpdateDataset()
+            end,
+        })
+        -- })
+        -- )
 
         conveyorData[machine.id] = {}
         local machineType = machine["type"]
@@ -231,18 +230,19 @@ local FactoryFloor = function(props: Props)
     local conveyorComponents = {}
     for _, machineConveyorsArray in conveyorData do
         for _, conveyor in machineConveyorsArray do
-            table.insert(
-                conveyorComponents,
-                Conveyor({
-                    Name = conveyor.name,
-                    StartPosition = conveyor.startPosition,
-                    EndPosition = conveyor.endPosition,
-                })
-            )
+            -- table.insert(
+            -- conveyorComponents,
+            conveyorComponents[conveyor.name] = Conveyor({
+                Name = conveyor.name,
+                StartPosition = conveyor.startPosition,
+                EndPosition = conveyor.endPosition,
+            })
+            -- )
         end
     end
 
-    children = Dash.append(children, machineComponents, conveyorComponents)
+    -- children = Dash.append(children, machineComponents, conveyorComponents)
+    children = Dash.join(children, machineComponents, conveyorComponents)
 
     return React.createElement(React.Fragment, {}, children)
 end
