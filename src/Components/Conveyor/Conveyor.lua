@@ -167,7 +167,12 @@ function Conveyor(props: Props)
 
             setControlPoints(table.clone(controlPoints))
         end
-    end, { props.StartPosition, props.EndPosition })
+    end, {
+        props.StartPosition.X,
+        props.StartPosition.Y,
+        props.EndPosition.X,
+        props.EndPosition.Y
+    })
 
     local controlPointComponents = {}
     for _, point in controlPoints do

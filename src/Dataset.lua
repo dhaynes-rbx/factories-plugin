@@ -253,19 +253,32 @@ function Dataset:addMachine()
     return newMachine
 end
 
-function Dataset:removeMachine(machine: Types.Machine)
+function Dataset:removeMachine(machineToRemove: Types.Machine)
     local machines = self.machines
     local indexToRemove = nil
     for i, machine in machines do
-        if machine.id == machine.id then
+        if machine.id == machineToRemove.id then
             indexToRemove = i
         end
     end
     if indexToRemove then
-        Scene.removeConveyors(machine)
+        Scene.removeConveyors(machineToRemove)
         table.remove(machines, indexToRemove)
     end
-    --Remove any conveyors
+    --Check other machines. If they have this machine as a source, remove it.
+    for _,machine in machines do
+        if machine.sources then
+            for i,sourceId in ipairs(machine.sources) do
+                if sourceId == machineToRemove.id then
+                    table.remove(machine.sources, i)
+                end
+            end
+            --A machine should never have an empty table for sources.
+            if #machine.sources == 0 then
+                machine.sources = nil
+            end
+        end
+    end
 end
 
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)

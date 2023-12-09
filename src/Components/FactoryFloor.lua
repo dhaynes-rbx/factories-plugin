@@ -102,18 +102,19 @@ local FactoryFloor = function(props: Props)
 
     --Create machine and conveyor components
     local machineComponents = {}
-    local conveyorData = {}
-    -- for _, machine in props.Machines do
-    -- machineComponents[machine.id] = Machine({
-    --     Id = machine.id,
-    --     OnHover = function(hoveredMachine, selectedObj)
-    --         props.OnMachineSelect(hoveredMachine, selectedObj)
-    --     end,
-    --     MachineData = machine,
-    --     UpdateDataset = function()
-    --         props.UpdateDataset()
-    --     end,
-    -- })
+    -- local conveyorData = {}
+    for _, machine in props.Machines do
+        machineComponents[machine.id] = Machine({
+            Id = machine.id,
+            OnHover = function(hoveredMachine, selectedObj)
+                props.OnMachineSelect(hoveredMachine, selectedObj)
+            end,
+            MachineData = machine,
+            UpdateDataset = function()
+                props.UpdateDataset()
+            end,
+        })
+    end
 
     -- conveyorData[machine.id] = {}
     -- local machineType = machine["type"]
@@ -258,6 +259,7 @@ local FactoryFloor = function(props: Props)
                     if sourceId == sourceMachine.id then
                         --This machine is a source. Its belt will be coming in.
                         local conveyorName = Scene.getConveyorBeltName(sourceMachine, machine)
+                        --conveyorName might be nil if we are in the process of deleting a machine.
                         if conveyorName then
                             table.insert(beltsIn, {
                                 name = conveyorName,
@@ -402,16 +404,6 @@ local FactoryFloor = function(props: Props)
             StartPosition = exitPoint.position,
             EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition),
         })
-    end
-
-    for _, machineConveyorsArray in conveyorData do
-        for _, conveyor in machineConveyorsArray do
-            conveyorComponents[conveyor.name] = Conveyor({
-                Name = conveyor.name,
-                StartPosition = conveyor.startPosition,
-                EndPosition = conveyor.endPosition,
-            })
-        end
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)

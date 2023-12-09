@@ -141,16 +141,16 @@ end
 function App:deleteMachine(machine: Types.Machine, anchor)
     self:setState({
         showModal = true,
-        modalTitle = "Would you like to delete " .. self.state.selectedMachine["id"] .. "from the dataset?",
+        modalTitle = "Would you like to delete " .. machine["id"] .. "from the dataset?",
 
         modalConfirmationCallback = function()
-            Dataset:removeMachine(self.state.selectedMachine)
+            Dataset:removeMachine(machine)
             self:showPreviousPanel()
             self:setState({ showModal = false })
             self:updateDataset(self.state.dataset)
         end,
         modalCancellationCallback = function()
-            Scene.instantiateMachineAnchor(self.state.selectedMachine)
+            Scene.instantiateMachineAnchor(machine)
             self:setState({ showModal = false })
             self:updateDataset(self.state.dataset)
         end,
