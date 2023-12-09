@@ -197,9 +197,11 @@ end
 
 function Scene.getConveyorBeltName(machine1, machine2)
     local machine1Anchor = Scene.getAnchorFromMachine(machine1)
-    local machine2Anchor = Scene.getAnchorFromMachine(machine2)
+    local machine2Anchor = machine2 and Scene.getAnchorFromMachine(machine2) or nil
     if machine1Anchor and machine2Anchor then
-        return Scene.getAnchorFromMachine(machine1).Name .. "-" .. Scene.getAnchorFromMachine(machine2).Name
+        return machine1Anchor.Name .. "-" .. machine2Anchor.Name
+    elseif machine1Anchor then
+        return machine1Anchor.Name
     else
         return nil
     end
