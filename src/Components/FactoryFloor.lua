@@ -313,6 +313,16 @@ local FactoryFloor = function(props: Props)
         for i, belt in ipairs(beltsOut) do
             belt.outPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, 5)
         end
+        
+        if machine["type"] == Constants.MachineTypes.makerSeller then
+            --This machine should exit
+            local conveyorName = Scene.getConveyorBeltName(machine)
+            table.insert(exitPoints, {
+                name = conveyorName,
+                sourceId = machine.id,
+                sortingPosition = machinePosition,
+            })
+        end
     end
 
     table.sort(entryPoints, function(a, b)
@@ -320,8 +330,20 @@ local FactoryFloor = function(props: Props)
     end)
     local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
     for i, point in ipairs(entryPoints) do
-        point.position = beltEntryPart.Attachment1.WorldCFrame.Position
-            + Vector3.new((i - 1) * 3 - ((#entryPoints - 1) * 3 / 2), 0, -5)
+        local attachment = beltEntryPart:FindFirstChild("Attachment"..i) or beltEntryPart.Attachment1
+        point.position = attachment.WorldCFrame.Position
+        -- point.position = beltEntryPart.Attachment1.WorldCFrame.Position
+        --     + Vector3.new((i - 1) * 3 - ((#entryPoints - 1) * 3 / 2), 0, -5)
+    end
+
+    table.sort(exitPoints, function(a, b)
+        return a.sortingPosition.X < b.sortingPosition.X
+    end)
+    local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+    for i, point in ipairs(exitPoints) do
+        local attachment = beltExitPart:FindFirstChild("Attachment"..i) or beltExitPart.Attachment1
+        point.position = attachment.WorldCFrame.Position
+        -- + Vector3.new((i - 1) * 3 - ((#exitPoints - 1) * 3 / 2), 0, -5)
     end
 
     local conveyorComponents = {}
@@ -332,16 +354,16 @@ local FactoryFloor = function(props: Props)
         end
         for i, beltComingIn in conveyorMap.beltsIn do
             if beltComingIn.sourceId == "enter" then
-                for _, point in entryPoints do
-                    if beltComingIn.name == point.name then
+                --this belt is coming from the left, offscreen.
+                for _, entryPoint in entryPoints do
+                    if beltComingIn.name == entryPoint.name then
                         conveyorComponents[beltComingIn.name] = Conveyor({
                             Name = beltComingIn.name,
                             StartPosition = beltComingIn.inPosition,
-                            EndPosition = point.position,
+                            EndPosition = entryPoint.position,
                         })
                     end
                 end
-                --this belt is coming from the left, offscreen.
             else
                 --Check the other machines
                 for _, sourceMachine in machineConveyorMap do
@@ -357,6 +379,14 @@ local FactoryFloor = function(props: Props)
                 end
             end
         end
+    end
+
+    for _,exitPoint in exitPoints do
+        conveyorComponents[exitPoint.name] = Conveyor({
+            Name = exitPoint.name,
+            StartPosition = exitPoint.position,
+            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition),
+        })
     end
 
     for _, machineConveyorsArray in conveyorData do
