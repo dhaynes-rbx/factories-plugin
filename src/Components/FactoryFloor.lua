@@ -85,6 +85,7 @@ local FactoryFloor = function(props: Props)
             end
 
             connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
+                print("Deleted!", child)
                 local machine = Dataset:getMachineFromMachineAnchor(child)
                 if machine then
                     props.DeleteMachine(machine, child)
@@ -97,7 +98,7 @@ local FactoryFloor = function(props: Props)
                 connection:Disconnect()
             end
         end
-    end, { props.OnClearSelection })
+    end, {})
 
     --Create machine and conveyor components
     local machineComponents = {}
@@ -239,15 +240,16 @@ local FactoryFloor = function(props: Props)
     local machineConveyorMap = {}
     local entryPoints = {}
     local exitPoints = {}
+    print("Num machines:", #props.Machines)
     for _, machine: Types.Machine in props.Machines do
         local machinePosition = worldPositionToVector3(machine.worldPosition)
-        --For each machine, get information on the conveyors that enter, and the conveyors that exit.
+        --For each machine, get information on the conveyors that enter from the left, and the conveyors that exit to the right.
         machineConveyorMap[machine.id] = {}
         machineConveyorMap[machine.id]["beltsIn"] = {}
         local beltsIn = machineConveyorMap[machine.id]["beltsIn"]
         machineConveyorMap[machine.id]["beltsOut"] = {}
         local beltsOut = machineConveyorMap[machine.id]["beltsOut"]
-        --Find the other in belts.
+        --Find the "in" belts, which are the belts that come in from the left side of the machine.
         --"Sources" should never be empty and always nil if there are no sources. But checking just in case.
         --TODO: Throw an error if #sources is 0 rather than nil.
         if machine.sources and #machine.sources > 0 then
@@ -267,18 +269,20 @@ local FactoryFloor = function(props: Props)
                 end
             end
         else
-            --If there's no sources, then it's a purchaser.
+            --If there's no sources, then it's a purchaser. Its belt should be coming in from the left side of the Factory.
             local conveyorName = Scene.getConveyorBeltName(machine)
-            table.insert(beltsIn, {
-                name = conveyorName,
-                sourceId = "enter",
-                sortingPosition = machinePosition,
-            })
-            table.insert(entryPoints, {
-                name = conveyorName,
-                destinationId = machine.id,
-                sortingPosition = machinePosition,
-            })
+            if conveyorName then
+                table.insert(beltsIn, {
+                    name = conveyorName,
+                    sourceId = "enter",
+                    sortingPosition = machinePosition,
+                })
+                table.insert(entryPoints, {
+                    name = conveyorName,
+                    destinationId = machine.id,
+                    sortingPosition = machinePosition,
+                })
+            end
         end
 
         table.sort(beltsIn, function(a, b)
@@ -288,7 +292,7 @@ local FactoryFloor = function(props: Props)
             belt.inPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsIn - 1) * 3 / 2), 0, -5)
         end
 
-        --Find the out belts.
+        --Find the "out" belts, which are on the right side of the machine.
         for _, potentialDestinationMachine in props.Machines do
             --"Sources" should never be empty and always nil if there are no sources. But checking just in case.
             if potentialDestinationMachine.sources and #potentialDestinationMachine.sources > 0 then
@@ -314,8 +318,9 @@ local FactoryFloor = function(props: Props)
             belt.outPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, 5)
         end
         
+        --If this machine is a makerSeller, then that means it outputs a product that has a value, and it also is not the source of any other machines.
+        --Therefore, its belt should exit the factory.
         if machine["type"] == Constants.MachineTypes.makerSeller then
-            --This machine should exit
             local conveyorName = Scene.getConveyorBeltName(machine)
             table.insert(exitPoints, {
                 name = conveyorName,
@@ -326,24 +331,32 @@ local FactoryFloor = function(props: Props)
     end
 
     table.sort(entryPoints, function(a, b)
-        return a.sortingPosition.X < b.sortingPosition.X
+        return a.sortingPosition.X > b.sortingPosition.X
     end)
     local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
+    local entryNodes = beltEntryPart:GetChildren()
+    table.sort(entryNodes, function(a,b)
+        return a.WorldCFrame.X > b.WorldCFrame.X
+    end)
     for i, point in ipairs(entryPoints) do
-        local attachment = beltEntryPart:FindFirstChild("Attachment"..i) or beltEntryPart.Attachment1
+        local attachment = entryNodes[i]
+        if not attachment then
+            attachment = entryNodes[#entryNodes]
+        end
         point.position = attachment.WorldCFrame.Position
-        -- point.position = beltEntryPart.Attachment1.WorldCFrame.Position
-        --     + Vector3.new((i - 1) * 3 - ((#entryPoints - 1) * 3 / 2), 0, -5)
     end
 
     table.sort(exitPoints, function(a, b)
-        return a.sortingPosition.X < b.sortingPosition.X
+        return a.sortingPosition.X > b.sortingPosition.X
     end)
     local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
+    local exitNodes = beltExitPart:GetChildren()
+    table.sort(exitNodes, function(a,b)
+        return a.WorldCFrame.X > b.WorldCFrame.X
+    end)
     for i, point in ipairs(exitPoints) do
-        local attachment = beltExitPart:FindFirstChild("Attachment"..i) or beltExitPart.Attachment1
+        local attachment = exitNodes[i]
         point.position = attachment.WorldCFrame.Position
-        -- + Vector3.new((i - 1) * 3 - ((#exitPoints - 1) * 3 / 2), 0, -5)
     end
 
     local conveyorComponents = {}
@@ -357,15 +370,17 @@ local FactoryFloor = function(props: Props)
                 --this belt is coming from the left, offscreen.
                 for _, entryPoint in entryPoints do
                     if beltComingIn.name == entryPoint.name then
+                        print(beltComingIn.name, entryPoint.name)
                         conveyorComponents[beltComingIn.name] = Conveyor({
                             Name = beltComingIn.name,
                             StartPosition = beltComingIn.inPosition,
                             EndPosition = entryPoint.position,
                         })
+                        
                     end
                 end
             else
-                --Check the other machines
+                --Check the other machines, and see where the belt coming in attaches to.
                 for _, sourceMachine in machineConveyorMap do
                     for _, beltLeavingSource in sourceMachine.beltsOut do
                         if beltLeavingSource.name == beltComingIn.name then
