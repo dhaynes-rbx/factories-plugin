@@ -84,13 +84,14 @@ local FactoryFloor = function(props: Props)
                 end
             end
 
-            connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
-                print("Deleted!", child)
-                local machine = Dataset:getMachineFromMachineAnchor(child)
-                if machine then
-                    props.DeleteMachine(machine, child)
-                end
-            end)
+        end)
+        
+        connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
+            print("Deleted!", child)
+            local machine = Dataset:getMachineFromMachineAnchor(child)
+            if machine then
+                props.DeleteMachine(machine, child)
+            end
         end)
 
         return function()

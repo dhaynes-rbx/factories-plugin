@@ -16,8 +16,8 @@ type Props = {
     Editing: boolean,
     Name: string,
     Subdivisions: number,
-    StartPosition: Types.Machine,
-    EndPosition: Types.Machine,
+    StartPosition: Vector3,
+    EndPosition: Vector3,
 }
 
 type ControlPoint = {
@@ -169,9 +169,9 @@ function Conveyor(props: Props)
         end
     end, {
         props.StartPosition.X,
-        props.StartPosition.Y,
+        props.StartPosition.Z,
         props.EndPosition.X,
-        props.EndPosition.Y
+        props.EndPosition.Z
     })
 
     local controlPointComponents = {}

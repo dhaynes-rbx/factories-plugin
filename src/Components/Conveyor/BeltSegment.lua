@@ -51,9 +51,9 @@ function BeltSegment(props: Props)
         end
     end, {
         props.StartPoint.Position.X,
-        props.StartPoint.Position.Y,
+        props.StartPoint.Position.Z,
         props.EndPoint.Position.X,
-        props.EndPoint.Position.Y,
+        props.EndPoint.Position.Z,
     })
 
     return React.createElement(React.Fragment, {}, children)
