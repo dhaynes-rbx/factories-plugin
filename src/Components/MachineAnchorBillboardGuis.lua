@@ -20,7 +20,6 @@ local Row = FishBloxComponents.Row
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
-local Input = require(script.Parent.Parent.Input)
 local Panels = Constants.Panels
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
@@ -39,9 +38,9 @@ local function MachineAnchorBillboardGuis(props:Props)
     for _,machineAnchor in Scene.getMachineAnchors() do
     
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
-        local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
-        local machineIsInvalid = machine["type"] == Constants.MachineTypes.invalid
         if machine then
+            local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
+            local machineIsInvalid = machine["type"] == Constants.MachineTypes.invalid
             local outputs = machine["outputs"]
             local icons = {}
             if outputs then
@@ -106,7 +105,7 @@ local function MachineAnchorBillboardGuis(props:Props)
     end
 
     return React.createElement("Folder", {
-        Name = "BillboardGUIs"
+        ["Name"] = "BillboardGUIs",
     }, billboardGuis)
 end
 

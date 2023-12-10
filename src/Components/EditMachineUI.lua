@@ -32,6 +32,7 @@ local Manifest = require(script.Parent.Parent.Manifest)
 local Dataset = require(script.Parent.Parent.Dataset)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 local Separator = require(script.Parent.SubComponents.Separator)
+local ErrorText = require(script.Parent.SubComponents.ErrorText)
 
 
 type Props = {
@@ -164,13 +165,17 @@ return function(props:Props)
     local coordinateName = ""
     
     if datasetIsLoaded and machine then
+
+        add(children, ErrorText({Text = "Error!", LayoutOrder = incrementLayoutOrder()}))
+
+        add(children, Text({
+            Text="type: "..machine["type"], 
+            Color = Color3.new(1,1,1), 
+            LayoutOrder = incrementLayoutOrder()}
+        ))
+
         add(children, createTextChangingButton("id", machine))
-        
-        -- add(children, createListModalButton("type", machine, Constants.MachineTypes, function(assetKey) 
-        --     machine["asset"] = Constants.MachineAssetPaths[assetKey]
-        -- end))
-        add(Text({Text="type: "..machine["type"]}))
-        
+
         add(children, createTextChangingButton("locName", machine))
         add(children, SmallLabel({Label = "coordinates", LayoutOrder = incrementLayoutOrder()}))
         add(children, createTextChangingButton("X", machine["coordinates"], true))
