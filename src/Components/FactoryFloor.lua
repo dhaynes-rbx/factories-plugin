@@ -286,12 +286,9 @@ local FactoryFloor = function(props: Props)
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)
-<<<<<<< Updated upstream
     -- children = Dash.join(children, machineComponents)
     getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
-=======
 
->>>>>>> Stashed changes
     return React.createElement(React.Fragment, {}, children)
 end
 
