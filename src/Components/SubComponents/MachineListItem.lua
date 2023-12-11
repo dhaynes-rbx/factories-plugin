@@ -20,33 +20,30 @@ local SmallLabel = require(script.Parent.SmallLabel)
 
 local add = require(script.Parent.Parent.Parent.Helpers.add)
 type Props = {
-    Appearance : string,
-    ButtonLabel : string,
-    IndentAmount : number,
-    Label : string,
-    LayoutOrder : number,
-    Machine : table,
-    OnActivated : any,
+    Appearance: string,
+    ButtonLabel: string,
+    IndentAmount: number,
+    Label: string,
+    LayoutOrder: number,
+    Machine: table,
+    OnActivated: any,
 }
 
 return function(props: Props)
     local children = {}
-    
+
     local hasLabel = typeof(props.Label) == "string"
     local filled = (props.Appearance == "Filled")
 
     local machine = props.Machine
-    -- local x = tonumber(machine["coordinates"]["X"])
-    -- local y = tonumber(machine["coordinates"]["Y"])
-    -- assert((x or y), "Machine coordinate error in data!")
     local machineAnchor = Scene.getAnchorFromMachine(machine)
-    
+
     local debugId = machine["machineAnchor"]
     if machineAnchor then
         debugId = machineAnchor:GetAttribute("debugId")
     end
     local showError: boolean = not Scene.isMachineAnchor(machineAnchor)
-    local errorText: string = showError and "Cannot find corresponding Machine Anchor: "..debugId.."!"
+    local errorText: string = showError and "Cannot find corresponding Machine Anchor: " .. debugId .. "!"
 
     local buttonStyle = {
         uiCorner = React.createElement("UICorner"),
@@ -60,29 +57,31 @@ return function(props: Props)
             PaddingLeft = UDim.new(0, 10),
             PaddingRight = UDim.new(0, 10),
             PaddingTop = UDim.new(0, 5),
-        })
+        }),
     }
 
     local outputStr = "outputs: "
-    for j,output in machine["outputs"] do
+    for j, output in machine["outputs"] do
         local separator = j > 1 and ", " or ""
-        outputStr = outputStr..separator..output
+        outputStr = outputStr .. separator .. output
     end
 
-    add(children, SmallLabel({
-        Bold = false,
-        FontSize = 16,
-        Label = outputStr
-    }))
+    add(
+        children,
+        SmallLabel({
+            Bold = false,
+            FontSize = 16,
+            Label = outputStr,
+        })
+    )
 
-    return Column({
-    }, {
+    return Column({}, {
         Row = Row({
             AutomaticSize = Enum.AutomaticSize.Y,
             BackgroundTransparency = 0.5,
             Gaps = 8,
             Size = UDim2.new(1, 0, 0, 0),
-            LayoutOrder = props.LayoutOrder
+            LayoutOrder = props.LayoutOrder,
         }, {
             Label = hasLabel and SmallLabel({
                 FontSize = 18,
@@ -117,17 +116,16 @@ return function(props: Props)
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 20,
                 TextXAlignment = Enum.TextXAlignment.Center,
-                [Roact.Event.MouseButton1Click] = function() 
+                [Roact.Event.MouseButton1Click] = function()
                     props.OnDeleteMachineClicked(machine)
                 end,
             }, buttonStyle),
-            
         }),
         Error = showError and Text({
             Text = errorText,
             Color = Color3.new(1, 0, 0),
         }),
-        FixButton = showError and React.createElement("TextButton",{
+        FixButton = showError and React.createElement("TextButton", {
             AutomaticSize = Enum.AutomaticSize.X,
             BackgroundColor3 = Color3.fromRGB(32, 117, 233),
             BackgroundTransparency = filled and 0 or 0.85,
@@ -142,6 +140,6 @@ return function(props: Props)
             [Roact.Event.MouseButton1Click] = function()
                 props.FixMissingMachineAnchor(machine)
             end,
-        })
+        }),
     })
 end

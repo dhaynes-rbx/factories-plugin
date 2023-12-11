@@ -193,7 +193,6 @@ function App:render()
                 Position = UDim2.new(0, 0, 0, 42),
                 AutomaticSize = Enum.AutomaticSize.X,
             }, {
-
                 AddMachineButton = Block({
                     AnchorPoint = Vector2.new(1, 1),
                     AutomaticSize = Enum.AutomaticSize.XY,

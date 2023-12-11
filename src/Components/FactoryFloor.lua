@@ -119,7 +119,6 @@ local FactoryFloor = function(props: Props)
     local machineConveyorMap = {}
     local entryPoints = {}
     local exitPoints = {}
-    print("Num machines:", #props.Machines)
     for _, machine: Types.Machine in props.Machines do
         local machinePosition = worldPositionToVector3(machine.worldPosition)
         --For each machine, get information on the conveyors that enter from the left, and the conveyors that exit to the right.

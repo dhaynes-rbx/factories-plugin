@@ -89,7 +89,7 @@ local function EditItemsListUI(props: Props)
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
-            Title = "Edit Items List",
+            Title = "Edit Items",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
