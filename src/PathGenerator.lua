@@ -124,6 +124,20 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
                 * CFrame.Angles(0, extraBendRot, 0)
         )
         table.insert(components, bend1)
+
+        local startBend = p1 + Vector3.new(0, 0, bend1Height - centerRadius)
+        local endBend = p1 + Vector3.new(centerRadius * bendingUp, 0, bend1Height)
+        local magnitude = (startBend - endBend).Magnitude
+        local density = math.ceil(magnitude * nodeDensity)
+        for i = 1, density, 1 do
+            local node = Instance.new("Part")
+            node.Size = Vector3.new(0.25, 1, 0.25)
+            node.Color = Color3.new(1, 0, 0)
+            node.CFrame = CFrame.new(startBend:Lerp(endBend, density))
+            node.Parent = nodeFolder
+            table.insert(nodes, node)
+            node.Name = name .. " bend1 " .. #nodes
+        end
     end
 
     if vertPartLength > 0 then
