@@ -116,128 +116,6 @@ local FactoryFloor = function(props: Props)
         })
     end
 
-    -- conveyorData[machine.id] = {}
-    -- local machineType = machine["type"]
-    -- if machine["sources"] then
-    --     for _, sourceId in machine["sources"] do
-    --         local sourceMachine = nil
-    --         for _, machineToCheck in props.Machines do
-    --             if sourceId == machineToCheck.id then
-    --                 sourceMachine = machineToCheck
-    --             end
-    --         end
-
-    --         local conveyorName = Scene.getConveyorBeltName(sourceMachine, machine)
-    --         if conveyorName then
-    --             table.insert(conveyorData[machine.id], {
-    --                 name = conveyorName,
-    --                 sourceId = sourceId,
-    --                 startPosition = worldPositionToVector3(machine.worldPosition),
-    --                 endPosition = worldPositionToVector3(sourceMachine.worldPosition),
-    --             })
-    --         else
-    --             print("No conveyor name! Likely related to an error in the machine data.")
-    --         end
-    --     end
-    -- else
-    --     if machine["type"] ~= Constants.MachineTypes.invalid then
-    --         --This is a purchaser, which means it doesn't have a source machine. Its conveyor comes in from offscreen.
-    --         local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
-    --         local beltEntryPart =
-    --             Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-    --         table.insert(conveyorData[machine.id], {
-    --             sourceId = "enter",
-    --             name = conveyorName,
-    --             startPosition = worldPositionToVector3(machine.worldPosition),
-    --             endPosition = beltEntryPart.Attachment1.WorldCFrame.Position,
-    --         })
-    --     end
-    -- end
-
-    -- if machineType == Constants.MachineTypes.makerSeller then
-    --     local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
-    --     local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-    --     table.insert(conveyorData[machine.id], {
-    --         sourceId = "exit",
-    --         name = conveyorName,
-    --         startPosition = beltExitPart.Attachment1.WorldCFrame.Position,
-    --         endPosition = worldPositionToVector3(machine.worldPosition),
-    --     })
-    -- end
-    -- end
-
-    --Sort conveyors start and end positions. Offset them so they don't overlap.
-    -- for _, machine in props.Machines do
-    -- table.sort(conveyorData[machine.id], function(a, b)
-    --     return a.endPosition.X < b.endPosition.X
-    -- end)
-
-    -- for i, conveyor in conveyorData[machine.id] do
-    --     local numBelts = #conveyorData[machine.id]
-    --     local offsetAmt = 3
-    --     local offset = (i - 1) * offsetAmt - (offsetAmt * (numBelts - 1)) / 2
-    --     local startPos = conveyor.startPosition + Vector3.new(offset, 0, -5)
-    --     conveyor.startPosition = startPos
-
-    --     local otherMachinesUsingSameSource = {}
-    --     local makerSellerMachines = {}
-    --     if conveyor.sourceId == "enter" then
-    --         for _, otherMachine in props.Machines do
-    --             if otherMachine.type == Constants.MachineTypes.purchaser then
-    --                 table.insert(otherMachinesUsingSameSource, otherMachine)
-    --             end
-    --         end
-    --     elseif conveyor.sourceId == "exit" then
-    --         for _, otherMachine in props.Machines do
-    --             if otherMachine.type == Constants.MachineTypes.makerSeller then
-    --                 table.insert(makerSellerMachines, otherMachine)
-    --             end
-    --         end
-    --     else
-    --         local machineSource = Dataset:getMachineFromId(conveyor.sourceId)
-    --         if machineSource then
-    --             --Check to see if other machines consider this machine a source
-    --             for _, otherMachine in props.Machines do
-    --                 if otherMachine.sources then
-    --                     for _, otherMachineSource in otherMachine.sources do
-    --                         if otherMachineSource == machineSource.id then
-    --                             table.insert(otherMachinesUsingSameSource, otherMachine)
-    --                         end
-    --                     end
-    --                 end
-    --             end
-    --         end
-    --     end
-    --     table.sort(otherMachinesUsingSameSource, function(a, b)
-    --         return a.worldPosition.X < b.worldPosition.X
-    --     end)
-    --     table.sort(makerSellerMachines, function(a, b)
-    --         return a.worldPosition.X < b.worldPosition.X
-    --     end)
-
-    --     local conveyorXOffsetAmount = 3
-    --     local numSourceBelts = #otherMachinesUsingSameSource
-    --     for j, otherMachine in ipairs(otherMachinesUsingSameSource) do
-    --         if otherMachine.id == machine.id then
-    --             local sourceOffset = (j - 1) * conveyorXOffsetAmount
-    --                 - (conveyorXOffsetAmount * (numSourceBelts - 1)) / 2
-
-    --             -- print(conveyor.sourceId, machine.id, j, sourceOffset)
-    --             local newEnd = conveyor.endPosition + Vector3.new(sourceOffset, 0, 5)
-    --             conveyor.endPosition = newEnd
-    --         end
-    --     end
-
-    --     local numExitBelts = #makerSellerMachines
-    --     for j, makerSeller in ipairs(makerSellerMachines) do
-    --         local sourceOffset = (j - 1) * conveyorXOffsetAmount - (conveyorXOffsetAmount * (numExitBelts - 1)) / 2
-    --         -- print(conveyor.sourceId, machine.id, j, sourceOffset)
-    --         local newStart = conveyor.startPosition + Vector3.new(sourceOffset, 0, 1)
-    --         conveyor.startPosition = newStart
-    --     end
-    -- end
-    -- end
-
     local machineConveyorMap = {}
     local entryPoints = {}
     local exitPoints = {}
@@ -324,11 +202,14 @@ local FactoryFloor = function(props: Props)
         --Therefore, its belt should exit the factory.
         if machine["type"] == Constants.MachineTypes.makerSeller then
             local conveyorName = Scene.getConveyorBeltName(machine)
-            table.insert(exitPoints, {
-                name = conveyorName,
-                sourceId = machine.id,
-                sortingPosition = machinePosition,
-            })
+            --conveyorName might be nil because a machine is in the process of being deleted.
+            if conveyorName then
+                table.insert(exitPoints, {
+                    name = conveyorName,
+                    sourceId = machine.id,
+                    sortingPosition = machinePosition,
+                })
+            end
         end
     end
 
@@ -372,7 +253,6 @@ local FactoryFloor = function(props: Props)
                 --this belt is coming from the left, offscreen.
                 for _, entryPoint in entryPoints do
                     if beltComingIn.name == entryPoint.name then
-                        print(beltComingIn.name, entryPoint.name)
                         conveyorComponents[beltComingIn.name] = Conveyor({
                             Name = beltComingIn.name,
                             StartPosition = beltComingIn.inPosition,
@@ -406,8 +286,12 @@ local FactoryFloor = function(props: Props)
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)
+<<<<<<< Updated upstream
     -- children = Dash.join(children, machineComponents)
     getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
+=======
+
+>>>>>>> Stashed changes
     return React.createElement(React.Fragment, {}, children)
 end
 
