@@ -125,15 +125,15 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         )
         table.insert(components, bend1)
 
-        local startBend = p1 + Vector3.new(0, 0, bend1Height - centerRadius)
-        local endBend = p1 + Vector3.new(centerRadius * bendingUp, 0, bend1Height)
+        local startBend = p1 + Vector3.new(0, 0, part1Length)
+        local endBend = p1 + Vector3.new(centerRadius * bendingUp, 0, part1Length + centerRadius)
         local magnitude = (startBend - endBend).Magnitude
         local density = math.ceil(magnitude * nodeDensity)
         for i = 1, density, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
-            node.CFrame = CFrame.new(startBend:Lerp(endBend, density))
+            node.CFrame = CFrame.new(startBend:Lerp(endBend, (i - 1) / density))
             node.Parent = nodeFolder
             table.insert(nodes, node)
             node.Name = name .. " bend1 " .. #nodes
@@ -157,9 +157,6 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
                         :Lerp(Vector3.new(0, 0, vertPartLength / 2), (i - 1) / density)
                 )
             )
-            if node.CFrame.Position.Y < 0 then
-                print("Help!", node.CFrame.Position)
-            end
             node.Parent = nodeFolder
             table.insert(nodes, node)
             node.Name = name .. " vertPart " .. #nodes
@@ -173,6 +170,20 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
                 * CFrame.Angles(0, extraBendRot + tau / 2, 0)
         )
         table.insert(components, bend2)
+
+        local startBend = midPos + Vector3.new(vertPartLength * 0.5 + centerRadius, 0, midPos.Z)
+        local endBend = midPos + Vector3.new(height * 0.5, 0, midPos.Z + bend2Height)
+        local magnitude = (startBend - endBend).Magnitude
+        local density = math.ceil(magnitude * nodeDensity)
+        for i = 1, density, 1 do
+            local node = Instance.new("Part")
+            node.Size = Vector3.new(0.25, 1, 0.25)
+            node.Color = Color3.new(1, 0, 0)
+            node.CFrame = CFrame.new(startBend:Lerp(endBend, (i - 1) / density))
+            node.Parent = nodeFolder
+            table.insert(nodes, node)
+            node.Name = name .. " bend2 " .. #nodes
+        end
     end
 
     if part2Length > 0 then
