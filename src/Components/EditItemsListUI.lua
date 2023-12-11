@@ -26,8 +26,12 @@ local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
 type Props = {
-    CurrentMapIndex:number,
-    Dataset:table,
+    CurrentMapIndex: number,
+    Items: table,
+    ShowEditItemPanel: (string) -> nil,
+    OnClosePanel: () -> nil,
+    UpdateDataset: (table) -> nil,
+    OnItemDeleteClicked: (string) -> nil,
 }
 
 local function EditItemsListUI(props: Props)
@@ -37,45 +41,49 @@ local function EditItemsListUI(props: Props)
         index = index + 1
         return index
     end
-    
-    local dataset = props.Dataset
-    local map = dataset["maps"][props.CurrentMapIndex]
-    local items = map["items"]
+
+    local items = props.Items
     local children = {}
-    
-    add(children, Button({
-        Label = "Add Item",
-			TextXAlignment = Enum.TextXAlignment.Center,
-			OnActivated = function()
+
+    add(
+        children,
+        Button({
+            Label = "Add Item",
+            TextXAlignment = Enum.TextXAlignment.Center,
+            OnActivated = function()
                 local newItem = Dataset:addItem()
-				props.UpdateDataset(dataset)
-				props.ShowEditItemPanel(newItem["id"])
-			end,
-			Size = UDim2.fromScale(1, 0),
-    }))
+                props.UpdateDataset()
+                props.ShowEditItemPanel(newItem["id"])
+            end,
+            Size = UDim2.fromScale(1, 0),
+        })
+    )
 
     local itemIndex = 1
     local itemKeys = Dash.keys(Dataset:getValidItems(items))
-    table.sort(itemKeys, function(a,b)  --Do this to make sure buttons show in alphabetical order
+    table.sort(itemKeys, function(a, b) --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
-    for i,key in itemKeys do
-        add(children, ListItemButton({
-            CanDelete = true,
-            Index = itemIndex,
-            Image = items[key]["thumb"],
-            ObjectToEdit = items[key],
-            Label = items[key]["id"],
-            LayoutOrder = incrementLayoutOrder(),
-            OnSwapButtonClicked = Dash.noop(),
-            OnEditButtonClicked = function(val)
-                props.ShowEditItemPanel(val)
-            end,
-            OnDeleteButtonClicked = function()
-                props.OnItemDeleteClicked(key)
-            end,
-            CanSwap = false,
-        }))
+    for i, key in itemKeys do
+        add(
+            children,
+            ListItemButton({
+                CanDelete = true,
+                Index = itemIndex,
+                Image = items[key]["thumb"],
+                ObjectToEdit = items[key],
+                Label = items[key]["id"],
+                LayoutOrder = incrementLayoutOrder(),
+                OnSwapButtonClicked = Dash.noop(),
+                OnEditButtonClicked = function(val)
+                    props.ShowEditItemPanel(val)
+                end,
+                OnDeleteButtonClicked = function()
+                    props.OnItemDeleteClicked(key)
+                end,
+                CanSwap = false,
+            })
+        )
         itemIndex += 1
     end
 

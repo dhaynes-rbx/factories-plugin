@@ -105,8 +105,8 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         part1.CFrame = CFrame.new(p1 + Vector3.new(0, 0, part1Length * 0.5))
         table.insert(components, part1)
 
-        local density = math.ceil(part1Length * nodeDensity)
-        for i = 0, density, 1 do
+        local density = math.floor(part1Length * nodeDensity)
+        for i = 0, density - 1, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
@@ -129,14 +129,14 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         local endBend = p1 + Vector3.new(centerRadius * bendingUp, 0, part1Length + centerRadius)
         local magnitude = (startBend - endBend).Magnitude
 
-        local density = math.ceil(magnitude * nodeDensity)
+        local density = math.floor(magnitude * nodeDensity)
         for i = 0, density, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
             -- node.CFrame = CFrame.new(startBend:Lerp(endBend, i / density))
-            local xPos = startBend:Lerp(endBend, -math.cos((i/density) * math.pi/2))
-            local zPos = startBend:Lerp(endBend, math.sin((i/density) * math.pi/2))
+            local xPos = startBend:Lerp(endBend, -math.cos((i / density) * math.pi / 2))
+            local zPos = startBend:Lerp(endBend, math.sin((i / density) * math.pi / 2))
             node.CFrame = CFrame.new(Vector3.new(xPos.X + centerRadius * bendingUp, p1.Y, zPos.Z))
             node.Parent = nodeFolder
             table.insert(nodes, node)
@@ -150,15 +150,14 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         vertPart.CFrame = CFrame.new(midPos) * CFrame.Angles(0, tau / 4, 0)
         table.insert(components, vertPart)
 
-        local density = math.ceil(vertPartLength * nodeDensity)
-        for i = 0, density, 1 do
+        local density = math.floor(vertPartLength * nodeDensity)
+        for i = 1, density - 1, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
             node.CFrame = vertPart.CFrame:ToWorldSpace(
                 CFrame.new(
-                    Vector3.new(0, 0, -vertPartLength / 2)
-                        :Lerp(Vector3.new(0, 0, vertPartLength / 2), i / density)
+                    Vector3.new(0, 0, -vertPartLength / 2):Lerp(Vector3.new(0, 0, vertPartLength / 2), i / density)
                 )
             )
             node.Parent = nodeFolder
@@ -176,17 +175,18 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         table.insert(components, bend2)
 
         local startBend = midPos + Vector3.new(vertPartLength * bendingUp * 0.5, 0, 0)
-        local endBend = midPos + Vector3.new(vertPartLength * bendingUp * 0.5 + centerRadius * bendingUp, 0, centerRadius)
+        local endBend = midPos
+            + Vector3.new(vertPartLength * bendingUp * 0.5 + centerRadius * bendingUp, 0, centerRadius)
         local magnitude = (startBend - endBend).Magnitude
 
-        local density = math.ceil(magnitude * nodeDensity)
+        local density = math.floor(magnitude * nodeDensity)
         for i = 0, density, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
             -- node.CFrame = CFrame.new(startBend:Lerp(endBend, (i-1) / density))
-            local xPos = startBend:Lerp(endBend, math.sin((i/density) * math.pi/2))
-            local zPos = startBend:Lerp(endBend, -math.cos((i/density) * math.pi/2))
+            local xPos = startBend:Lerp(endBend, math.sin((i / density) * math.pi / 2))
+            local zPos = startBend:Lerp(endBend, -math.cos((i / density) * math.pi / 2))
             node.CFrame = CFrame.new(Vector3.new(xPos.X, p1.Y, zPos.Z + centerRadius))
             node.Parent = nodeFolder
             table.insert(nodes, node)
@@ -200,8 +200,8 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         part2.CFrame = CFrame.new(p2 + Vector3.new(0, 0, part2Length * -0.5))
         table.insert(components, part2)
 
-        local density = math.ceil(part2Length * nodeDensity)
-        for i = 0, density, 1 do
+        local density = math.floor(part2Length * nodeDensity)
+        for i = 0, density - 1, 1 do
             local node = Instance.new("Part")
             node.Size = Vector3.new(0.25, 1, 0.25)
             node.Color = Color3.new(1, 0, 0)
@@ -211,7 +211,7 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
             node.Name = name .. " vertPart " .. #nodes
         end
     end
-    for _,node in nodes do
+    for _, node in nodes do
         node.Transparency = 0.75
     end
 

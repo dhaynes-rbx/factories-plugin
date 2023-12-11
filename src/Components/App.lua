@@ -330,15 +330,15 @@ function App:render()
                                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
                             })
                         end,
-                        UpdateDataset = function(dataset)
-                            self:updateDataset(dataset)
+                        UpdateDataset = function()
+                            self:updateDataset(self.state.dataset)
                         end,
                     }, {}),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({
                         CurrentMapIndex = self.state.currentMapIndex,
-                        Dataset = self.state.dataset,
+                        Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
 
                         ShowEditItemPanel = function(itemKey)
                             self:changePanel(Panels.EditItemUI)
