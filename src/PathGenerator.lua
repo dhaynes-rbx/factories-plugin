@@ -1,4 +1,5 @@
 local module = {}
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 local folder = getOrCreateFolder("Temp_PathGenerator", ReplicatedStorage)
@@ -13,6 +14,8 @@ cylinderTemplate.Shape = Enum.PartType.Cylinder
 
 local tau = math.pi * 2
 local abs = math.abs
+
+local nodeDensity = 2
 
 function generateBend(innerRadius, width, thickness, angle, debugMode)
     if angle <= 0 or angle > tau * (3 / 4) then
@@ -61,7 +64,7 @@ function generateBend(innerRadius, width, thickness, angle, debugMode)
     return bend
 end
 
-function generateBasicPath(p1, p2, width, thickness, desiredRadius)
+function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
     folder:ClearAllChildren()
 
     if p1.Z > p2.Z then
@@ -93,12 +96,25 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius)
     local part2Length = partLength
 
     local components = {}
+    local nodes = {}
+    local nodeFolder = getOrCreateFolder("Nodes", game.Workspace)
 
     if part1Length > 0 then
-        local part1 = partTemplate:clone()
+        local part1 = partTemplate:Clone()
         part1.Size = Vector3.new(width, thickness, part1Length)
         part1.CFrame = CFrame.new(p1 + Vector3.new(0, 0, part1Length * 0.5))
         table.insert(components, part1)
+
+        local density = math.ceil(part1Length * nodeDensity)
+        for i = 1, density, 1 do
+            local node = Instance.new("Part")
+            node.Size = Vector3.new(0.25, 1, 0.25)
+            node.Color = Color3.new(1, 0, 0)
+            node.CFrame = CFrame.new(p1:Lerp(p1 + Vector3.new(0, 0, part1Length), (i - 1) / density))
+            node.Parent = nodeFolder
+            table.insert(nodes, node)
+            node.Name = name .. " part1 " .. #nodes
+        end
     end
 
     if bend1Height > 0 then
@@ -111,10 +127,29 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius)
     end
 
     if vertPartLength > 0 then
-        local vertPart = partTemplate:clone()
+        local vertPart = partTemplate:Clone()
         vertPart.Size = Vector3.new(width, thickness, vertPartLength)
         vertPart.CFrame = CFrame.new(midPos) * CFrame.Angles(0, tau / 4, 0)
         table.insert(components, vertPart)
+
+        local density = math.ceil(vertPartLength * nodeDensity)
+        for i = 1, density, 1 do
+            local node = Instance.new("Part")
+            node.Size = Vector3.new(0.25, 1, 0.25)
+            node.Color = Color3.new(1, 0, 0)
+            node.CFrame = vertPart.CFrame:ToWorldSpace(
+                CFrame.new(
+                    Vector3.new(0, 0, -vertPartLength / 2)
+                        :Lerp(Vector3.new(0, 0, vertPartLength / 2), (i - 1) / density)
+                )
+            )
+            if node.CFrame.Position.Y < 0 then
+                print("Help!", node.CFrame.Position)
+            end
+            node.Parent = nodeFolder
+            table.insert(nodes, node)
+            node.Name = name .. " vertPart " .. #nodes
+        end
     end
 
     if bend2Height > 0 then
@@ -127,16 +162,26 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius)
     end
 
     if part2Length > 0 then
-        local part2 = partTemplate:clone()
+        local part2 = partTemplate:Clone()
         part2.Size = Vector3.new(width, thickness, part2Length)
         part2.CFrame = CFrame.new(p2 + Vector3.new(0, 0, part2Length * -0.5))
         table.insert(components, part2)
+
+        local density = math.ceil(part2Length * nodeDensity)
+        for i = 1, density, 1 do
+            local node = Instance.new("Part")
+            node.Size = Vector3.new(0.25, 1, 0.25)
+            node.Color = Color3.new(1, 0, 0)
+            node.CFrame = CFrame.new(p2:Lerp(p2 - Vector3.new(0, 0, part2Length), (i - 1) / density))
+            node.Parent = nodeFolder
+            table.insert(nodes, node)
+            node.Name = name .. " vertPart " .. #nodes
+        end
     end
 
     local primaryPart = table.remove(components, 1)
     primaryPart.Parent = folder
     local path = primaryPart:UnionAsync(components)
-    path.Locked = true
 
     return path
 end

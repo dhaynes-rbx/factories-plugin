@@ -83,9 +83,8 @@ local FactoryFloor = function(props: Props)
                     end
                 end
             end
-
         end)
-        
+
         connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
             print("Deleted!", child)
             local machine = Dataset:getMachineFromMachineAnchor(child)
@@ -320,7 +319,7 @@ local FactoryFloor = function(props: Props)
         for i, belt in ipairs(beltsOut) do
             belt.outPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, 5)
         end
-        
+
         --If this machine is a makerSeller, then that means it outputs a product that has a value, and it also is not the source of any other machines.
         --Therefore, its belt should exit the factory.
         if machine["type"] == Constants.MachineTypes.makerSeller then
@@ -338,7 +337,7 @@ local FactoryFloor = function(props: Props)
     end)
     local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
     local entryNodes = beltEntryPart:GetChildren()
-    table.sort(entryNodes, function(a,b)
+    table.sort(entryNodes, function(a, b)
         return a.WorldCFrame.X > b.WorldCFrame.X
     end)
     for i, point in ipairs(entryPoints) do
@@ -354,7 +353,7 @@ local FactoryFloor = function(props: Props)
     end)
     local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
     local exitNodes = beltExitPart:GetChildren()
-    table.sort(exitNodes, function(a,b)
+    table.sort(exitNodes, function(a, b)
         return a.WorldCFrame.X > b.WorldCFrame.X
     end)
     for i, point in ipairs(exitPoints) do
@@ -379,7 +378,6 @@ local FactoryFloor = function(props: Props)
                             StartPosition = beltComingIn.inPosition,
                             EndPosition = entryPoint.position,
                         })
-                        
                     end
                 end
             else
@@ -399,7 +397,7 @@ local FactoryFloor = function(props: Props)
         end
     end
 
-    for _,exitPoint in exitPoints do
+    for _, exitPoint in exitPoints do
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
@@ -409,7 +407,7 @@ local FactoryFloor = function(props: Props)
 
     children = Dash.join(children, machineComponents, conveyorComponents)
     -- children = Dash.join(children, machineComponents)
-
+    getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
     return React.createElement(React.Fragment, {}, children)
 end
 

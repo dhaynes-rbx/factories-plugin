@@ -171,7 +171,7 @@ function Conveyor(props: Props)
         props.StartPosition.X,
         props.StartPosition.Z,
         props.EndPosition.X,
-        props.EndPosition.Z
+        props.EndPosition.Z,
     })
 
     local controlPointComponents = {}

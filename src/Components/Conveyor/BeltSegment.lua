@@ -5,6 +5,7 @@ local React = require(Packages.React)
 local PathGenerator = require(script.Parent.Parent.Parent.PathGenerator)
 local thickness = 0.5
 local width = 1.5
+local desiredRadius = 4
 
 type Props = {
     Conveyor: Folder,
@@ -23,9 +24,14 @@ function BeltSegment(props: Props)
                 child:Destroy()
             end
         end
-
-        local part =
-            PathGenerator.GenerateBasicPath(props.StartPoint.Position, props.EndPoint.Position, width, thickness)
+        local part = PathGenerator.GenerateBasicPath(
+            props.StartPoint.Position,
+            props.EndPoint.Position,
+            width,
+            thickness,
+            desiredRadius,
+            props.Conveyor.Name
+        )
         if part then
             part.Name = props.Name
             part.Parent = props.Conveyor.BeltSegments
@@ -43,8 +49,14 @@ function BeltSegment(props: Props)
         if beltPart then
             beltPart:Destroy()
 
-            local newPart =
-                PathGenerator.GenerateBasicPath(props.StartPoint.Position, props.EndPoint.Position, width, thickness)
+            local newPart = PathGenerator.GenerateBasicPath(
+                props.StartPoint.Position,
+                props.EndPoint.Position,
+                width,
+                thickness,
+                desiredRadius,
+                props.Conveyor.Name
+            )
             newPart.Name = props.Name
             newPart.Parent = props.Conveyor.BeltSegments
             setBeltPart(newPart)
