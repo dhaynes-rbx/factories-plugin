@@ -159,7 +159,7 @@ end
 
 function App:setCurrentMap(mapIndex)
     local currentMap = self.state.dataset["maps"][mapIndex]
-    self.state.currentMapIndex = mapIndex
+    -- self.state.currentMapIndex = mapIndex
     Scene.updateAllMapAssets(currentMap)
     self:updateDataset(self.state.dataset)
     self:setState({
@@ -348,8 +348,8 @@ function App:render()
                         OnClosePanel = function()
                             self:showPreviousPanel()
                         end,
-                        UpdateDataset = function(dataset)
-                            self:updateDataset(dataset)
+                        UpdateDataset = function()
+                            self:updateDataset(self.state.dataset)
                         end,
                         OnItemDeleteClicked = function(itemKey)
                             self:setState({

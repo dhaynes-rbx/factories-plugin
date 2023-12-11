@@ -168,6 +168,7 @@ function Scene.instantiateMachineAnchor(machine: table)
     return anchor
 end
 
+--TODO: This should be handled by the components.
 function Scene.updateAllMapAssets(map: table)
     local folder = Scene.getMachinesFolder()
     if not folder then

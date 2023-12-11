@@ -77,6 +77,8 @@ function Dataset:getDataset()
 end
 
 function Dataset:updateDataset(dataset, currentMapIndex)
+    assert(dataset, "Dataset error! Dataset is nil!")
+
     DatasetInstance.write(dataset)
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
@@ -266,9 +268,9 @@ function Dataset:removeMachine(machineToRemove: Types.Machine)
         table.remove(machines, indexToRemove)
     end
     --Check other machines. If they have this machine as a source, remove it.
-    for _,machine in machines do
+    for _, machine in machines do
         if machine.sources then
-            for i,sourceId in ipairs(machine.sources) do
+            for i, sourceId in ipairs(machine.sources) do
                 if sourceId == machineToRemove.id then
                     table.remove(machine.sources, i)
                 end
