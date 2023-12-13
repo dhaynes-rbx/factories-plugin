@@ -30,7 +30,7 @@ function BeltSegment(props: Props)
             width,
             thickness,
             desiredRadius,
-            props.Conveyor.Name
+            props.Conveyor
         )
         if part then
             part.Name = props.Name
@@ -55,7 +55,7 @@ function BeltSegment(props: Props)
                 width,
                 thickness,
                 desiredRadius,
-                props.Conveyor.Name
+                props.Conveyor
             )
             newPart.Name = props.Name
             newPart.Parent = props.Conveyor.BeltSegments

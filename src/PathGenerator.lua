@@ -64,7 +64,7 @@ function generateBend(innerRadius, width, thickness, angle, debugMode)
     return bend
 end
 
-function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
+function generateBasicPath(p1, p2, width, thickness, desiredRadius, conveyor)
     folder:ClearAllChildren()
 
     if p1.Z > p2.Z then
@@ -97,7 +97,9 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
 
     local components = {}
     local nodes = {}
-    local nodeFolder = getOrCreateFolder("Nodes", game.Workspace)
+    local nodeFolder = getOrCreateFolder("BeltData", conveyor)
+    nodeFolder:ClearAllChildren()
+    local name = conveyor.Name
 
     if part1Length > 0 then
         local part1 = partTemplate:Clone()
@@ -212,7 +214,7 @@ function generateBasicPath(p1, p2, width, thickness, desiredRadius, name)
         end
     end
     for _, node in nodes do
-        node.Transparency = 0.75
+        node.Transparency = 0.25
     end
 
     local primaryPart = table.remove(components, 1)
