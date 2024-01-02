@@ -297,41 +297,41 @@ function App:render()
 
                 EditMachineUI = self.state.currentPanel == Panels.EditMachineUI
                     and React.createElement(EditMachineUI, {
-                        CurrentMap = self.state.currentMap,
+                        CurrentMapIndex = self.state.currentMapIndex,
                         Dataset = self.state.dataset,
                         Machine = self.state.selectedMachine,
 
                         MachineAnchor = self.state.selectedMachineAnchor,
 
-                        AddMachineAnchor = function(machineObj)
-                            Scene.addMachineAnchor(machineObj)
-                        end,
+                        -- AddMachineAnchor = function(machineObj)
+                        --     Scene.addMachineAnchor(machineObj)
+                        -- end,
                         OnClosePanel = function()
                             Selection:Set({})
                             self:showPreviousPanel()
                         end,
-                        OnDeleteButtonClicked = function(title, callback)
-                            self:setState({
-                                showModal = true,
-                                modalConfirmationCallback = function()
-                                    self:setState({ showModal = false })
-                                    callback()
-                                end,
-                                modalCancellationCallback = function()
-                                    self:setState({ showModal = false })
-                                end,
-                                modalTitle = title,
-                            })
-                        end,
-                        OnOutputItemEditClicked = function(itemKey)
-                            self:changePanel(Panels.EditItemUI)
-                            self:setState({
-                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                            })
-                        end,
-                        UpdateDataset = function()
-                            self:updateDataset(self.state.dataset)
-                        end,
+                        -- OnDeleteButtonClicked = function(title, callback)
+                        --     self:setState({
+                        --         showModal = true,
+                        --         modalConfirmationCallback = function()
+                        --             self:setState({ showModal = false })
+                        --             callback()
+                        --         end,
+                        --         modalCancellationCallback = function()
+                        --             self:setState({ showModal = false })
+                        --         end,
+                        --         modalTitle = title,
+                        --     })
+                        -- end,
+                        -- OnOutputItemEditClicked = function(itemKey)
+                        --     self:changePanel(Panels.EditItemUI)
+                        --     self:setState({
+                        --         selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                        --     })
+                        -- end,
+                        -- UpdateDataset = function()
+                        --     self:updateDataset(self.state.dataset)
+                        -- end,
                     }, {}),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI

@@ -33,35 +33,27 @@ local Dataset = require(script.Parent.Parent.Dataset)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 local Separator = require(script.Parent.SubComponents.Separator)
 local ErrorText = require(script.Parent.SubComponents.ErrorText)
+local Types = require(script.Parent.Parent.Types)
+local Incrementer = require(script.Parent.Parent.Incrementer)
+local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
 
 type Props = {
     AddMachineAnchor: any,
     CurrentMap: table,
     Dataset: table,
-    Machine: table,
+    Machine: Types.Machine,
     MachineAnchor: Instance,
     OnClosePanel: any,
     UpdateDataset: any,
 }
 
 local function EditMachineUI(props: Props)
-    -- --use this to create a consistent layout order that plays nice with Roact
-    local index = 0
-    local incrementLayoutOrder = function()
-        index = index + 1
-        return index
-    end
+    --use this to create a consistent layout order that plays nice with Roact
+    local layoutOrder = Incrementer.new()
 
     local children = {}
-    children["ID"] = Block({
-        Size = UDim2.new(1, 0, 0, 25),
-    }, {
-        Label = Text({
-            Text = "ID",
-        }),
-        Input = React.createElement("TextBox", {}, {
-            UICorner = React.createElement("UICorner"),
-        }),
+    children["ID"] = InlineTextInput({
+        Text = props.Machine.id,
     })
 
     return React.createElement(React.Fragment, {}, {
@@ -71,10 +63,12 @@ local function EditMachineUI(props: Props)
             Title = "Editing Machine",
         }, children),
     })
+    -- return React.createElement(React.Fragment, {}, children)
 end
 
 return function(props: Props)
     return React.createElement(EditMachineUI, props)
+    -- return React.createElement(React.Fragment, {}, {})
 end
 
 -- return function(props: Props)
