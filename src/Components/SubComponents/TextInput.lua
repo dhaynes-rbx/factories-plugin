@@ -1,5 +1,4 @@
 local React = require(script.Parent.Parent.Parent.Packages.React)
-local Incrementer = require(script.Parent.Parent.Parent.Incrementer)
 local ReactRoblox = require(script.Parent.Parent.Parent.Packages.ReactRoblox)
 
 type Props = {
@@ -7,41 +6,22 @@ type Props = {
     OnChanged: (string) -> any,
 }
 
-local function InlineTextInput(props: Props)
-    local layoutOrder = Incrementer.new()
+local function TextInput(props: Props)
     return React.createElement("Frame", {
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 30),
     }, {
-        label = React.createElement("TextLabel", {
-            FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-            Text = "ID",
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 16,
-            TextWrapped = true,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            BackgroundTransparency = 1,
-            Size = UDim2.fromScale(0.4, 1),
-            LayoutOrder = layoutOrder:Increment(),
-        }),
-
-        uIListLayout = React.createElement("UIListLayout", {
-            FillDirection = Enum.FillDirection.Horizontal,
-            SortOrder = Enum.SortOrder.LayoutOrder,
-        }),
-
         frame = React.createElement("Frame", {
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
             BackgroundTransparency = 1,
             BorderColor3 = Color3.fromRGB(0, 0, 0),
             BorderSizePixel = 0,
-            Size = UDim2.fromScale(0.6, 1),
-            LayoutOrder = layoutOrder:Increment(),
+            Size = UDim2.fromScale(1, 1),
         }, {
             input = React.createElement("TextBox", {
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-                PlaceholderText = "templateMachine",
+                PlaceholderText = "Enter Localized Name",
                 Text = props.Text,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 16,
@@ -74,5 +54,5 @@ local function InlineTextInput(props: Props)
 end
 
 return function(props: Props)
-    return React.createElement(InlineTextInput, props)
+    return React.createElement(TextInput, props)
 end

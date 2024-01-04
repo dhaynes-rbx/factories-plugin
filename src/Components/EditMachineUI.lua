@@ -12,16 +12,8 @@ local Column = FishBloxComponents.Column
 local Gap = FishBloxComponents.Gap
 local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
-local TextInput = FishBloxComponents.TextInput
 
-local TextInputModal = require(script.Parent.Modals.TextInputModal)
-local SelectFromListModal = require(script.Parent.Modals.SelectFromListModal)
 local SidePanel = require(script.Parent.SubComponents.SidePanel)
-local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
-local SmallButton = require(script.Parent.SubComponents.SmallButton)
-local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
-local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Scene = require(script.Parent.Parent.Scene)
@@ -36,6 +28,7 @@ local ErrorText = require(script.Parent.SubComponents.ErrorText)
 local Types = require(script.Parent.Parent.Types)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
+local TextInput = require(script.Parent.SubComponents.TextInput)
 
 type Props = {
     AddMachineAnchor: any,
@@ -54,6 +47,17 @@ local function EditMachineUI(props: Props)
     local children = {}
     children["ID"] = InlineTextInput({
         Text = props.Machine.id,
+        OnChanged = function(text)
+            print("Hi!", text)
+            props.UpdateDataset()
+        end,
+    })
+    children["LocName"] = TextInput({
+        Text = props.Machine.locName,
+        OnChanged = function(text)
+            print("Hi!", text)
+            props.UpdateDataset()
+        end,
     })
 
     return React.createElement(React.Fragment, {}, {
@@ -63,7 +67,6 @@ local function EditMachineUI(props: Props)
             Title = "Editing Machine",
         }, children),
     })
-    -- return React.createElement(React.Fragment, {}, children)
 end
 
 return function(props: Props)
