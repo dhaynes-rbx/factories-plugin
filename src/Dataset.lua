@@ -283,6 +283,25 @@ function Dataset:removeMachine(machineToRemove: Types.Machine)
     end
 end
 
+function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
+    if not id or #id < 1 then
+        return false
+    end
+    id = Dataset:resolveDuplicateId(id, self.machines)
+    machineToUpdate.id = id
+    --if we're changing the ID, we must also change it wherever it appears as another machine's source
+    for i, machine in self.machines do
+        if machine["sources"] then
+            for j, source in machine["sources"] do
+                if source == id then
+                    self.machines[i]["sources"][j] = id
+                end
+            end
+        end
+    end
+    return true
+end
+
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
     local debugId = machineAnchor:GetAttribute("debugId")
     local counter = 0

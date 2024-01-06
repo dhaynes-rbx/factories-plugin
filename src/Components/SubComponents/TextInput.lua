@@ -4,6 +4,8 @@ local ReactRoblox = require(script.Parent.Parent.Parent.Packages.ReactRoblox)
 type Props = {
     Text: string,
     OnChanged: (string) -> any,
+    LayoutOrder: number,
+    PlaceholderText: string,
 }
 
 local function TextInput(props: Props)
@@ -11,6 +13,7 @@ local function TextInput(props: Props)
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 30),
+        LayoutOrder = props.LayoutOrder,
     }, {
         frame = React.createElement("Frame", {
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -21,7 +24,7 @@ local function TextInput(props: Props)
         }, {
             input = React.createElement("TextBox", {
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-                PlaceholderText = "Enter Localized Name",
+                PlaceholderText = props.PlaceholderText,
                 Text = props.Text,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 16,

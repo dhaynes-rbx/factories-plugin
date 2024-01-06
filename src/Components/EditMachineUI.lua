@@ -29,6 +29,8 @@ local Types = require(script.Parent.Parent.Types)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
 local TextInput = require(script.Parent.SubComponents.TextInput)
+local FormatText = require(script.Parent.Parent.FormatText)
+local TextItem = require(script.Parent.SubComponents.TextItem)
 
 type Props = {
     AddMachineAnchor: any,
@@ -44,20 +46,31 @@ local function EditMachineUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local layoutOrder = Incrementer.new()
 
+    local id, setMachineId = React.useState("")
+
     local children = {}
-    children["ID"] = InlineTextInput({
-        Text = props.Machine.id,
-        OnChanged = function(text)
-            print("Hi!", text)
-            props.UpdateDataset()
-        end,
+    children["ID"] = TextItem({
+        Text = "ID: " .. props.Machine.id,
+        LayoutOrder = layoutOrder:Increment(),
     })
     children["LocName"] = TextInput({
         Text = props.Machine.locName,
-        OnChanged = function(text)
-            print("Hi!", text)
-            props.UpdateDataset()
+        PlaceholderText = "Enter Localized Name",
+        OnChanged = function(rbx)
+            local newText = rbx.Text
+            if newText == props.Machine.locName then
+                return
+            end
+            --Check for invalid characters
+            --Auto update ID based on LocName
+            local updated = Dataset:updateMachineId(props.Machine, FormatText.convertToIdText(newText))
+            if updated then
+                props.Machine.locName = newText
+                setMachineId(props.Machine.id)
+                props.UpdateDataset()
+            end
         end,
+        LayoutOrder = layoutOrder:Increment(),
     })
 
     return React.createElement(React.Fragment, {}, {
