@@ -34,8 +34,13 @@ return function(props, children)
         Padding = UDim.new(0, 12),
         Corner = UDim.new(0, 12),
         ClipsDescendants = true,
-        BlockClicks = true,
     }, {
+        --Click Blocker
+        Block({
+            Size = UDim2.fromScale(1, 1),
+            BlockClicks = true,
+            ZIndex = -1,
+        }),
         Column({
             AutomaticSize = Enum.AutomaticSize.Y,
         }, {

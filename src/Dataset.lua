@@ -284,6 +284,7 @@ function Dataset:removeMachine(machineToRemove: Types.Machine)
 end
 
 function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
+    local originalId = machineToUpdate.id
     if not id or #id < 1 then
         return false
     end
@@ -293,7 +294,7 @@ function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
     for i, machine in self.machines do
         if machine["sources"] then
             for j, source in machine["sources"] do
-                if source == id then
+                if source == originalId then
                     self.machines[i]["sources"][j] = id
                 end
             end

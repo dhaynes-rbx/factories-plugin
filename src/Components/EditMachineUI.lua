@@ -28,9 +28,9 @@ local ErrorText = require(script.Parent.SubComponents.ErrorText)
 local Types = require(script.Parent.Parent.Types)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
-local TextInput = require(script.Parent.SubComponents.TextInput)
 local FormatText = require(script.Parent.Parent.FormatText)
 local TextItem = require(script.Parent.SubComponents.TextItem)
+local InlineNumberInput = require(script.Parent.InlineNumberInput)
 
 type Props = {
     AddMachineAnchor: any,
@@ -53,14 +53,21 @@ local function EditMachineUI(props: Props)
         Text = "ID: " .. props.Machine.id,
         LayoutOrder = layoutOrder:Increment(),
     })
-    children["LocName"] = TextInput({
-        Text = props.Machine.locName,
-        PlaceholderText = "Enter Localized Name",
-        OnChanged = function(rbx)
-            local newText = rbx.Text
-            if newText == props.Machine.locName then
+    children["LocName"] = FishBloxComponents.TextInput({
+        HideLabel = true,
+        LayoutOrder = layoutOrder:Increment(),
+        Placeholder = "Enter Localized Name",
+        Size = UDim2.new(1, 0, 0, 50),
+        Value = props.Machine.locName,
+        --Events
+        OnChanged = function(text)
+            local newText = text
+            if #text < 1 then
                 return
             end
+            -- if text == props.Machine.locName then
+            --     return
+            -- end
             --Check for invalid characters
             --Auto update ID based on LocName
             local updated = Dataset:updateMachineId(props.Machine, FormatText.convertToIdText(newText))
@@ -70,7 +77,12 @@ local function EditMachineUI(props: Props)
                 props.UpdateDataset()
             end
         end,
+    })
+
+    children["StartingOutput"] = InlineNumberInput({
+        Value = props.Machine.currentOutputCount,
         LayoutOrder = layoutOrder:Increment(),
+        Label = "Starting Output",
     })
 
     return React.createElement(React.Fragment, {}, {

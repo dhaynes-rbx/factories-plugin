@@ -13,6 +13,7 @@ local function InlineTextInput(props: Props)
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 30),
+        LayoutOrder = props.LayoutOrder,
     }, {
         label = React.createElement("TextLabel", {
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
