@@ -28,5 +28,10 @@ return {
     },
     Defaults = {
         BoldFont = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+        MachineDefaultOutput = 40,
+        MachineDefaultOutputRange = {
+            min = 0,
+            max = 100,
+        },
     },
 }

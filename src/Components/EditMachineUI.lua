@@ -47,6 +47,8 @@ local function EditMachineUI(props: Props)
     local layoutOrder = Incrementer.new()
 
     local id, setMachineId = React.useState("")
+    local currentOutputCount, setCurrentOutputCount = React.useState(props.Machine.currentOutputCount)
+    local machine = props.Machine
 
     local children = {}
     children["ID"] = TextItem({
@@ -62,12 +64,10 @@ local function EditMachineUI(props: Props)
         --Events
         OnChanged = function(text)
             local newText = text
+            --prevent the id from being empty
             if #text < 1 then
                 return
             end
-            -- if text == props.Machine.locName then
-            --     return
-            -- end
             --Check for invalid characters
             --Auto update ID based on LocName
             local updated = Dataset:updateMachineId(props.Machine, FormatText.convertToIdText(newText))
@@ -80,9 +80,96 @@ local function EditMachineUI(props: Props)
     })
 
     children["StartingOutput"] = InlineNumberInput({
-        Value = props.Machine.currentOutputCount,
+        Value = currentOutputCount,
         LayoutOrder = layoutOrder:Increment(),
         Label = "Starting Output",
+        OnReset = function()
+            Dataset:updateMachineProperty(props.Machine, "currentOutputCount", Constants.Defaults.MachineDefaultOutput)
+            props.UpdateDataset()
+        end,
+        OnChanged = function(value)
+            if not tonumber(value) then
+                return
+            end
+            value = tonumber(value)
+            local min = props.Machine.outputRange.min
+            local max = props.Machine.outputRange.max
+            if value < min then
+                value = min
+            elseif value > max then
+                value = max
+            end
+            setCurrentOutputCount(value)
+            Dataset:updateMachineProperty(props.Machine, "currentOutputCount", value)
+            props.UpdateDataset()
+        end,
+    })
+
+    children["MinOutput"] = InlineNumberInput({
+        Value = props.Machine.outputRange.min,
+        LayoutOrder = layoutOrder:Increment(),
+        Label = "Min",
+        OnReset = function()
+            local defaultOutputRange = {
+                min = Constants.Defaults.MachineDefaultOutputRange.min,
+                max = props.Machine.outputRange.max,
+            }
+            Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
+            props.UpdateDataset()
+        end,
+        OnChanged = function(value)
+            if not tonumber(value) then
+                return
+            end
+            value = tonumber(value)
+            local max = props.Machine.outputRange.max
+            if value > max then
+                value = max
+            end
+            local newOutputRange = {
+                min = value,
+                max = props.Machine.outputRange.max,
+            }
+            Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
+            if currentOutputCount < value then
+                Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+                setCurrentOutputCount(value)
+            end
+            props.UpdateDataset()
+        end,
+    })
+    children["MaxOutput"] = InlineNumberInput({
+        Value = props.Machine.outputRange.max,
+        LayoutOrder = layoutOrder:Increment(),
+        Label = "Max",
+        OnReset = function()
+            local defaultOutputRange = {
+                min = props.Machine.outputRange.min,
+                max = Constants.Defaults.MachineDefaultOutputRange.max,
+            }
+            Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
+            props.UpdateDataset()
+        end,
+        OnChanged = function(value)
+            if not tonumber(value) then
+                return
+            end
+            value = tonumber(value)
+            local min = props.Machine.outputRange.mi
+            if value < min then
+                value = min
+            end
+            local newOutputRange = {
+                min = props.Machine.outputRange.min,
+                max = value,
+            }
+            Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
+            if currentOutputCount > value then
+                Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+                setCurrentOutputCount(value)
+            end
+            props.UpdateDataset()
+        end,
     })
 
     return React.createElement(React.Fragment, {}, {

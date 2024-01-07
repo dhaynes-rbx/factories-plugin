@@ -303,6 +303,10 @@ function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
     return true
 end
 
+function Dataset:updateMachineProperty(machineToUpdate: Types.Machine, property: string, value: string | number)
+    machineToUpdate[property] = value
+end
+
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
     local debugId = machineAnchor:GetAttribute("debugId")
     local counter = 0

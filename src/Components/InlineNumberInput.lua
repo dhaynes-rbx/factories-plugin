@@ -1,12 +1,15 @@
 local React = require(script.Parent.Parent.Packages.React)
 local Packages = script.Parent.Parent.Packages
 local FishBlox = require(Packages.FishBlox)
+local ReactRoblox = require(script.Parent.Parent.Packages.ReactRoblox)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
     Label: string,
     LayoutOrder: number,
     Value: string,
+    OnReset: () -> nil,
+    OnChanged: () -> number,
 }
 
 local function InlineNumberInput(props: Props)
@@ -30,6 +33,9 @@ local function InlineNumberInput(props: Props)
                 Size = UDim2.new(1, 0, 0, 50),
                 HideLabel = true,
                 MultiLine = false,
+                OnChanged = function(value)
+                    props.OnChanged(value)
+                end,
             }),
             -- input = React.createElement("TextBox", {
             --     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
@@ -87,6 +93,9 @@ local function InlineNumberInput(props: Props)
                 BorderColor3 = Color3.fromRGB(0, 0, 0),
                 BorderSizePixel = 0,
                 Size = UDim2.fromOffset(15, 15),
+                [ReactRoblox.Event.Activated] = function()
+                    props.OnReset()
+                end,
             }, {
                 -- uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
             }),
