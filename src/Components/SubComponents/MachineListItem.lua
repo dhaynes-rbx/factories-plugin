@@ -30,6 +30,7 @@ type Props = {
 }
 
 return function(props: Props)
+    print("Delete this")
     local children = {}
 
     local hasLabel = typeof(props.Label) == "string"

@@ -31,6 +31,9 @@ local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
 local FormatText = require(script.Parent.Parent.FormatText)
 local TextItem = require(script.Parent.SubComponents.TextItem)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
+local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
+local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
+local InputMachineListItem = require(script.Parent.SubComponents.InputMachineListItem)
 
 type Props = {
     AddMachineAnchor: any,
@@ -39,6 +42,7 @@ type Props = {
     Machine: Types.Machine,
     MachineAnchor: Instance,
     OnClosePanel: any,
+    OnAddInputMachine: (Types.Machine) -> nil,
     UpdateDataset: any,
 }
 
@@ -50,127 +54,179 @@ local function EditMachineUI(props: Props)
     local currentOutputCount, setCurrentOutputCount = React.useState(props.Machine.currentOutputCount)
     local machine = props.Machine
 
-    local children = {}
-    children["ID"] = TextItem({
-        Text = "ID: " .. props.Machine.id,
-        LayoutOrder = layoutOrder:Increment(),
-    })
-    children["LocName"] = FishBloxComponents.TextInput({
-        HideLabel = true,
-        LayoutOrder = layoutOrder:Increment(),
-        Placeholder = "Enter Localized Name",
-        Size = UDim2.new(1, 0, 0, 50),
-        Value = props.Machine.locName,
-        --Events
-        OnChanged = function(text)
-            local newText = text
-            --prevent the id from being empty
-            if #text < 1 then
-                return
-            end
-            --Check for invalid characters
-            --Auto update ID based on LocName
-            local updated = Dataset:updateMachineId(props.Machine, FormatText.convertToIdText(newText))
-            if updated then
-                props.Machine.locName = newText
-                setMachineId(props.Machine.id)
+    local machineInputs = {}
+    if machine.sources then
+        for i, inputMachine in machine.sources do
+            table.insert(
+                machineInputs,
+                InputMachineListItem({
+                    Machine = Dataset:getMachineFromId(inputMachine),
+                    LayoutOrder = i,
+                    OnClickUp = function()
+                        --
+                    end,
+                    OnClickDown = function()
+                        --
+                    end,
+                })
+            )
+        end
+    end
+
+    local children = {
+
+        ID = TextItem({
+            Text = "ID: " .. props.Machine.id,
+            LayoutOrder = layoutOrder:Increment(),
+        }),
+
+        LocName = FishBloxComponents.TextInput({
+            HideLabel = true,
+            LayoutOrder = layoutOrder:Increment(),
+            Placeholder = "Enter Localized Name",
+            Size = UDim2.new(1, 0, 0, 50),
+            Value = props.Machine.locName,
+            --Events
+            OnChanged = function(text)
+                local newText = text
+                --prevent the id from being empty
+                if #text < 1 then
+                    return
+                end
+                --Check for invalid characters
+                --Auto update ID based on LocName
+                local updated = Dataset:updateMachineId(props.Machine, FormatText.convertToIdText(newText))
+                if updated then
+                    props.Machine.locName = newText
+                    setMachineId(props.Machine.id)
+                    props.UpdateDataset()
+                end
+            end,
+        }),
+
+        AddInputMachines = LabeledAddButton({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Input Machines",
+
+            OnActivated = function()
+                props.OnAddInputMachine(machine)
+            end,
+        }),
+
+        InputMachines = Column({
+            Gaps = 8,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(1, 0, 0, 0),
+            LayoutOrder = layoutOrder:Increment(),
+        }, machineInputs),
+
+        AddOutputs = LabeledAddButton({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Outputs (Making)",
+
+            OnActivated = function()
+                props.OnAddOutput(machine)
+            end,
+        }),
+
+        StartingOutput = InlineNumberInput({
+            Value = props.Machine.currentOutputCount,
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Starting Output",
+            OnReset = function()
+                Dataset:updateMachineProperty(
+                    props.Machine,
+                    "currentOutputCount",
+                    Constants.Defaults.MachineDefaultOutput
+                )
                 props.UpdateDataset()
-            end
-        end,
-    })
-
-    children["StartingOutput"] = InlineNumberInput({
-        Value = currentOutputCount,
-        LayoutOrder = layoutOrder:Increment(),
-        Label = "Starting Output",
-        OnReset = function()
-            Dataset:updateMachineProperty(props.Machine, "currentOutputCount", Constants.Defaults.MachineDefaultOutput)
-            props.UpdateDataset()
-        end,
-        OnChanged = function(value)
-            if not tonumber(value) then
-                return
-            end
-            value = tonumber(value)
-            local min = props.Machine.outputRange.min
-            local max = props.Machine.outputRange.max
-            if value < min then
-                value = min
-            elseif value > max then
-                value = max
-            end
-            setCurrentOutputCount(value)
-            Dataset:updateMachineProperty(props.Machine, "currentOutputCount", value)
-            props.UpdateDataset()
-        end,
-    })
-
-    children["MinOutput"] = InlineNumberInput({
-        Value = props.Machine.outputRange.min,
-        LayoutOrder = layoutOrder:Increment(),
-        Label = "Min",
-        OnReset = function()
-            local defaultOutputRange = {
-                min = Constants.Defaults.MachineDefaultOutputRange.min,
-                max = props.Machine.outputRange.max,
-            }
-            Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
-            props.UpdateDataset()
-        end,
-        OnChanged = function(value)
-            if not tonumber(value) then
-                return
-            end
-            value = tonumber(value)
-            local max = props.Machine.outputRange.max
-            if value > max then
-                value = max
-            end
-            local newOutputRange = {
-                min = value,
-                max = props.Machine.outputRange.max,
-            }
-            Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
-            if currentOutputCount < value then
-                Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+            end,
+            OnChanged = function(value)
+                if not tonumber(value) then
+                    return
+                end
+                value = tonumber(value)
+                -- local min = props.Machine.outputRange.min
+                -- local max = props.Machine.outputRange.max
+                -- if value < min then
+                --     value = min
+                -- elseif value > max then
+                --     value = max
+                -- end
                 setCurrentOutputCount(value)
-            end
-            props.UpdateDataset()
-        end,
-    })
-    children["MaxOutput"] = InlineNumberInput({
-        Value = props.Machine.outputRange.max,
-        LayoutOrder = layoutOrder:Increment(),
-        Label = "Max",
-        OnReset = function()
-            local defaultOutputRange = {
-                min = props.Machine.outputRange.min,
-                max = Constants.Defaults.MachineDefaultOutputRange.max,
-            }
-            Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
-            props.UpdateDataset()
-        end,
-        OnChanged = function(value)
-            if not tonumber(value) then
-                return
-            end
-            value = tonumber(value)
-            local min = props.Machine.outputRange.mi
-            if value < min then
-                value = min
-            end
-            local newOutputRange = {
-                min = props.Machine.outputRange.min,
-                max = value,
-            }
-            Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
-            if currentOutputCount > value then
-                Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
-                setCurrentOutputCount(value)
-            end
-            props.UpdateDataset()
-        end,
-    })
+                Dataset:updateMachineProperty(props.Machine, "currentOutputCount", value)
+                props.UpdateDataset()
+            end,
+        }),
+
+        MinOutput = InlineNumberInput({
+            Value = props.Machine.outputRange.min,
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Min",
+            OnReset = function()
+                local defaultOutputRange = {
+                    min = Constants.Defaults.MachineDefaultOutputRange.min,
+                    max = props.Machine.outputRange.max,
+                }
+                Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
+                props.UpdateDataset()
+            end,
+            OnChanged = function(value)
+                if not tonumber(value) then
+                    return
+                end
+                value = tonumber(value)
+                local max = props.Machine.outputRange.max
+                -- if value > max then
+                --     value = max
+                -- end
+                local newOutputRange = {
+                    min = value,
+                    max = max,
+                }
+                Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
+                -- if currentOutputCount < value then
+                --     Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+                --     setCurrentOutputCount(value)
+                -- end
+                props.UpdateDataset()
+            end,
+        }),
+
+        MaxOutput = InlineNumberInput({
+            Value = props.Machine.outputRange.max,
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Max",
+            OnReset = function()
+                local defaultOutputRange = {
+                    min = props.Machine.outputRange.min,
+                    max = Constants.Defaults.MachineDefaultOutputRange.max,
+                }
+                Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
+                props.UpdateDataset()
+            end,
+            OnChanged = function(value)
+                if not tonumber(value) then
+                    return
+                end
+                value = tonumber(value)
+                local min = props.Machine.outputRange.min
+                -- if value < min then
+                --     value = min
+                -- end
+                local newOutputRange = {
+                    min = min,
+                    max = value,
+                }
+                Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
+                -- if currentOutputCount > value then
+                --     Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+                --     setCurrentOutputCount(value)
+                -- end
+                props.UpdateDataset()
+            end,
+        }),
+    }
 
     return React.createElement(React.Fragment, {}, {
         EditMachineUI = SidePanel({

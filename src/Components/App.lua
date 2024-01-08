@@ -310,6 +310,12 @@ function App:render()
                             Selection:Set({})
                             self:showPreviousPanel()
                         end,
+                        OnAddInputMachine = function(machine: Types.Machine)
+                            print("Add inputs for " .. machine.id)
+                        end,
+                        OnAddOutput = function(machine: Types.Machine)
+                            print("Add output for " .. machine.id)
+                        end,
                         -- OnDeleteButtonClicked = function(title, callback)
                         --     self:setState({
                         --         showModal = true,
