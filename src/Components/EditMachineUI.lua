@@ -43,6 +43,7 @@ type Props = {
     MachineAnchor: Instance,
     OnClosePanel: any,
     OnAddInputMachine: (Types.Machine) -> nil,
+    OnClickEditItem: (Types.Item) -> nil,
     UpdateDataset: any,
 }
 
@@ -105,11 +106,12 @@ local function EditMachineUI(props: Props)
                     OnClickDown = function()
                         --
                     end,
-                    OnClickEdit = function()
-                        --
+                    OnClickEdit = function(itemToEdit: Types.Item)
+                        props.OnClickEditItem(itemToEdit)
                     end,
-                    OnClickRemove = function()
-                        --
+                    OnClickRemove = function(itemToRemove: Types.Item)
+                        Dataset:removeOutputFromMachine(props.Machine, itemToRemove)
+                        props.UpdateDataset()
                     end,
                     OnActivated = function()
                         Dash.noop()

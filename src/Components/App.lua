@@ -318,6 +318,10 @@ function App:render()
                         OnAddOutput = function(machine: Types.Machine)
                             self:changePanel(Panels.SelectItemUI)
                         end,
+                        OnClickEditItem = function(item: Types.Item)
+                            self:setState({ selectedItem = item })
+                            self:changePanel(Panels.EditItemUI)
+                        end,
                         OnHover = function(anchor)
                             if not anchor then
                                 anchor = React.None
@@ -386,8 +390,9 @@ function App:render()
                         self:setState({ selectedItem = item })
                         self:showPreviousPanel()
                     end,
-                    OnClickEdit = function(item: Types.Item)
-                        --Pop the item edit panel
+                    OnClickEditItem = function(item: Types.Item)
+                        self:setState({ selectedItem = item })
+                        self:changePanel(Panels.EditItemUI)
                     end,
                     OnClosePanel = function()
                         self:showPreviousPanel()

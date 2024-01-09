@@ -345,6 +345,15 @@ function Dataset:addOutputToMachine(machineToUpdate: Types.Machine, item: Types.
     table.insert(machineToUpdate.outputs, item.id)
 end
 
+function Dataset:removeOutputFromMachine(machineToUpdate: Types.Machine, item: Types.Item)
+    if machineToUpdate.outputs then
+        local index = table.find(machineToUpdate.outputs, item.id)
+        if index then
+            table.remove(machineToUpdate.outputs, index)
+        end
+    end
+end
+
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
     local debugId = machineAnchor:GetAttribute("debugId")
     local counter = 0

@@ -69,7 +69,7 @@ local function SelectItemUI(props: Props)
                 LayoutOrder = layoutOrder:Increment(),
 
                 OnClickEdit = function(itemToEdit: Types.Item)
-                    props.OnClickEdit(itemToEdit)
+                    props.OnClickEditItem(itemToEdit)
                 end,
                 OnClickRemove = function(itemToRemove)
                     Dataset:removeItem(itemToRemove.id)
