@@ -36,15 +36,12 @@ local incrementLayoutOrder = function()
     return index
 end
 type Props = {
-    OnClick: () -> nil,
     OnClosePanel: () -> nil,
-    OnNewInputMachineChosen: () -> nil,
-
-    Machines: any,
-    SelectedMachine: Types.Machine,
+    OnNewOutputItemChosen: (Types.Item) -> nil,
+    Items: any,
 }
 
-local function SelectMachineUI(props: Props)
+local function SelectItemUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local layoutOrder = Incrementer.new()
 
@@ -63,54 +60,19 @@ local function SelectMachineUI(props: Props)
         }),
     }
 
-    local machineChoices = {}
-    for i, machine in props.Machines do
-        local ignoreMachine = false
-        if machine.id == props.SelectedMachine.id then
-            ignoreMachine = true
-        end
-        if props.SelectedMachine.sources then
-            for _, sourceId in props.SelectedMachine.sources do
-                if sourceId == machine.id then
-                    ignoreMachine = true
-                end
-            end
-        end
-        if ignoreMachine then
-            continue
-        end
+    local itemChoices = {}
 
-        table.insert(
-            machineChoices,
-            MachineListItem({
-                Label = machine.id,
-                LayoutOrder = i,
-                OnActivated = function(machineId)
-                    Dataset:addSourceToMachine(props.SelectedMachine, machineId)
-                    props.OnNewInputMachineChosen()
-                end,
-                Machine = machine,
-
-                OnClickUp = Dash.noop(),
-                OnClickDown = Dash.noop(),
-                OnClickEdit = Dash.noop(),
-                OnClickRemove = Dash.noop(),
-                OnHover = function(hoveredMachine: Types.Machine)
-                    local anchor = hoveredMachine and Scene.getAnchorFromMachine(hoveredMachine)
-                    props.OnHover(anchor)
-                end,
-
-                HideArrows = true,
-                HideEditButton = true,
-                HideRemoveButton = true,
-            })
-        )
-    end
-
-    scrollingFrameChildren = Dash.join(scrollingFrameChildren, machineChoices)
+    scrollingFrameChildren = Dash.join(scrollingFrameChildren, itemChoices)
 
     local children = {
+        AddItem = LabeledAddButton({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Create New Item",
 
+            OnActivated = function()
+                props.OnAddNewItem()
+            end,
+        }),
         ScrollingList = React.createElement("ScrollingFrame", {
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
             CanvasSize = UDim2.new(),
@@ -139,7 +101,7 @@ local function SelectMachineUI(props: Props)
     return React.createElement(React.Fragment, nil, {
         SidePanel({
             Gaps = 12,
-            Title = "Select Machine",
+            Title = "Select Item",
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
@@ -147,5 +109,5 @@ local function SelectMachineUI(props: Props)
 end
 
 return function(props: Props)
-    return React.createElement(SelectMachineUI, props)
+    return React.createElement(SelectItemUI, props)
 end

@@ -38,9 +38,11 @@ function MachineListItem(props: Props)
         Size = UDim2.new(1, 0, 0, 50),
         LayoutOrder = props.LayoutOrder,
         [ReactRoblox.Event.MouseEnter] = function()
+            props.OnHover(props.Machine)
             setHovered(true)
         end,
         [ReactRoblox.Event.MouseLeave] = function()
+            props.OnHover(nil)
             setHovered(false)
         end,
     }, {
@@ -90,8 +92,7 @@ function MachineListItem(props: Props)
                             Size = UDim2.fromOffset(15, 15),
 
                             [ReactRoblox.Event.Activated] = function()
-                                print("Remove from", props.Machine.id)
-                                props.OnClickRemove()
+                                props.OnClickRemove(props.Machine.id)
                             end,
                         }, {
                             uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
@@ -119,7 +120,6 @@ function MachineListItem(props: Props)
                             Size = UDim2.fromOffset(15, 20),
 
                             [ReactRoblox.Event.Activated] = function()
-                                print("Edit", props.Machine.id)
                                 props.OnClickEdit()
                             end,
                         }, {
@@ -206,7 +206,6 @@ function MachineListItem(props: Props)
                         BorderSizePixel = 0,
                         Size = UDim2.fromOffset(20, 20),
                         [ReactRoblox.Event.Activated] = function()
-                            print("Click Up")
                             props.OnClickUp(props.Machine, props.LayoutOrder)
                         end,
                     }, {
@@ -225,7 +224,6 @@ function MachineListItem(props: Props)
                         Size = UDim2.fromOffset(20, 20),
 
                         [ReactRoblox.Event.Activated] = function()
-                            print("Click Down")
                             props.OnClickDown(props.Machine, props.LayoutOrder)
                         end,
                     }, {

@@ -56,13 +56,13 @@ local function EditMachineUI(props: Props)
 
     local machineInputs = {}
     if machine.sources then
-        for i, inputMachineId in machine.sources do
-            local inputMachine: Types.Machine = Dataset:getMachineFromId(inputMachineId)
+        for i, sourceMachineId in machine.sources do
+            local sourceMachine: Types.Machine = Dataset:getMachineFromId(sourceMachineId)
             table.insert(
                 machineInputs,
                 MachineListItem({
-                    Machine = inputMachine,
-                    Label = inputMachine.locName,
+                    Machine = sourceMachine,
+                    Label = sourceMachine.locName,
                     LayoutOrder = i,
                     OnActivated = function() end,
                     OnClickUp = function()
@@ -74,8 +74,13 @@ local function EditMachineUI(props: Props)
                     OnClickEdit = function()
                         --
                     end,
-                    OnClickRemove = function()
-                        --
+                    OnClickRemove = function(sourceToRemove)
+                        Dataset:removeSourceFromMachine(machine, sourceToRemove)
+                        props.UpdateDataset()
+                    end,
+                    OnHover = function(hoveredMachine: Types.Machine)
+                        local anchor = hoveredMachine and Scene.getAnchorFromMachine(hoveredMachine)
+                        props.OnHover(anchor)
                     end,
 
                     HideEditButton = true,
@@ -150,7 +155,7 @@ local function EditMachineUI(props: Props)
             Label = "Input Machines",
 
             OnActivated = function()
-                props.OnAddInputMachine(machine)
+                props.OnAddInputMachine()
             end,
         }),
 

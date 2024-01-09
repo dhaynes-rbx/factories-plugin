@@ -308,6 +308,29 @@ function Dataset:updateMachineProperty(machineToUpdate: Types.Machine, property:
     machineToUpdate[property] = value
 end
 
+--Add a sourceId to the machine, but also check to make sure it doesn't already exist
+function Dataset:addSourceToMachine(machineToUpdate: Types.Machine, sourceMachineId)
+    if machineToUpdate.sources then
+        for _, sourceId in machineToUpdate.sources do
+            --if the sourceId already exists, then do not add another.
+            if sourceId == sourceMachineId then
+                return
+            end
+        end
+    else
+        machineToUpdate.sources = {}
+    end
+    table.insert(machineToUpdate.sources, sourceMachineId)
+end
+function Dataset:removeSourceFromMachine(machineToUpdate: Types.Machine, sourceMachineId)
+    if machineToUpdate.sources then
+        local index = table.find(machineToUpdate.sources, sourceMachineId)
+        if index then
+            table.remove(machineToUpdate.sources, index)
+        end
+    end
+end
+
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
     local debugId = machineAnchor:GetAttribute("debugId")
     local counter = 0

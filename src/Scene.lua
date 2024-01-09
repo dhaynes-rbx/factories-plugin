@@ -44,40 +44,6 @@ function Scene.setCamera()
     Camera.CFrame = cf
     Camera.CameraType = Enum.CameraType.Custom
 end
-
-function Scene.getMachinesFolder()
-    return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
-end
-
-function Scene.getMachineAnchors()
-    local machinesFolder = Scene.getMachinesFolder()
-    return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
-end
-
--- function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
---     local machines = Scene.getMachineAnchors()
---     for _,v in machines do
---         local nameX, nameY = Dataset:getCoordinatesFromAnchorName(v.Name)
---         if nameX == x and nameY == y then
---             return v
---         end
---     end
---     return nil
--- end
-
-function Scene.getMachineAnchor(machine: table)
-    local result = nil
-    local machineAnchors = Scene.getMachineAnchors()
-    local machineAnchorId = machine["machineAnchor"]
-    for _, machineAnchor in machineAnchors do
-        local debugId = machineAnchor:GetAttribute("debugId")
-        if debugId == machineAnchorId then
-            result = machineAnchor
-        end
-    end
-    return result
-end
-
 function Scene.loadScene()
     if Scene.isLoaded() then
         print("Scene is already loaded!")
@@ -113,6 +79,20 @@ function Scene.loadScene()
     ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
 end
 
+function Scene.getMachinesFolder()
+    return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
+end
+
+-- function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
+--     local machines = Scene.getMachineAnchors()
+--     for _,v in machines do
+--         local nameX, nameY = Dataset:getCoordinatesFromAnchorName(v.Name)
+--         if nameX == x and nameY == y then
+--             return v
+--         end
+--     end
+--     return nil
+-- end
 function Scene.isMachineAnchor(obj)
     if not obj then
         return false
@@ -123,7 +103,24 @@ function Scene.isMachineAnchor(obj)
     return false
 end
 
-function Scene.getAnchorFromMachine(machine: table)
+function Scene.getMachineAnchors()
+    local machinesFolder = Scene.getMachinesFolder()
+    return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
+end
+-- function Scene.getAnchorFromMachine(machine: table)
+--     local result = nil
+--     local machineAnchors = Scene.getMachineAnchors()
+--     local machineAnchorId = machine["machineAnchor"]
+--     for _, machineAnchor in machineAnchors do
+--         local debugId = machineAnchor:GetAttribute("debugId")
+--         if debugId == machineAnchorId then
+--             result = machineAnchor
+--         end
+--     end
+--     return result
+-- end
+
+function Scene.getAnchorFromMachine(machine: Types.Machine)
     local anchor = nil
     if machine["machineAnchor"] then
         for _, anchorInScene in Scene.getMachineAnchors() do
@@ -185,12 +182,12 @@ function Scene.updateAllMapAssets(map: table)
     -- Scene.updateAllConveyorBelts(map)
 end
 
-function Scene.removeMachineAnchor(machine: Types.Machine)
-    local anchor = Scene.getMachineAnchor(machine)
-    if anchor then
-        anchor:Destroy()
-    end
-end
+-- function Scene.removeMachineAnchor(machine: Types.Machine)
+--     local anchor = Scene.getAnchorFromMachine(machine)
+--     if anchor then
+--         anchor:Destroy()
+--     end
+-- end
 
 function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")

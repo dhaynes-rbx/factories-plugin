@@ -83,7 +83,6 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 15),
 
                         [ReactRoblox.Event.Activated] = function()
-                            print("Remove from", props.Item.id)
                             props.OnClickRemove()
                         end,
                     }, {
@@ -111,7 +110,6 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 20),
 
                         [ReactRoblox.Event.Activated] = function()
-                            print("Edit", props.Item.id)
                             props.OnClickEdit()
                         end,
                     }, {
@@ -197,7 +195,6 @@ function InputMachineListItem(props: Props)
                     BorderSizePixel = 0,
                     Size = UDim2.fromOffset(20, 20),
                     [ReactRoblox.Event.Activated] = function()
-                        print("Click Up")
                         props.OnClickUp(props.Item, props.LayoutOrder)
                     end,
                 }, {
@@ -216,7 +213,6 @@ function InputMachineListItem(props: Props)
                     Size = UDim2.fromOffset(20, 20),
 
                     [ReactRoblox.Event.Activated] = function()
-                        print("Click Down")
                         props.OnClickDown(props.Item, props.LayoutOrder)
                     end,
                 }, {

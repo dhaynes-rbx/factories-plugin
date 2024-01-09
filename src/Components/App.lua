@@ -311,11 +311,17 @@ function App:render()
                             Selection:Set({})
                             self:showPreviousPanel()
                         end,
-                        OnAddInputMachine = function(machine: Types.Machine)
+                        OnAddInputMachine = function()
                             self:changePanel(Panels.SelectMachineUI)
                         end,
                         OnAddOutput = function(machine: Types.Machine)
-                            print("Add output for " .. machine.id)
+                            self:changePanel(Panels.SelectItemUI)
+                        end,
+                        OnHover = function(anchor)
+                            if not anchor then
+                                anchor = React.None
+                            end
+                            self:setState({ highlightedMachineAnchor = anchor })
                         end,
                         -- OnDeleteButtonClicked = function(title, callback)
                         --     self:setState({
@@ -343,23 +349,41 @@ function App:render()
 
                 SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI
                     and SelectMachineUI({
-                        MachineChoices = self.state.dataset.maps[self.state.currentMapIndex].machines,
+                        Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
                         SelectedMachine = self.state.selectedMachine,
                         OnClosePanel = function()
                             self:showPreviousPanel()
-                            -- self:setState({ selectedItem = nil })
                         end,
-                        OnClick = function(imageKey)
-                            -- local item =
-                            --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
-                            -- item["thumb"] = imageKey
-                            -- self:updateDataset(self.state.dataset)
+                        -- OnClick = function(imageKey)
+                        --     -- local item =
+                        --     --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                        --     -- item["thumb"] = imageKey
+                        --     -- self:updateDataset(self.state.dataset)
+                        --     self:showPreviousPanel()
+                        -- end,
+                        OnNewInputMachineChosen = function()
+                            self:updateDataset(self.state.dataset)
                             self:showPreviousPanel()
                         end,
-                        OnNewInputMachineChosen = function(machineId)
-                            self:showPreviousPanel()
+                        OnHover = function(anchor)
+                            if not anchor then
+                                anchor = React.None
+                            end
+                            self:setState({ highlightedMachineAnchor = anchor })
                         end,
                     }),
+
+                SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
+                    Items = self.state.dataset.maps[self.state.currentMapIndex].items,
+                    OnNewOutputItemChosen = function(item:Types.Item)
+                        if not item then
+                            item = React.None
+                        end
+                        self:setState({selectedItem = item})
+                        self:showPreviousPanel()
+                    end,
+                    OnAddNewItem = function() end,
+                }),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({

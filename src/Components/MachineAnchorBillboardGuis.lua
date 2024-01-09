@@ -27,16 +27,14 @@ local Studio = require(script.Parent.Parent.Studio)
 local add = require(script.Parent.Parent.Helpers.add)
 local Manifest = require(script.Parent.Parent.Manifest)
 
-type Props =
-{
-    Items:table,
-    HighlightedAnchor:Model,
+type Props = {
+    Items: table,
+    HighlightedAnchor: Model,
 }
 
-local function MachineAnchorBillboardGuis(props:Props)
+local function MachineAnchorBillboardGuis(props: Props)
     local billboardGuis = {}
-    for _,machineAnchor in Scene.getMachineAnchors() do
-    
+    for _, machineAnchor in Scene.getMachineAnchors() do
         local machine = Dataset:getMachineFromMachineAnchor(machineAnchor)
         if machine then
             local duplicateCoordinatesExist = Dataset:duplicateCoordinatesExist(machine.coordinates)
@@ -44,63 +42,69 @@ local function MachineAnchorBillboardGuis(props:Props)
             local outputs = machine["outputs"]
             local icons = {}
             if outputs then
-                for _,output in outputs do
+                for _, output in outputs do
                     local item = props.Items[output]
                     local image = item["thumb"]
-                    table.insert(icons, React.createElement("ImageLabel", {
-                        Size = UDim2.fromOffset(25,25),
-                        BackgroundTransparency = 1,
-                        Image = Manifest.images[image] or "rbxassetid://7553285523",
-                    }))
+                    table.insert(
+                        icons,
+                        React.createElement("ImageLabel", {
+                            Size = UDim2.fromOffset(25, 25),
+                            BackgroundTransparency = 1,
+                            Image = Manifest.images[image] or "rbxassetid://7553285523",
+                        })
+                    )
                 end
             end
-    
+
             local outputsString = ""
-            for i,output in machine["outputs"] do
+            for i, output in machine["outputs"] do
                 local separator = i > 1 and ", " or ""
-                outputsString = outputsString..separator..output
+                outputsString = outputsString .. separator .. output
             end
-            add(billboardGuis, React.createElement("BillboardGui", {
-                Adornee = machineAnchor,
-                AlwaysOnTop = true,
-                Size = UDim2.new(0, 150, 0, 100),
-            }, {
-                Column = Column({
-                    AutomaticSize = Enum.AutomaticSize.Y,
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center
+            add(
+                billboardGuis,
+                React.createElement("BillboardGui", {
+                    Adornee = machineAnchor,
+                    AlwaysOnTop = true,
+                    Size = UDim2.new(0, 150, 0, 100),
                 }, {
-                    Row = Row({
-                        Gaps = 4,
+                    Column = Column({
+                        AutomaticSize = Enum.AutomaticSize.Y,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        LayoutOrder = 0,
-                        Size = UDim2.new(1, 0, 0, 25),
-                    }, icons),
-                    Text1 = Text({
-                        Color = Color3.new(1,1,1),
-                        FontSize = 16,
-                        LayoutOrder = 1,
-                        Text = machine["id"]
+                    }, {
+                        Row = Row({
+                            Gaps = 4,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            LayoutOrder = 0,
+                            Size = UDim2.new(1, 0, 0, 25),
+                        }, icons),
+                        Text1 = Text({
+                            Color = Color3.new(1, 1, 1),
+                            FontSize = 16,
+                            LayoutOrder = 1,
+                            Text = machine["id"],
+                        }),
+                        Text2 = Text({
+                            Color = machineIsInvalid and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
+                            FontSize = 16,
+                            LayoutOrder = 2,
+                            Text = "Makes: " .. outputsString,
+                        }),
+                        Text3 = Text({
+                            Color = duplicateCoordinatesExist and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
+                            FontSize = 16,
+                            LayoutOrder = 3,
+                            Text = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")",
+                        }),
                     }),
-                    Text2 = Text({
-                        Color = machineIsInvalid and Color3.new(1,0,0) or Color3.new(1,1,1),
-                        FontSize = 16,
-                        LayoutOrder = 2,
-                        Text = "Makes: "..outputsString,
+                    HighlightBox = React.createElement("SelectionBox", {
+                        Adornee = props.HighlightedAnchor,
+                        LineThickness = 0.25,
+                        SurfaceColor3 = Color3.fromRGB(0, 255, 38),
+                        Color3 = Color3.fromRGB(38, 255, 0),
                     }),
-                    Text3 = Text({
-                        Color = duplicateCoordinatesExist and Color3.new(1,0,0) or Color3.new(1,1,1),
-                        FontSize = 16,
-                        LayoutOrder = 3,
-                        Text = "("..machine["coordinates"]["X"]..","..machine["coordinates"]["Y"]..")"
-                    }),
-                }),
-                HighlightBox = props.HighlightedAnchor and React.createElement("SelectionBox", {
-                    Adornee = props.HighlightedAnchor,
-                    LineThickness = 0.25,
-                    SurfaceColor3 = Color3.fromRGB(0, 255, 38),
-                    Color3 = Color3.fromRGB(38, 255, 0),
-                  })
-            }))
+                })
+            )
         end
     end
 
@@ -109,6 +113,6 @@ local function MachineAnchorBillboardGuis(props:Props)
     }, billboardGuis)
 end
 
-return function(props:Props)
+return function(props: Props)
     return React.createElement(MachineAnchorBillboardGuis, props)
 end
