@@ -44,6 +44,7 @@ local FactoryFloor = require(script.Parent.FactoryFloor)
 
 local Types = require(script.Parent.Parent.Types)
 local SelectMachineUI = require(script.Parent.SelectMachineUI)
+local SelectItemUI = require(script.Parent.SelectItemUI)
 
 function App:setPanel()
     Studio.setSelectionTool()
@@ -351,6 +352,7 @@ function App:render()
                     and SelectMachineUI({
                         Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
                         SelectedMachine = self.state.selectedMachine,
+
                         OnClosePanel = function()
                             self:showPreviousPanel()
                         end,
@@ -374,21 +376,31 @@ function App:render()
                     }),
 
                 SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
-                    Items = self.state.dataset.maps[self.state.currentMapIndex].items,
-                    OnNewOutputItemChosen = function(item:Types.Item)
+                    Items = Dataset:getValidItems(),
+                    SelectedMachine = self.state.selectedMachine,
+
+                    OnChooseItem = function(item: Types.Item)
                         if not item then
                             item = React.None
                         end
-                        self:setState({selectedItem = item})
+                        self:setState({ selectedItem = item })
                         self:showPreviousPanel()
                     end,
-                    OnAddNewItem = function() end,
+                    OnClickEdit = function(item: Types.Item)
+                        --Pop the item edit panel
+                    end,
+                    OnClosePanel = function()
+                        self:showPreviousPanel()
+                    end,
+                    UpdateDataset = function()
+                        self:updateDataset(self.state.dataset)
+                    end,
                 }),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({
                         CurrentMapIndex = self.state.currentMapIndex,
-                        Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
+                        Items = Dataset:getValidItems(),
 
                         ShowEditItemPanel = function(itemKey)
                             self:changePanel(Panels.EditItemUI)

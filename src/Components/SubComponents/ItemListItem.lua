@@ -14,17 +14,18 @@ local FishBloxComponents = FishBlox.Components
 -- return React.createElement
 
 type Props = {
+    HideArrows: boolean,
+    Item: Types.Item,
     Label: string,
     LayoutOrder: number,
     OnActivated: any,
-    Item: Types.Item,
     OnClickUp: () -> nil,
     OnClickDown: () -> nil,
     OnClickEdit: () -> nil,
     OnClickRemove: () -> nil,
 }
 
-function InputMachineListItem(props: Props)
+function ItemListItem(props: Props)
     local hovered, setHovered = React.useState(false)
 
     return React.createElement("Frame", {
@@ -42,12 +43,15 @@ function InputMachineListItem(props: Props)
         end,
     }, {
         HoverButtons = hovered
-            and React.createElement("Frame", {
+            and React.createElement("ImageButton", {
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
                 BorderColor3 = Color3.fromRGB(0, 0, 0),
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, 0, 0, 50),
+                [ReactRoblox.Event.Activated] = function()
+                    props.OnActivated(props.Item)
+                end,
             }, {
                 uIPadding = React.createElement("UIPadding", {
                     PaddingBottom = UDim.new(0, 4),
@@ -83,7 +87,7 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 15),
 
                         [ReactRoblox.Event.Activated] = function()
-                            props.OnClickRemove()
+                            props.OnClickRemove(props.Item)
                         end,
                     }, {
                         uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
@@ -110,7 +114,7 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 20),
 
                         [ReactRoblox.Event.Activated] = function()
-                            props.OnClickEdit()
+                            props.OnClickEdit(props.Item)
                         end,
                     }, {
                         uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint", {
@@ -178,51 +182,52 @@ function InputMachineListItem(props: Props)
                 Size = UDim2.fromScale(0, 1),
             }),
 
-            sortArrows = React.createElement("Frame", {
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                BorderColor3 = Color3.fromRGB(0, 0, 0),
-                BorderSizePixel = 0,
-                Position = UDim2.fromScale(0, 0.479),
-                Size = UDim2.new(0, 25, 1, 4),
-            }, {
-                imageButton = React.createElement("ImageButton", {
-                    Image = "rbxassetid://7901794424",
-                    ImageColor3 = Color3.fromRGB(106, 106, 106),
-                    BackgroundColor3 = Color3.fromRGB(79, 159, 243),
+            sortArrows = props.HideArrows
+                and React.createElement("Frame", {
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BackgroundTransparency = 1,
                     BorderColor3 = Color3.fromRGB(0, 0, 0),
                     BorderSizePixel = 0,
-                    Size = UDim2.fromOffset(20, 20),
-                    [ReactRoblox.Event.Activated] = function()
-                        props.OnClickUp(props.Item, props.LayoutOrder)
-                    end,
+                    Position = UDim2.fromScale(0, 0.479),
+                    Size = UDim2.new(0, 25, 1, 4),
                 }, {
-                    uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint"),
-                }),
+                    imageButton = React.createElement("ImageButton", {
+                        Image = "rbxassetid://7901794424",
+                        ImageColor3 = Color3.fromRGB(106, 106, 106),
+                        BackgroundColor3 = Color3.fromRGB(79, 159, 243),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Size = UDim2.fromOffset(20, 20),
+                        [ReactRoblox.Event.Activated] = function()
+                            props.OnClickUp(props.Item, props.LayoutOrder)
+                        end,
+                    }, {
+                        uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint"),
+                    }),
 
-                imageButton1 = React.createElement("ImageButton", {
-                    Image = "rbxassetid://7901781271",
-                    ImageColor3 = Color3.fromRGB(106, 106, 106),
-                    AnchorPoint = Vector2.new(0, 1),
-                    BackgroundColor3 = Color3.fromRGB(79, 159, 243),
-                    BackgroundTransparency = 1,
-                    BorderColor3 = Color3.fromRGB(0, 0, 0),
-                    BorderSizePixel = 0,
-                    Position = UDim2.fromScale(0, 1),
-                    Size = UDim2.fromOffset(20, 20),
+                    imageButton1 = React.createElement("ImageButton", {
+                        Image = "rbxassetid://7901781271",
+                        ImageColor3 = Color3.fromRGB(106, 106, 106),
+                        AnchorPoint = Vector2.new(0, 1),
+                        BackgroundColor3 = Color3.fromRGB(79, 159, 243),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.fromScale(0, 1),
+                        Size = UDim2.fromOffset(20, 20),
 
-                    [ReactRoblox.Event.Activated] = function()
-                        props.OnClickDown(props.Item, props.LayoutOrder)
-                    end,
-                }, {
-                    uIAspectRatioConstraint2 = React.createElement("UIAspectRatioConstraint"),
+                        [ReactRoblox.Event.Activated] = function()
+                            props.OnClickDown(props.Item, props.LayoutOrder)
+                        end,
+                    }, {
+                        uIAspectRatioConstraint2 = React.createElement("UIAspectRatioConstraint"),
+                    }),
                 }),
-            }),
         }),
     })
 end
 
 return function(props: Props)
-    return React.createElement(InputMachineListItem, props)
+    return React.createElement(ItemListItem, props)
 end

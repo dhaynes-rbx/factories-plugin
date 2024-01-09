@@ -28,17 +28,15 @@ local Types = require(script.Parent.Parent.Types)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
+local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 
---use this to create a consistent layout order that plays nice with Roact
-local index = 0
-local incrementLayoutOrder = function()
-    index = index + 1
-    return index
-end
+local layoutOrder = Incrementer.new()
 type Props = {
-    OnClosePanel: () -> nil,
-    OnNewOutputItemChosen: (Types.Item) -> nil,
     Items: any,
+    OnClosePanel: () -> nil,
+    OnChooseItem: (Types.Item) -> nil,
+    OnClickEdit: (Types.Item) -> nil,
+    UpdateDataset: () -> nil,
 }
 
 local function SelectItemUI(props: Props)
@@ -61,6 +59,30 @@ local function SelectItemUI(props: Props)
     }
 
     local itemChoices = {}
+    for itemKey, item in props.Items do
+        table.insert(
+            itemChoices,
+            ItemListItem({
+                HideArrows = true,
+                Item = item,
+                Label = item.locName,
+                LayoutOrder = layoutOrder:Increment(),
+
+                OnClickEdit = function(itemToEdit: Types.Item)
+                    props.OnClickEdit(itemToEdit)
+                end,
+                OnClickRemove = function(itemToRemove)
+                    Dataset:removeItem(itemToRemove.id)
+                    props.UpdateDataset()
+                end,
+                OnActivated = function(itemChosen: Types.Item)
+                    Dataset:addOutputToMachine(props.SelectedMachine, itemChosen)
+                    props.UpdateDataset()
+                    props.OnClosePanel()
+                end,
+            })
+        )
+    end
 
     scrollingFrameChildren = Dash.join(scrollingFrameChildren, itemChoices)
 
@@ -70,7 +92,8 @@ local function SelectItemUI(props: Props)
             Label = "Create New Item",
 
             OnActivated = function()
-                props.OnAddNewItem()
+                Dataset:addItem()
+                props.UpdateDataset()
             end,
         }),
         ScrollingList = React.createElement("ScrollingFrame", {
@@ -86,6 +109,7 @@ local function SelectItemUI(props: Props)
             BorderColor3 = Color3.fromRGB(0, 0, 0),
             BorderSizePixel = 0,
             Size = UDim2.fromScale(1, 1),
+            LayoutOrder = layoutOrder:Increment(),
         }, {
             frame = React.createElement("Frame", {
                 AutomaticSize = Enum.AutomaticSize.Y,

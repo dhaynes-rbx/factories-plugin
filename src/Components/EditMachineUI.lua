@@ -33,7 +33,7 @@ local TextItem = require(script.Parent.SubComponents.TextItem)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
-local MachineOutputListItem = require(script.Parent.SubComponents.MachineOutputListItem)
+local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 
 type Props = {
     AddMachineAnchor: any,
@@ -95,7 +95,7 @@ local function EditMachineUI(props: Props)
             local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[outputItem]
             table.insert(
                 machineOutputs,
-                MachineOutputListItem({
+                ItemListItem({
                     Item = item,
                     Label = item.locName,
                     LayoutOrder = i,
@@ -110,6 +110,9 @@ local function EditMachineUI(props: Props)
                     end,
                     OnClickRemove = function()
                         --
+                    end,
+                    OnActivated = function()
+                        Dash.noop()
                     end,
                 })
             )

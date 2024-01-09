@@ -176,9 +176,9 @@ function Dataset:removeItem(itemKey)
 end
 
 --Returns items, minus the currency and none items
-function Dataset:getValidItems(originalItems: table)
+function Dataset:getValidItems()
     local result = {}
-    for k, v in originalItems do
+    for k, v in self.items do
         if v["id"] == "currency" or v["id"] == "none" then
             continue
         else
@@ -329,6 +329,20 @@ function Dataset:removeSourceFromMachine(machineToUpdate: Types.Machine, sourceM
             table.remove(machineToUpdate.sources, index)
         end
     end
+end
+
+--Add the item id to the outputs of the machine, but check for duplicates.
+function Dataset:addOutputToMachine(machineToUpdate: Types.Machine, item: Types.Item)
+    if machineToUpdate.outputs then
+        for _, itemId in machineToUpdate.outputs do
+            if item.id == itemId then
+                return
+            end
+        end
+    else
+        machineToUpdate.outputs = {}
+    end
+    table.insert(machineToUpdate.outputs, item.id)
 end
 
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
