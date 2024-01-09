@@ -341,19 +341,21 @@ function App:render()
                         end,
                     }, {}),
 
-                SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI and SelectMachineUI({
-                    OnClosePanel = function()
-                        self:showPreviousPanel()
-                        -- self:setState({ selectedItem = nil })
-                    end,
-                    OnClick = function(imageKey)
-                        -- local item =
-                        --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
-                        -- item["thumb"] = imageKey
-                        -- self:updateDataset(self.state.dataset)
-                        self:showPreviousPanel()
-                    end,
-                }),
+                SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI
+                    and SelectMachineUI({
+                        MachineChoices = self.state.dataset.maps[self.state.currentMapIndex].machines,
+                        OnClosePanel = function()
+                            self:showPreviousPanel()
+                            -- self:setState({ selectedItem = nil })
+                        end,
+                        OnClick = function(imageKey)
+                            -- local item =
+                            --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                            -- item["thumb"] = imageKey
+                            -- self:updateDataset(self.state.dataset)
+                            self:showPreviousPanel()
+                        end,
+                    }),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({
