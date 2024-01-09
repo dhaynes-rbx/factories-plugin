@@ -43,6 +43,7 @@ local Manifest = require(script.Parent.Parent.Manifest)
 local FactoryFloor = require(script.Parent.FactoryFloor)
 
 local Types = require(script.Parent.Parent.Types)
+local SelectMachineUI = require(script.Parent.SelectMachineUI)
 
 function App:setPanel()
     Studio.setSelectionTool()
@@ -311,7 +312,7 @@ function App:render()
                             self:showPreviousPanel()
                         end,
                         OnAddInputMachine = function(machine: Types.Machine)
-                            print("Add inputs for " .. machine.id)
+                            self:changePanel(Panels.SelectMachineUI)
                         end,
                         OnAddOutput = function(machine: Types.Machine)
                             print("Add output for " .. machine.id)
@@ -339,6 +340,20 @@ function App:render()
                             self:updateDataset(self.state.dataset)
                         end,
                     }, {}),
+
+                SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI and SelectMachineUI({
+                    OnClosePanel = function()
+                        self:showPreviousPanel()
+                        -- self:setState({ selectedItem = nil })
+                    end,
+                    OnClick = function(imageKey)
+                        -- local item =
+                        --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
+                        -- item["thumb"] = imageKey
+                        -- self:updateDataset(self.state.dataset)
+                        self:showPreviousPanel()
+                    end,
+                }),
 
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({

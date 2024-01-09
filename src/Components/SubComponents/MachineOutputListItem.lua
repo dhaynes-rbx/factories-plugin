@@ -17,11 +17,11 @@ type Props = {
     Label: string,
     LayoutOrder: number,
     OnActivated: any,
-    Machine: Types.Machine,
+    Item: Types.Item,
     OnClickUp: () -> nil,
     OnClickDown: () -> nil,
     OnClickEdit: () -> nil,
-    OnClickDelete: () -> nil,
+    OnClickRemove: () -> nil,
 }
 
 function InputMachineListItem(props: Props)
@@ -83,7 +83,8 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 15),
 
                         [ReactRoblox.Event.Activated] = function()
-                            print("Delete", props.Machine.id)
+                            print("Remove from", props.Item.id)
+                            props.OnClickRemove()
                         end,
                     }, {
                         uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
@@ -110,7 +111,8 @@ function InputMachineListItem(props: Props)
                         Size = UDim2.fromOffset(15, 20),
 
                         [ReactRoblox.Event.Activated] = function()
-                            print("Edit", props.Machine.id)
+                            print("Edit", props.Item.id)
+                            props.OnClickEdit()
                         end,
                     }, {
                         uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint", {
@@ -165,7 +167,7 @@ function InputMachineListItem(props: Props)
             }),
             label = React.createElement("TextLabel", {
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-                Text = props.Machine.locName,
+                Text = props.Label,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 16,
                 TextWrapped = true,
@@ -196,7 +198,7 @@ function InputMachineListItem(props: Props)
                     Size = UDim2.fromOffset(20, 20),
                     [ReactRoblox.Event.Activated] = function()
                         print("Click Up")
-                        props.OnClickUp(props.Machine, props.LayoutOrder)
+                        props.OnClickUp(props.Item, props.LayoutOrder)
                     end,
                 }, {
                     uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint"),
@@ -215,7 +217,7 @@ function InputMachineListItem(props: Props)
 
                     [ReactRoblox.Event.Activated] = function()
                         print("Click Down")
-                        props.OnClickDown(props.Machine, props.LayoutOrder)
+                        props.OnClickDown(props.Item, props.LayoutOrder)
                     end,
                 }, {
                     uIAspectRatioConstraint2 = React.createElement("UIAspectRatioConstraint"),

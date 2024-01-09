@@ -33,7 +33,8 @@ local TextItem = require(script.Parent.SubComponents.TextItem)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
-local InputMachineListItem = require(script.Parent.SubComponents.InputMachineListItem)
+local MachineInputListItem = require(script.Parent.SubComponents.MachineInputListItem)
+local MachineOutputListItem = require(script.Parent.SubComponents.MachineOutputListItem)
 
 type Props = {
     AddMachineAnchor: any,
@@ -56,16 +57,51 @@ local function EditMachineUI(props: Props)
 
     local machineInputs = {}
     if machine.sources then
-        for i, inputMachine in machine.sources do
+        for i, inputMachineId in machine.sources do
+            local inputMachine: Types.Machine = Dataset:getMachineFromId(inputMachineId)
             table.insert(
                 machineInputs,
-                InputMachineListItem({
-                    Machine = Dataset:getMachineFromId(inputMachine),
+                MachineInputListItem({
+                    Machine = inputMachine,
+                    Label = inputMachine.locName,
                     LayoutOrder = i,
                     OnClickUp = function()
                         --
                     end,
                     OnClickDown = function()
+                        --
+                    end,
+                    OnClickEdit = function()
+                        --
+                    end,
+                    OnClickRemove = function()
+                        --
+                    end,
+                })
+            )
+        end
+    end
+
+    local machineOutputs = {}
+    if machine.outputs then
+        for i, outputItem in machine.outputs do
+            local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[outputItem]
+            table.insert(
+                machineOutputs,
+                MachineOutputListItem({
+                    Item = item,
+                    Label = item.locName,
+                    LayoutOrder = i,
+                    OnClickUp = function()
+                        --
+                    end,
+                    OnClickDown = function()
+                        --
+                    end,
+                    OnClickEdit = function()
+                        --
+                    end,
+                    OnClickRemove = function()
                         --
                     end,
                 })
@@ -78,6 +114,9 @@ local function EditMachineUI(props: Props)
         ID = TextItem({
             Text = "ID: " .. props.Machine.id,
             LayoutOrder = layoutOrder:Increment(),
+            OnActivate = function(input)
+                print(Dash.pretty(props.Machine, { multiline = true, indent = "\t", depth = 10 }))
+            end,
         }),
 
         LocName = FishBloxComponents.TextInput({
@@ -128,6 +167,13 @@ local function EditMachineUI(props: Props)
                 props.OnAddOutput(machine)
             end,
         }),
+
+        OutputItems = Column({
+            Gaps = 8,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(1, 0, 0, 0),
+            LayoutOrder = layoutOrder:Increment(),
+        }, machineOutputs),
 
         StartingOutput = InlineNumberInput({
             Value = props.Machine.currentOutputCount,

@@ -88,9 +88,10 @@ function Dataset:updateDataset(dataset, currentMapIndex)
     cleanMachines(self.machines, self.items)
 end
 
-function Dataset:getMap(mapIndex: number)
-    return self.dataset["maps"][mapIndex]
-end
+--TODO: Remove?
+-- function Dataset:getMap(mapIndex: number)
+--     return self.dataset["maps"][mapIndex]
+-- end
 
 function Dataset:changeItemId(itemKey, newName)
     --check for naming collisions
