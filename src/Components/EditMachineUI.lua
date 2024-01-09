@@ -33,7 +33,6 @@ local TextItem = require(script.Parent.SubComponents.TextItem)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
-local MachineInputListItem = require(script.Parent.SubComponents.MachineInputListItem)
 local MachineOutputListItem = require(script.Parent.SubComponents.MachineOutputListItem)
 
 type Props = {
@@ -61,10 +60,11 @@ local function EditMachineUI(props: Props)
             local inputMachine: Types.Machine = Dataset:getMachineFromId(inputMachineId)
             table.insert(
                 machineInputs,
-                MachineInputListItem({
+                MachineListItem({
                     Machine = inputMachine,
                     Label = inputMachine.locName,
                     LayoutOrder = i,
+                    OnActivated = function() end,
                     OnClickUp = function()
                         --
                     end,
@@ -77,6 +77,8 @@ local function EditMachineUI(props: Props)
                     OnClickRemove = function()
                         --
                     end,
+
+                    HideEditButton = true,
                 })
             )
         end

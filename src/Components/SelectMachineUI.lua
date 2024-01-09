@@ -25,7 +25,7 @@ local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 local Manifest = require(script.Parent.Parent.Manifest)
 local Types = require(script.Parent.Parent.Types)
-local MachineInputListItem = require(script.Parent.SubComponents.MachineInputListItem)
+local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 
@@ -38,7 +38,10 @@ end
 type Props = {
     OnClick: () -> nil,
     OnClosePanel: () -> nil,
+    OnNewInputMachineChosen: () -> nil,
+
     MachineChoices: any,
+    SelectedMachine: Types.Machine,
 }
 
 local function SelectMachineUI(props: Props)
@@ -64,15 +67,22 @@ local function SelectMachineUI(props: Props)
     for i, machine in props.MachineChoices do
         table.insert(
             machineChoices,
-            MachineInputListItem({
+            MachineListItem({
                 Label = machine.id,
                 LayoutOrder = i,
-                OnActivated = Dash.noop(),
+                OnActivated = function(machineId)
+                    props.OnNewInputMachineChosen()
+                end,
                 Machine = machine,
+
                 OnClickUp = Dash.noop(),
                 OnClickDown = Dash.noop(),
                 OnClickEdit = Dash.noop(),
                 OnClickRemove = Dash.noop(),
+
+                HideArrows = true,
+                HideEditButton = true,
+                HideRemoveButton = true,
             })
         )
     end

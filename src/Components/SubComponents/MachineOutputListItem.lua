@@ -29,7 +29,7 @@ function InputMachineListItem(props: Props)
 
     return React.createElement("Frame", {
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.95,
+        BackgroundTransparency = hovered and 0.93 or 0.95,
         BorderColor3 = Color3.fromRGB(0, 0, 0),
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 50),

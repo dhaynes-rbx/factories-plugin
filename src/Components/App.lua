@@ -344,6 +344,7 @@ function App:render()
                 SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI
                     and SelectMachineUI({
                         MachineChoices = self.state.dataset.maps[self.state.currentMapIndex].machines,
+                        SelectedMachine = self.state.selectedMachine,
                         OnClosePanel = function()
                             self:showPreviousPanel()
                             -- self:setState({ selectedItem = nil })
@@ -353,6 +354,9 @@ function App:render()
                             --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
                             -- item["thumb"] = imageKey
                             -- self:updateDataset(self.state.dataset)
+                            self:showPreviousPanel()
+                        end,
+                        OnNewInputMachineChosen = function(machineId)
                             self:showPreviousPanel()
                         end,
                     }),
