@@ -90,12 +90,12 @@ local function EditMachineUI(props: Props)
         end
     end
 
-    local machineOutputs = {}
+    local outputItems = {}
     if machine.outputs then
         for i, outputItem in machine.outputs do
             local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[outputItem]
             table.insert(
-                machineOutputs,
+                outputItems,
                 ItemListItem({
                     Item = item,
                     Label = item.locName,
@@ -186,7 +186,7 @@ local function EditMachineUI(props: Props)
             AutomaticSize = Enum.AutomaticSize.Y,
             Size = UDim2.new(1, 0, 0, 0),
             LayoutOrder = layoutOrder:Increment(),
-        }, machineOutputs),
+        }, outputItems),
 
         StartingOutput = InlineNumberInput({
             Value = props.Machine.currentOutputCount,
