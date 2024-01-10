@@ -71,6 +71,7 @@ local function MachineAnchorBillboardGuis(props: Props)
                     Column = Column({
                         AutomaticSize = Enum.AutomaticSize.Y,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
                     }, {
                         Row = Row({
                             Gaps = 4,
@@ -78,18 +79,18 @@ local function MachineAnchorBillboardGuis(props: Props)
                             LayoutOrder = 0,
                             Size = UDim2.new(1, 0, 0, 25),
                         }, icons),
-                        Text1 = Text({
-                            Color = Color3.new(1, 1, 1),
-                            FontSize = 16,
-                            LayoutOrder = 1,
-                            Text = machine["id"],
-                        }),
-                        Text2 = Text({
-                            Color = machineIsInvalid and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
-                            FontSize = 16,
-                            LayoutOrder = 2,
-                            Text = "Makes: " .. outputsString,
-                        }),
+                        -- Text1 = Text({
+                        --     Color = Color3.new(1, 1, 1),
+                        --     FontSize = 16,
+                        --     LayoutOrder = 1,
+                        --     Text = machine["id"],
+                        -- }),
+                        -- Text2 = Text({
+                        --     Color = machineIsInvalid and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
+                        --     FontSize = 16,
+                        --     LayoutOrder = 2,
+                        --     Text = "Makes: " .. outputsString,
+                        -- }),
                         Text3 = Text({
                             Color = duplicateCoordinatesExist and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
                             FontSize = 16,

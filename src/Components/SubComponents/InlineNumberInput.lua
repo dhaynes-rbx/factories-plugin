@@ -1,7 +1,7 @@
-local React = require(script.Parent.Parent.Packages.React)
-local Packages = script.Parent.Parent.Packages
+local Packages = script.Parent.Parent.Parent.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
 local FishBlox = require(Packages.FishBlox)
-local ReactRoblox = require(script.Parent.Parent.Packages.ReactRoblox)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {

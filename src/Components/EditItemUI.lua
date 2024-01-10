@@ -32,14 +32,14 @@ local add = require(script.Parent.Parent.Helpers.add)
 local Separator = require(script.Parent.SubComponents.Separator)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 type Props = {
-    CurrentMapIndex:number,
-    Dataset:table,
-    Item:table,
-    OnClosePanel:any,
-    OnDeleteRequirementClicked:any,
-    ShowEditItemPanel:any,
-    UpdateDataset:any,
-    ShowImageSelector:any,
+    CurrentMapIndex: number,
+    Dataset: table,
+    Item: table,
+    OnClosePanel: any,
+    OnDeleteRequirementClicked: any,
+    ShowEditItemPanel: () -> nil,
+    UpdateDataset: () -> nil,
+    OnClickThumbnail: () -> nil,
 }
 
 local function EditItemUI(props: Props)
@@ -51,7 +51,7 @@ local function EditItemUI(props: Props)
     local modalEnabled, setModalEnabled = React.useState(false)
     local showThumbnails, setShowThumbnails = React.useState(false)
     local valueType, setValueType = React.useState(nil)
-    
+
     local dataset = props.Dataset
     local map = dataset["maps"][props.CurrentMapIndex]
     local items = map["items"]
@@ -63,7 +63,7 @@ local function EditItemUI(props: Props)
         return index
     end
 
-    local createTextChangingButton = function(key:string, itemObject:table, isNumber:boolean)
+    local createTextChangingButton = function(key: string, itemObject: table, isNumber: boolean)
         return SmallButtonWithLabel({
             ButtonLabel = tostring(itemObject[key]),
             Label = key,
@@ -102,138 +102,156 @@ local function EditItemUI(props: Props)
     add(children, createTextChangingButton("id", item))
     add(children, createTextChangingButton("locName", item))
 
-    add(children, SmallButtonWithLabel({
-        Appearance = "Filled",
-        ButtonLabel = item["thumb"],
-        Label = "thumb:",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = function()
-            props.ShowImageSelector()
-        end,
-    }))
-    add(children, Row({
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        LayoutOrder = incrementLayoutOrder(),
-        Size = UDim2.new(1, 0, 0, 75)
-    }, {
-        Icon = React.createElement("ImageLabel", {
-            AnchorPoint = Vector2.new(0.5,0.5),
-            BackgroundTransparency = 1,
-            Image = Manifest.images[props.Item["thumb"]],
-            Size = UDim2.fromScale(1,1),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+    add(
+        children,
+        SmallButtonWithLabel({
+            Appearance = "Filled",
+            ButtonLabel = item["thumb"],
+            Label = "thumb:",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                props.OnClickThumbnail()
+            end,
         })
-    }))
-    
+    )
+    add(
+        children,
+        Row({
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            LayoutOrder = incrementLayoutOrder(),
+            Size = UDim2.new(1, 0, 0, 75),
+        }, {
+            Icon = React.createElement("ImageLabel", {
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                BackgroundTransparency = 1,
+                Image = Manifest.images[props.Item["thumb"]],
+                Size = UDim2.fromScale(1, 1),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+            }),
+        })
+    )
+
     --REQUIREMENTS
     --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
     local itemRequirementChoices = table.clone(items)
     if item["requirements"] then
-        for _,outputItem in item["requirements"] do
+        for _, outputItem in item["requirements"] do
             local id = outputItem["itemId"]
             itemRequirementChoices[id] = nil
         end
         itemRequirementChoices[item["id"]] = nil
     end
 
-    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
-    add(children, LabelWithAdd({
-        Label = "requirements:",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = function()
-            if not item["requirements"] then
-                item["requirements"] = {}
-            end
-            setListModalEnabled(true)
-            setListChoices(itemRequirementChoices)
-            setCurrentFieldKey(nil)
-            setCurrentFieldValue(nil)
-            setCurrentFieldCallback(function()
-                return function(newValue)
-                    local newRequirementItem = {itemId = newValue, count = 10}
-                    table.insert(item["requirements"], newRequirementItem)
-                    props.UpdateDataset(dataset)
+    add(children, Separator({ LayoutOrder = incrementLayoutOrder() }))
+    add(
+        children,
+        LabelWithAdd({
+            Label = "requirements:",
+            LayoutOrder = incrementLayoutOrder(),
+            OnActivated = function()
+                if not item["requirements"] then
+                    item["requirements"] = {}
                 end
-            end)
-        end,
-    }))
+                setListModalEnabled(true)
+                setListChoices(itemRequirementChoices)
+                setCurrentFieldKey(nil)
+                setCurrentFieldValue(nil)
+                setCurrentFieldCallback(function()
+                    return function(newValue)
+                        local newRequirementItem = { itemId = newValue, count = 10 }
+                        table.insert(item["requirements"], newRequirementItem)
+                        props.UpdateDataset(dataset)
+                    end
+                end)
+            end,
+        })
+    )
     if item["requirements"] then
-        for i,requirement in item["requirements"] do
+        for i, requirement in item["requirements"] do
             -- add(children, createListModalButton("itemId", requirement, items, false))
             local currentCount = requirement["count"]
-            add(children, ListItemButton({
-                CanDelete = (#item["requirements"] > 1),
-                Image = items[requirement["itemId"]]["thumb"],
-                Index = i,
-                Label = requirement["itemId"],
-                LayoutOrder = incrementLayoutOrder(),
-                ObjectToEdit = items[requirement["itemId"]],
-                OnDeleteButtonClicked = function(itemKey) 
-                    props.OnDeleteRequirementClicked(
-                        "Do you want to delete "..itemKey.." as a requirement for "..props.Item["id"].."?",
-                        function()
-                            table.remove(item["requirements"], i)
-                        end
-                    )
-                end,
-                OnEditButtonClicked = function(itemKey) 
-                    props.ShowEditItemPanel(itemKey)
-                end,
-                OnSwapButtonClicked = function(itemKey) 
-                    setListModalEnabled(true)
-                    setListChoices(itemRequirementChoices)
-                    setCurrentFieldKey(i)
-                    setCurrentFieldValue(itemKey)
-                    setCurrentFieldCallback(function()
-                        return function(newValue)
-                            item["requirements"][i] = {
-                                itemId = newValue,
-                                count = currentCount
-                            }
-                            props.UpdateDataset(props.Dataset)
-                        end
-                    end)
-                end,
-            }))
+            add(
+                children,
+                ListItemButton({
+                    CanDelete = (#item["requirements"] > 1),
+                    Image = items[requirement["itemId"]]["thumb"],
+                    Index = i,
+                    Label = requirement["itemId"],
+                    LayoutOrder = incrementLayoutOrder(),
+                    ObjectToEdit = items[requirement["itemId"]],
+                    OnDeleteButtonClicked = function(itemKey)
+                        props.OnDeleteRequirementClicked(
+                            "Do you want to delete " .. itemKey .. " as a requirement for " .. props.Item["id"] .. "?",
+                            function()
+                                table.remove(item["requirements"], i)
+                            end
+                        )
+                    end,
+                    OnEditButtonClicked = function(itemKey)
+                        props.ShowEditItemPanel(itemKey)
+                    end,
+                    OnSwapButtonClicked = function(itemKey)
+                        setListModalEnabled(true)
+                        setListChoices(itemRequirementChoices)
+                        setCurrentFieldKey(i)
+                        setCurrentFieldValue(itemKey)
+                        setCurrentFieldCallback(function()
+                            return function(newValue)
+                                item["requirements"][i] = {
+                                    itemId = newValue,
+                                    count = currentCount,
+                                }
+                                props.UpdateDataset(props.Dataset)
+                            end
+                        end)
+                    end,
+                })
+            )
             add(children, createTextChangingButton("count", requirement, true))
         end
     else
         --if there are no requirements, then make a requirement. An item should ALWAYS have a currency requirement if there is no item requirement.
         item["requirements"] = {}
-        table.insert(item["requirements"], {count = 1, itemId = "currency"})
+        table.insert(item["requirements"], { count = 1, itemId = "currency" })
         props.UpdateDataset(props.Dataset)
     end
 
-    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
-    add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
+    add(children, Separator({ LayoutOrder = incrementLayoutOrder() }))
+    add(children, SmallLabel({ Label = "value:", LayoutOrder = incrementLayoutOrder() }))
     if item["value"] and item["value"]["itemId"] then
         -- add(children, createTextChangingButton("itemId", item["value"]))
         add(children, createTextChangingButton("count", item["value"]))
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Remove Value",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                item["value"] = nil
-                props.UpdateDataset(dataset)
-            end
-        }))
+        add(
+            children,
+            SmallButton({
+                Appearance = "Filled",
+                Label = "Remove Value",
+                LayoutOrder = incrementLayoutOrder(),
+                OnActivated = function()
+                    item["value"] = nil
+                    props.UpdateDataset(dataset)
+                end,
+            })
+        )
     else
-        add(children, Text({Text = "None", Color = Color3.new(1,1,1), LayoutOrder = incrementLayoutOrder()}))
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Add Value",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                item["value"] = {itemId = "currency", count = 10}
-                props.UpdateDataset(dataset)
-            end
-        }))
+        add(children, Text({ Text = "None", Color = Color3.new(1, 1, 1), LayoutOrder = incrementLayoutOrder() }))
+        add(
+            children,
+            SmallButton({
+                Appearance = "Filled",
+                Label = "Add Value",
+                LayoutOrder = incrementLayoutOrder(),
+                OnActivated = function()
+                    item["value"] = { itemId = "currency", count = 10 }
+                    props.UpdateDataset(dataset)
+                end,
+            })
+        )
     end
 
     return React.createElement(React.Fragment, nil, {
         Panel = SidePanel({
-            Title = "Edit Item: "..props.Item["id"],
+            Title = "Edit Item: " .. props.Item["id"],
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
@@ -279,7 +297,7 @@ local function EditItemUI(props: Props)
                 setCurrentFieldValue(nil)
                 Studio.setSelectionTool()
             end,
-        })
+        }),
     })
 end
 

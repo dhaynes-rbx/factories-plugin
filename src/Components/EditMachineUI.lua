@@ -30,7 +30,7 @@ local Incrementer = require(script.Parent.Parent.Incrementer)
 local InlineTextInput = require(script.Parent.SubComponents.InlineTextInput)
 local FormatText = require(script.Parent.Parent.FormatText)
 local TextItem = require(script.Parent.SubComponents.TextItem)
-local InlineNumberInput = require(script.Parent.InlineNumberInput)
+local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
@@ -100,6 +100,7 @@ local function EditMachineUI(props: Props)
                     Item = item,
                     Label = item.locName,
                     LayoutOrder = i,
+                    Thumbnail = item.thumb,
                     OnClickUp = function()
                         --
                     end,

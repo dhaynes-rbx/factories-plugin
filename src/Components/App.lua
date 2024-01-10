@@ -27,7 +27,7 @@ local EditItemUI = require(script.Parent.EditItemUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
 local MachineAnchorBillboardGuis = require(script.Parent.MachineAnchorBillboardGuis)
-local ImageSelectorUI = require(script.Parent.ImageSelectorUI)
+local SelectThumbnailUI = require(script.Parent.SelectThumbnailUI)
 
 local Constants = require(script.Parent.Parent.Constants)
 local Dataset = require(script.Parent.Parent.Dataset)
@@ -380,7 +380,7 @@ function App:render()
                     }),
 
                 SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
-                    Items = Dataset:getValidItems(),
+                    Items = Dataset:getValidItems(true),
                     SelectedMachine = self.state.selectedMachine,
 
                     OnChooseItem = function(item: Types.Item)
@@ -405,7 +405,7 @@ function App:render()
                 EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
                     and EditItemsListUI({
                         CurrentMapIndex = self.state.currentMapIndex,
-                        Items = Dataset:getValidItems(),
+                        Items = Dataset:getValidItems(false),
 
                         ShowEditItemPanel = function(itemKey)
                             self:changePanel(Panels.EditItemUI)
@@ -467,14 +467,14 @@ function App:render()
                                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
                             })
                         end,
-                        ShowImageSelector = function()
-                            self:changePanel(Panels.ImageSelectorUI)
+                        OnClickThumbnail = function()
+                            self:changePanel(Panels.SelectThumbnailUI)
                         end,
                         UpdateDataset = function(dataset)
                             self:updateDataset(dataset)
                         end,
                     }),
-                ImageSelectorUI = self.state.currentPanel == Panels.ImageSelectorUI and ImageSelectorUI({
+                SelectThumbnailUI = self.state.currentPanel == Panels.SelectThumbnailUI and SelectThumbnailUI({
                     OnClosePanel = function()
                         self:showPreviousPanel()
                         self:setState({ selectedItem = nil })

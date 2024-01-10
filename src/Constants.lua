@@ -7,7 +7,7 @@ return {
         EditItemUI = "Edit Item",
         EditPowerupsListUI = "Edit Powerups List",
         EditPowerupUI = "Edit Powerup",
-        ImageSelectorUI = "Image Selector",
+        SelectThumbnailUI = "Select Thumbnail",
         SelectMachineUI = "Select Machine",
         SelectItemUI = "Select Item",
     },

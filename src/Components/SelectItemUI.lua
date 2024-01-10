@@ -67,6 +67,7 @@ local function SelectItemUI(props: Props)
                 Item = item,
                 Label = item.locName,
                 LayoutOrder = layoutOrder:Increment(),
+                Thumbnail = item.thumb,
 
                 OnClickEdit = function(itemToEdit: Types.Item)
                     props.OnClickEditItem(itemToEdit)

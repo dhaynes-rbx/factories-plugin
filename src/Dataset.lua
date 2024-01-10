@@ -176,14 +176,28 @@ function Dataset:removeItem(itemKey)
 end
 
 --Returns items, minus the currency and none items
-function Dataset:getValidItems()
+function Dataset:getValidItems(excludeOutputsInUse: boolean)
     local result = {}
-    for k, v in self.items do
-        if v["id"] == "currency" or v["id"] == "none" then
-            continue
-        else
-            result[v["id"]] = v
+    for itemKey, item in self.items do
+        local skip = false
+        if item.id == "currency" or item.id == "none" then
+            skip = true
+        elseif excludeOutputsInUse then
+            for _, machine in self.machines do
+                if machine.outputs then
+                    for _, outputId in machine.outputs do
+                        if item.id == outputId then
+                            skip = true
+                        end
+                    end
+                end
+            end
         end
+
+        if skip then
+            continue
+        end
+        result[item.id] = item
     end
     return result
 end
