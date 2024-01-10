@@ -48,7 +48,7 @@ local function MachineAnchorBillboardGuis(props: Props)
                     table.insert(
                         icons,
                         React.createElement("ImageLabel", {
-                            Size = UDim2.fromOffset(25, 25),
+                            Size = UDim2.fromOffset(50, 50),
                             BackgroundTransparency = 1,
                             Image = Manifest.images[image] or "rbxassetid://7553285523",
                         })
@@ -79,12 +79,12 @@ local function MachineAnchorBillboardGuis(props: Props)
                             LayoutOrder = 0,
                             Size = UDim2.new(1, 0, 0, 25),
                         }, icons),
-                        -- Text1 = Text({
-                        --     Color = Color3.new(1, 1, 1),
-                        --     FontSize = 16,
-                        --     LayoutOrder = 1,
-                        --     Text = machine["id"],
-                        -- }),
+                        Text1 = Text({
+                            Color = Color3.new(1, 1, 1),
+                            FontSize = 16,
+                            LayoutOrder = 1,
+                            Text = machine.locName,
+                        }),
                         -- Text2 = Text({
                         --     Color = machineIsInvalid and Color3.new(1, 0, 0) or Color3.new(1, 1, 1),
                         --     FontSize = 16,

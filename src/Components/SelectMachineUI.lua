@@ -83,7 +83,7 @@ local function SelectMachineUI(props: Props)
         table.insert(
             machineChoices,
             MachineListItem({
-                Label = machine.id,
+                Label = machine.locName,
                 LayoutOrder = i,
                 OnActivated = function(machineId)
                     Dataset:addSourceToMachine(props.SelectedMachine, machineId)
