@@ -8,6 +8,9 @@ local FishBlox = require(Packages.FishBlox)
 local Types = require(script.Parent.Parent.Parent.Types)
 local ReactRoblox = require(script.Parent.Parent.Parent.Packages.ReactRoblox)
 local Manifest = require(script.Parent.Parent.Parent.Manifest)
+local TextItem = require(script.Parent.TextItem)
+local Dataset = require(script.Parent.Parent.Parent.Dataset)
+local Scene = require(script.Parent.Parent.Parent.Scene)
 local FishBloxComponents = FishBlox.Components
 
 -- local SmallLabel = require(script.Parent.SmallLabel)
@@ -20,31 +23,47 @@ type Props = {
     Label: string,
     LayoutOrder: number,
     Thumbnail: string,
+    Unavailable: boolean,
     OnActivated: any,
     OnClickUp: () -> nil,
     OnClickDown: () -> nil,
     OnClickEdit: () -> nil,
     OnClickRemove: () -> nil,
+    OnHover: () -> nil,
 }
 
 function ItemListItem(props: Props)
     local hovered, setHovered = React.useState(false)
 
+    if props.Unavailable then
+    end
+
     return React.createElement("Frame", {
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = hovered and 0.93 or 0.95,
+        BackgroundTransparency = props.Unavailable and 1 or (hovered and 0.93 or 0.95),
         BorderColor3 = Color3.fromRGB(0, 0, 0),
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 50),
         LayoutOrder = props.LayoutOrder,
         [ReactRoblox.Event.MouseEnter] = function()
+            if props.Unavailable then
+                local anchor = nil
+                local machineWithOutput: Types.Machine = Dataset:getMachineFromOutputItem(props.Item)
+                if machineWithOutput then
+                    anchor = Scene.getAnchorFromMachine(machineWithOutput)
+                end
+                props.OnHover(anchor)
+            end
             setHovered(true)
         end,
         [ReactRoblox.Event.MouseLeave] = function()
+            if props.Unavailable then
+                props.OnHover(nil)
+            end
             setHovered(false)
         end,
     }, {
-        HoverButtons = hovered
+        HoverButtons = (not props.Unavailable or hovered)
             and React.createElement("ImageButton", {
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
@@ -141,7 +160,7 @@ function ItemListItem(props: Props)
             uIStroke = React.createElement("UIStroke", {
                 Color = Color3.fromRGB(243, 243, 243),
                 Thickness = 2,
-                Transparency = 0.85,
+                Transparency = props.Unavailable and 0.95 or 0.85,
             }),
             uIPadding = React.createElement("UIPadding", {
                 PaddingBottom = UDim.new(0, 4),
@@ -152,6 +171,7 @@ function ItemListItem(props: Props)
 
             imageLabel = React.createElement("ImageLabel", {
                 Image = Manifest.images[props.Thumbnail],
+                ImageTransparency = props.Unavailable and 0.6 or 0,
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
@@ -174,6 +194,7 @@ function ItemListItem(props: Props)
                 Text = props.Label,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 16,
+                TextTransparency = props.Unavailable and 0.6 or 0,
                 TextWrapped = true,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AnchorPoint = Vector2.new(1, 0),
@@ -184,7 +205,7 @@ function ItemListItem(props: Props)
                 Size = UDim2.fromScale(0, 1),
             }),
 
-            sortArrows = props.HideArrows
+            sortArrows = (not props.Unavailable or props.HideArrows)
                 and React.createElement("Frame", {
                     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BackgroundTransparency = 1,

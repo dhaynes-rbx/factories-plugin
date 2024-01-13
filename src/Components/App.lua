@@ -380,7 +380,8 @@ function App:render()
                     }),
 
                 SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
-                    Items = Dataset:getValidItems(true),
+                    Items = Dataset:getValidItems(false),
+                    -- Items = self.state.dataset.maps[self.state.currentMapIndex].items,
                     SelectedMachine = self.state.selectedMachine,
 
                     OnChooseItem = function(item: Types.Item)
@@ -396,6 +397,12 @@ function App:render()
                     end,
                     OnClosePanel = function()
                         self:showPreviousPanel()
+                    end,
+                    OnHover = function(anchor)
+                        if not anchor then
+                            anchor = React.None
+                        end
+                        self:setState({ highlightedMachineAnchor = anchor })
                     end,
                     UpdateDataset = function()
                         self:updateDataset(self.state.dataset)
@@ -443,8 +450,8 @@ function App:render()
                         Item = self.state.selectedItem,
 
                         OnClosePanel = function()
-                            self:showPreviousPanel()
                             self:setState({ selectedItem = nil })
+                            self:showPreviousPanel()
                         end,
                         OnDeleteRequirementClicked = function(title, callback)
                             self:setState({
@@ -470,14 +477,16 @@ function App:render()
                         OnClickThumbnail = function()
                             self:changePanel(Panels.SelectThumbnailUI)
                         end,
-                        UpdateDataset = function(dataset)
-                            self:updateDataset(dataset)
+                        UpdateSelectedItem = function(item: Types.Item)
+                            self:setState({ selectedItem = item })
+                        end,
+                        UpdateDataset = function()
+                            self:updateDataset(self.state.dataset)
                         end,
                     }),
                 SelectThumbnailUI = self.state.currentPanel == Panels.SelectThumbnailUI and SelectThumbnailUI({
                     OnClosePanel = function()
                         self:showPreviousPanel()
-                        self:setState({ selectedItem = nil })
                     end,
                     OnClick = function(imageKey)
                         local item =

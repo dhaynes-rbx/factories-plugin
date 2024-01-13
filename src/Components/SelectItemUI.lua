@@ -36,6 +36,7 @@ type Props = {
     OnClosePanel: () -> nil,
     OnChooseItem: (Types.Item) -> nil,
     OnClickEdit: (Types.Item) -> nil,
+    OnHover: (Model) -> nil,
     UpdateDataset: () -> nil,
 }
 
@@ -45,9 +46,9 @@ local function SelectItemUI(props: Props)
 
     local scrollingFrameChildren = {
         uIPadding = React.createElement("UIPadding", {
-            PaddingBottom = UDim.new(0, 80),
+            PaddingBottom = UDim.new(0, #Dash.keys(props.Items) * 10),
             PaddingLeft = UDim.new(0, 4),
-            PaddingRight = UDim.new(0, 4),
+            PaddingRight = UDim.new(0, 6),
             PaddingTop = UDim.new(0, 8),
         }),
 
@@ -59,7 +60,31 @@ local function SelectItemUI(props: Props)
     }
 
     local itemChoices = {}
-    for itemKey, item in props.Items do
+    local sortedItemKeys = Dash.keys(props.Items)
+    table.sort(sortedItemKeys, function(a, b)
+        return props.Items[a].locName:lower() < props.Items[b].locName:lower()
+    end)
+    --Check the unused items. Change the visual appearance based on whether or not the item is available to be used.
+    local availableItemKeys = Dash.keys(Dataset:getValidItems(true))
+    local unavailableItemKeys = {}
+    for i, itemKey in sortedItemKeys do
+        local item = props.Items[itemKey]
+        local unavailable = true
+        for _, availableItem in availableItemKeys do
+            if availableItem.id == item.id then
+                unavailable = false
+            end
+        end
+        if unavailable then
+            table.insert(unavailableItemKeys, item.id)
+        end
+    end
+    for _, key in availableItemKeys do
+        local item = props.Items[key]
+        if key == "currency" or key == "none" then
+            continue
+        end
+
         table.insert(
             itemChoices,
             ItemListItem({
@@ -68,6 +93,7 @@ local function SelectItemUI(props: Props)
                 Label = item.locName,
                 LayoutOrder = layoutOrder:Increment(),
                 Thumbnail = item.thumb,
+                -- Unavailable = false,
 
                 OnClickEdit = function(itemToEdit: Types.Item)
                     props.OnClickEditItem(itemToEdit)
@@ -84,6 +110,61 @@ local function SelectItemUI(props: Props)
             })
         )
     end
+    for _, key in unavailableItemKeys do
+        local item = props.Items[key]
+        local skip = false
+        for _, itemKey in availableItemKeys do
+            if itemKey == key then
+                skip = true
+            end
+        end
+        if not skip then
+            table.insert(
+                itemChoices,
+                ItemListItem({
+                    HideArrows = true,
+                    HideButtons = true,
+                    Item = item,
+                    Label = item.locName,
+                    LayoutOrder = layoutOrder:Increment(),
+                    Thumbnail = item.thumb,
+                    Unavailable = true,
+
+                    OnClickEdit = function() end,
+                    OnClickRemove = function() end,
+                    OnActivated = function() end,
+                    OnHover = function(anchor)
+                        props.OnHover(anchor)
+                    end,
+                })
+            )
+        end
+    end
+
+    -- table.insert(
+    --     itemChoices,
+    --     ItemListItem({
+    --         HideArrows = true,
+    --         Item = item,
+    --         Label = item.locName,
+    --         LayoutOrder = layoutOrder:Increment(),
+    --         Thumbnail = item.thumb,
+    --         Unavailable = unavailable,
+
+    --         OnClickEdit = not unavailable and function(itemToEdit: Types.Item)
+    --             props.OnClickEditItem(itemToEdit)
+    --         end,
+    --         OnClickRemove = not unavailable and function(itemToRemove)
+    --             Dataset:removeItem(itemToRemove.id)
+    --             props.UpdateDataset()
+    --         end,
+    --         OnActivated = not unavailable and function(itemChosen: Types.Item)
+    --             Dataset:addOutputToMachine(props.SelectedMachine, itemChosen)
+    --             props.UpdateDataset()
+    --             props.OnClosePanel()
+    --         end,
+    --     })
+    -- )
 
     scrollingFrameChildren = Dash.join(scrollingFrameChildren, itemChoices)
 

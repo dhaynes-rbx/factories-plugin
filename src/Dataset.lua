@@ -93,42 +93,42 @@ end
 --     return self.dataset["maps"][mapIndex]
 -- end
 
-function Dataset:changeItemId(itemKey, newName)
-    --check for naming collisions
-    newName = self:resolveDuplicateId(newName, self.items)
+-- function Dataset:changeItemId(itemKey, newName)
+-- --check for naming collisions
+-- newName = self:resolveDuplicateId(newName, self.items)
 
-    local items = self.items
-    local oldName = itemKey
-    local newItem = table.clone(items[itemKey])
+-- local items = self.items
+-- local oldName = itemKey
+-- local newItem = table.clone(items[itemKey])
 
-    newItem["id"] = newName
-    items[newName] = newItem
-    items[oldName] = nil
+-- newItem["id"] = newName
+-- items[newName] = newItem
+-- items[oldName] = nil
 
-    local machines = self.machines
-    for i, machine in machines do
-        if machine["outputs"] then
-            for j, output in machine["outputs"] do
-                if output == oldName then
-                    machines[i]["outputs"][j] = newName
-                end
-            end
-        end
-    end
+-- local machines = self.machines
+-- for i, machine in machines do
+--     if machine["outputs"] then
+--         for j, output in machine["outputs"] do
+--             if output == oldName then
+--                 machines[i]["outputs"][j] = newName
+--             end
+--         end
+--     end
+-- end
 
-    --Loop through all items. Make sure if this new item is a requirement for another item, to change its id there too.
-    for _, item in self.items do
-        if item["requirements"] then
-            for _, req in item["requirements"] do
-                if req["itemId"] == oldName then
-                    req["itemId"] = newName
-                end
-            end
-        end
-    end
+-- --Loop through all items. Make sure if this new item is a requirement for another item, to change its id there too.
+-- for _, item in self.items do
+--     if item["requirements"] then
+--         for _, req in item["requirements"] do
+--             if req["itemId"] == oldName then
+--                 req["itemId"] = newName
+--             end
+--         end
+--     end
+-- end
 
-    return newName
-end
+-- return newName
+-- end
 
 function Dataset:addItem()
     local items = self.items
@@ -173,6 +173,67 @@ function Dataset:removeItem(itemKey)
     end
 
     items[itemKey] = nil
+end
+
+function Dataset:updateItemId(itemToUpdate: Types.Item, newId: string)
+    if not newId or #newId < 1 then
+        return false
+    end
+    if itemToUpdate.id == newId then
+        return true, itemToUpdate
+    end
+    newId = Dataset:resolveDuplicateId(newId, self.machines)
+
+    local originalId = itemToUpdate.id
+    local newItem = table.clone(self.items[originalId])
+
+    newItem.id = newId
+    self.items[newId] = newItem
+    self.items[originalId] = nil
+
+    -- if we're changing the ID, we must also change it wherever it appears as another machine's source
+    for i, machine in self.machines do
+        if machine["outputs"] then
+            for j, source in machine["outputs"] do
+                if source == originalId then
+                    self.machines[i]["outputs"][j] = newId
+                end
+            end
+        end
+    end
+
+    for i, item in self.items do
+        if item.requirements then
+            for j, requirement in item.requirements do
+                if requirement.itemId == originalId then
+                    self.items[i]["requirements"][j] = newId
+                end
+            end
+        end
+    end
+
+    -- Dataset:changeItemId(itemToUpdate.id, id)
+    -- itemToUpdate.id = id
+    --if we're changing the ID, we must also change it wherever it appears as another machine's source
+    -- for i, machine in self.machines do
+    --     if machine["outputs"] then
+    --         for j, source in machine["outputs"] do
+    --             if source == originalId then
+    --                 self.machines[i]["outputs"][j] = id
+    --             end
+    --         end
+    --     end
+    -- end
+    -- for i, item in self.items do
+    --     if item.requirements then
+    --         for j, requirement in item.requirements do
+    --             if requirement.itemId == originalId then
+    --                 self.items[i]["requirements"][j] = id
+    --             end
+    --         end
+    --     end
+    -- end
+    return true, newItem
 end
 
 --Returns items, minus the currency and none items
@@ -366,6 +427,20 @@ function Dataset:removeOutputFromMachine(machineToUpdate: Types.Machine, item: T
             table.remove(machineToUpdate.outputs, index)
         end
     end
+end
+
+function Dataset:getMachineFromOutputItem(item: Types.Item)
+    local machineWithOutput: Types.Machine = nil
+    for _, machine in self.machines do
+        if machine.outputs then
+            for _, outputId in machine.outputs do
+                if outputId == item.id then
+                    machineWithOutput = machine
+                end
+            end
+        end
+    end
+    return machineWithOutput
 end
 
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)

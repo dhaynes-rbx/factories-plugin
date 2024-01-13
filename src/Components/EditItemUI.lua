@@ -34,10 +34,13 @@ local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 local FormatText = require(script.Parent.Parent.FormatText)
 local TextItem = require(script.Parent.SubComponents.TextItem)
 local Incrementer = require(script.Parent.Parent.Incrementer)
+local InlineThumbnailSelect = require(script.Parent.SubComponents.InlineThumbnailSelect)
+local Types = require(script.Parent.Parent.Types)
+local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 type Props = {
     CurrentMapIndex: number,
     Dataset: table,
-    Item: table,
+    Item: Types.Item,
     OnClosePanel: any,
     OnDeleteRequirementClicked: any,
     ShowEditItemPanel: () -> nil,
@@ -46,14 +49,17 @@ type Props = {
 }
 
 local function EditItemUI(props: Props)
-    local _, setItemId = React.useState(nil)
+    local itemId, setItemId = React.useState(props.Item.id)
+
+    local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
+
     local layoutOrder = Incrementer.new()
     local children = {
         ID = TextItem({
-            Text = "ID: " .. props.Item.id,
+            Text = "ID: " .. item.id,
             LayoutOrder = layoutOrder:Increment(),
             OnActivate = function(input)
-                print(Dash.pretty(props.Item, { multiline = true, indent = "\t", depth = 10 }))
+                print(Dash.pretty(item, { multiline = true, indent = "\t", depth = 10 }))
             end,
         }),
 
@@ -62,7 +68,7 @@ local function EditItemUI(props: Props)
             LayoutOrder = layoutOrder:Increment(),
             Placeholder = "Enter Localized Name",
             Size = UDim2.new(1, 0, 0, 50),
-            Value = props.Item.locName,
+            Value = item.locName,
             --Events
             OnChanged = function(text)
                 local newText = text
@@ -72,13 +78,62 @@ local function EditItemUI(props: Props)
                 end
                 --Check for invalid characters
                 --Auto update ID based on LocName
-                local updated = Dataset:updateItemId(props.Item, FormatText.convertToIdText(newText))
+
+                local updated, newItem = Dataset:updateItemId(item, FormatText.convertToIdText(newText))
                 if updated then
-                    props.Item.locName = newText
-                    setItemId(props.Item.id)
+                    newItem.locName = newText
+                    setItemId(newItem.id)
+                    props.UpdateSelectedItem(newItem)
                     props.UpdateDataset()
                 end
             end,
+        }),
+
+        ThumbnailSelect = InlineThumbnailSelect({
+            Label = "Thumbnail",
+            Thumbnail = item.thumb,
+            OnActivated = function()
+                props.OnClickThumbnail()
+            end,
+        }),
+
+        MinOutput = InlineNumberInput({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Sale Price",
+            OnReset = function() end,
+            OnChanged = function() end,
+            Value = item.value,
+            -- Value = props.Machine.outputRange.min,
+            -- LayoutOrder = layoutOrder:Increment(),
+            -- Label = "Min",
+            -- OnReset = function()
+            --     local defaultOutputRange = {
+            --         min = Constants.Defaults.MachineDefaultOutputRange.min,
+            --         max = props.Machine.outputRange.max,
+            --     }
+            --     Dataset:updateMachineProperty(props.Machine, "outputRange", defaultOutputRange)
+            --     props.UpdateDataset()
+            -- end,
+            -- OnChanged = function(value)
+            --     if not tonumber(value) then
+            --         return
+            --     end
+            --     value = tonumber(value)
+            --     local max = props.Machine.outputRange.max
+            --     -- if value > max then
+            --     --     value = max
+            --     -- end
+            --     local newOutputRange = {
+            --         min = value,
+            --         max = max,
+            --     }
+            --     Dataset:updateMachineProperty(props.Machine, "outputRange", newOutputRange)
+            --     -- if currentOutputCount < value then
+            --     --     Dataset:updateMachineProperty(props.Machine, "currentStartingOutput", value)
+            --     --     setCurrentOutputCount(value)
+            --     -- end
+            --     props.UpdateDataset()
+            -- end,
         }),
     }
 
