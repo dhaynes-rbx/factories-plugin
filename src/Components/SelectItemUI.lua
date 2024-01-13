@@ -89,6 +89,7 @@ local function SelectItemUI(props: Props)
             itemChoices,
             ItemListItem({
                 HideArrows = true,
+                ShowTrashButton = true,
                 Item = item,
                 Label = item.locName,
                 LayoutOrder = layoutOrder:Increment(),
@@ -123,7 +124,7 @@ local function SelectItemUI(props: Props)
                 itemChoices,
                 ItemListItem({
                     HideArrows = true,
-                    HideButtons = true,
+
                     Item = item,
                     Label = item.locName,
                     LayoutOrder = layoutOrder:Increment(),

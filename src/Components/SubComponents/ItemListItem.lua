@@ -35,7 +35,11 @@ type Props = {
 function ItemListItem(props: Props)
     local hovered, setHovered = React.useState(false)
 
+    local showHoverButtons = true
     if props.Unavailable then
+        showHoverButtons = false
+    else
+        showHoverButtons = hovered
     end
 
     return React.createElement("Frame", {
@@ -63,7 +67,7 @@ function ItemListItem(props: Props)
             setHovered(false)
         end,
     }, {
-        HoverButtons = (not props.Unavailable or hovered)
+        HoverButtons = showHoverButtons
             and React.createElement("ImageButton", {
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
@@ -114,6 +118,36 @@ function ItemListItem(props: Props)
                         uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
                     }),
                 }),
+
+                -- trash = props.ShowTrashButton
+                --     and React.createElement("Frame", {
+                --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                --         BackgroundTransparency = 1,
+                --         BorderColor3 = Color3.fromRGB(0, 0, 0),
+                --         BorderSizePixel = 0,
+                --         Size = UDim2.fromOffset(25, 30),
+                --         LayoutOrder = 1,
+                --     }, {
+                --         imageLabel1 = React.createElement("ImageButton", {
+                --             Image = "rbxassetid://15973390234",
+                --             ImageColor3 = Color3.fromRGB(79, 159, 243),
+                --             AnchorPoint = Vector2.new(0.5, 0.5),
+                --             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                --             BackgroundTransparency = 1,
+                --             BorderColor3 = Color3.fromRGB(0, 0, 0),
+                --             BorderSizePixel = 0,
+                --             Position = UDim2.fromScale(0.5, 0.5),
+                --             Size = UDim2.fromOffset(15, 20),
+
+                --             [ReactRoblox.Event.Activated] = function()
+                --                 props.OnClickRemove(props.Item)
+                --             end,
+                --         }, {
+                --             uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint", {
+                --                 AspectRatio = 0.74,
+                --             }),
+                --         }),
+                --     }),
 
                 edit = React.createElement("Frame", {
                     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -205,48 +239,48 @@ function ItemListItem(props: Props)
                 Size = UDim2.fromScale(0, 1),
             }),
 
-            sortArrows = (not props.Unavailable or props.HideArrows)
-                and React.createElement("Frame", {
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    BackgroundTransparency = 1,
-                    BorderColor3 = Color3.fromRGB(0, 0, 0),
-                    BorderSizePixel = 0,
-                    Position = UDim2.fromScale(0, 0.479),
-                    Size = UDim2.new(0, 25, 1, 4),
-                }, {
-                    imageButton = React.createElement("ImageButton", {
-                        Image = "rbxassetid://7901794424",
-                        ImageColor3 = Color3.fromRGB(106, 106, 106),
-                        BackgroundColor3 = Color3.fromRGB(79, 159, 243),
-                        BackgroundTransparency = 1,
-                        BorderColor3 = Color3.fromRGB(0, 0, 0),
-                        BorderSizePixel = 0,
-                        Size = UDim2.fromOffset(20, 20),
-                        [ReactRoblox.Event.Activated] = function()
-                            props.OnClickUp(props.Item, props.LayoutOrder)
-                        end,
-                    }, {
-                        uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint"),
-                    }),
+            -- sortArrows = (not props.Unavailable or props.HideArrows)
+            --     and React.createElement("Frame", {
+            --         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            --         BackgroundTransparency = 1,
+            --         BorderColor3 = Color3.fromRGB(0, 0, 0),
+            --         BorderSizePixel = 0,
+            --         Position = UDim2.fromScale(0, 0.479),
+            --         Size = UDim2.new(0, 25, 1, 4),
+            --     }, {
+            --         imageButton = React.createElement("ImageButton", {
+            --             Image = "rbxassetid://7901794424",
+            --             ImageColor3 = Color3.fromRGB(106, 106, 106),
+            --             BackgroundColor3 = Color3.fromRGB(79, 159, 243),
+            --             BackgroundTransparency = 1,
+            --             BorderColor3 = Color3.fromRGB(0, 0, 0),
+            --             BorderSizePixel = 0,
+            --             Size = UDim2.fromOffset(20, 20),
+            --             [ReactRoblox.Event.Activated] = function()
+            --                 props.OnClickUp(props.Item, props.LayoutOrder)
+            --             end,
+            --         }, {
+            --             uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint"),
+            --         }),
 
-                    imageButton1 = React.createElement("ImageButton", {
-                        Image = "rbxassetid://7901781271",
-                        ImageColor3 = Color3.fromRGB(106, 106, 106),
-                        AnchorPoint = Vector2.new(0, 1),
-                        BackgroundColor3 = Color3.fromRGB(79, 159, 243),
-                        BackgroundTransparency = 1,
-                        BorderColor3 = Color3.fromRGB(0, 0, 0),
-                        BorderSizePixel = 0,
-                        Position = UDim2.fromScale(0, 1),
-                        Size = UDim2.fromOffset(20, 20),
+            --         imageButton1 = React.createElement("ImageButton", {
+            --             Image = "rbxassetid://7901781271",
+            --             ImageColor3 = Color3.fromRGB(106, 106, 106),
+            --             AnchorPoint = Vector2.new(0, 1),
+            --             BackgroundColor3 = Color3.fromRGB(79, 159, 243),
+            --             BackgroundTransparency = 1,
+            --             BorderColor3 = Color3.fromRGB(0, 0, 0),
+            --             BorderSizePixel = 0,
+            --             Position = UDim2.fromScale(0, 1),
+            --             Size = UDim2.fromOffset(20, 20),
 
-                        [ReactRoblox.Event.Activated] = function()
-                            props.OnClickDown(props.Item, props.LayoutOrder)
-                        end,
-                    }, {
-                        uIAspectRatioConstraint2 = React.createElement("UIAspectRatioConstraint"),
-                    }),
-                }),
+            --             [ReactRoblox.Event.Activated] = function()
+            --                 props.OnClickDown(props.Item, props.LayoutOrder)
+            --             end,
+            --         }, {
+            --             uIAspectRatioConstraint2 = React.createElement("UIAspectRatioConstraint"),
+            --         }),
+            --     }),
         }),
     })
 end

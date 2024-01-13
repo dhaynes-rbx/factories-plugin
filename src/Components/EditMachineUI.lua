@@ -122,6 +122,8 @@ local function EditMachineUI(props: Props)
         end
     end
 
+    local gapAmount = 16
+
     local children = {
 
         ID = TextItem({
@@ -156,6 +158,12 @@ local function EditMachineUI(props: Props)
             end,
         }),
 
+        Gap1 = React.createElement("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, gapAmount),
+            LayoutOrder = layoutOrder:Increment(),
+        }),
+
         AddInputMachines = LabeledAddButton({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Input Machines",
@@ -172,6 +180,12 @@ local function EditMachineUI(props: Props)
             LayoutOrder = layoutOrder:Increment(),
         }, machineInputs),
 
+        Gap2 = React.createElement("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, gapAmount),
+            LayoutOrder = layoutOrder:Increment(),
+        }),
+
         AddOutputs = LabeledAddButton({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Outputs (Making)",
@@ -187,6 +201,12 @@ local function EditMachineUI(props: Props)
             Size = UDim2.new(1, 0, 0, 0),
             LayoutOrder = layoutOrder:Increment(),
         }, outputItems),
+
+        Gap3 = React.createElement("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, gapAmount),
+            LayoutOrder = layoutOrder:Increment(),
+        }),
 
         StartingOutput = InlineNumberInput({
             Value = props.Machine.currentOutputCount,
