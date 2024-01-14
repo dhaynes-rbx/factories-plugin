@@ -177,7 +177,7 @@ local function EditItemUI(props: Props)
         EditMachineUI = SidePanel({
             OnClosePanel = props.OnClosePanel,
             ShowClose = true,
-            Title = "Editing Machine",
+            Title = "Editing Item",
         }, children),
     })
 end
