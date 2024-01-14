@@ -37,33 +37,6 @@ local function InlineNumberInput(props: Props)
                     props.OnChanged(value)
                 end,
             }),
-            -- input = React.createElement("TextBox", {
-            --     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-            --     PlaceholderColor3 = Color3.fromRGB(178, 178, 178),
-            --     PlaceholderText = "0",
-            --     Text = "0",
-            --     TextColor3 = Color3.fromRGB(255, 255, 255),
-            --     TextSize = 16,
-            --     TextXAlignment = Enum.TextXAlignment.Right,
-            --     BackgroundTransparency = 1,
-            --     Size = UDim2.fromScale(1, 1),
-            -- }, {
-            --     uICorner = React.createElement("UICorner"),
-            -- }),
-
-            -- uIStroke = React.createElement("UIStroke", {
-            --     Color = Color3.fromRGB(79, 159, 243),
-            --     Thickness = 2,
-            -- }),
-
-            -- uICorner1 = React.createElement("UICorner", {
-            --     CornerRadius = UDim.new(0, 6),
-            -- }),
-
-            -- uIPadding = React.createElement("UIPadding", {
-            --     PaddingLeft = UDim.new(0, 8),
-            --     PaddingRight = UDim.new(0, 8),
-            -- }),
         }),
 
         label = React.createElement("Frame", {
@@ -96,8 +69,6 @@ local function InlineNumberInput(props: Props)
                 [ReactRoblox.Event.Activated] = function()
                     props.OnReset()
                 end,
-            }, {
-                -- uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
             }),
 
             uIListLayout = React.createElement("UIListLayout", {

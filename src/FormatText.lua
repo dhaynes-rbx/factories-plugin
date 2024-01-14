@@ -8,4 +8,12 @@ FormatText.convertToIdText = function(text)
     return idText
 end
 
+FormatText.numbersOnly = function(value)
+    if tonumber(value) then
+        return value
+    else
+        return value:gsub("%D+", "")
+    end
+end
+
 return FormatText

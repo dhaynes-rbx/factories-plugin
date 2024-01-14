@@ -37,6 +37,7 @@ local Incrementer = require(script.Parent.Parent.Incrementer)
 local InlineThumbnailSelect = require(script.Parent.SubComponents.InlineThumbnailSelect)
 local Types = require(script.Parent.Parent.Types)
 local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
+local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 type Props = {
     CurrentMapIndex: number,
     Dataset: table,
@@ -50,8 +51,32 @@ type Props = {
 
 local function EditItemUI(props: Props)
     local itemId, setItemId = React.useState(props.Item.id)
+    local itemCost, setItemCost = React.useState(nil)
+    local itemSalePrice, setItemSalePrice = React.useState(nil)
 
     local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
+    if not itemCost then
+        if item.requirements then
+            for _, requirement: Types.RequirementItem in item.requirements do
+                if requirement.itemId == "currency" then
+                    itemCost = requirement.count
+                end
+            end
+        else
+            item.requirements = {
+                {
+                    itemId = "currency",
+                    count = 0,
+                },
+            }
+        end
+    end
+    if not itemSalePrice then
+        if not item.value then
+            item.value = { itemId = "currency", count = 0 }
+        end
+        itemSalePrice = item.value.count
+    end
 
     local layoutOrder = Incrementer.new()
     local children = {
@@ -96,12 +121,55 @@ local function EditItemUI(props: Props)
             end,
         }),
 
-        MinOutput = InlineNumberInput({
+        SalePrice = InlineNumberInput({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Sale Price",
             OnReset = function() end,
-            OnChanged = function() end,
-            Value = item.value,
+            OnChanged = function(value)
+                value = tonumber(FormatText.numbersOnly(value))
+                if value then
+                    if value == 0 then
+                        item.value = nil
+                    else
+                        item.value = {
+                            itemId = "currency",
+                            count = value,
+                        }
+                    end
+                    setItemSalePrice(value)
+                    props.UpdateDataset()
+                end
+            end,
+            Value = itemSalePrice,
+        }),
+
+        Cost = InlineNumberInput({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Cost",
+            OnReset = function() end,
+            OnChanged = function(value)
+                value = FormatText.numbersOnly(value)
+                if tonumber(value) then
+                    item.requirements = {
+                        {
+                            itemId = "currency",
+                            count = value,
+                        },
+                    }
+                    setItemCost(value)
+                    props.UpdateDataset()
+                end
+            end,
+            Value = itemCost,
+        }),
+
+        AddRequirements = LabeledAddButton({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Requirements",
+
+            OnActivated = function()
+                -- props.OnAddRequirement()
+            end,
         }),
     }
 
