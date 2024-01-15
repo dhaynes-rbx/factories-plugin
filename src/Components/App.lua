@@ -305,9 +305,6 @@ function App:render()
 
                         MachineAnchor = self.state.selectedMachineAnchor,
 
-                        -- AddMachineAnchor = function(machineObj)
-                        --     Scene.addMachineAnchor(machineObj)
-                        -- end,
                         OnClosePanel = function()
                             Selection:Set({})
                             self:showPreviousPanel()
@@ -328,25 +325,6 @@ function App:render()
                             end
                             self:setState({ highlightedMachineAnchor = anchor })
                         end,
-                        -- OnDeleteButtonClicked = function(title, callback)
-                        --     self:setState({
-                        --         showModal = true,
-                        --         modalConfirmationCallback = function()
-                        --             self:setState({ showModal = false })
-                        --             callback()
-                        --         end,
-                        --         modalCancellationCallback = function()
-                        --             self:setState({ showModal = false })
-                        --         end,
-                        --         modalTitle = title,
-                        --     })
-                        -- end,
-                        -- OnOutputItemEditClicked = function(itemKey)
-                        --     self:changePanel(Panels.EditItemUI)
-                        --     self:setState({
-                        --         selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                        --     })
-                        -- end,
                         UpdateDataset = function()
                             self:updateDataset(self.state.dataset)
                         end,
@@ -406,40 +384,6 @@ function App:render()
                         self:updateDataset(self.state.dataset)
                     end,
                 }),
-
-                -- EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
-                --     and EditItemsListUI({
-                --         CurrentMapIndex = self.state.currentMapIndex,
-                --         Items = Dataset:getValidItems(false),
-
-                --         ShowEditItemPanel = function(itemKey)
-                --             self:changePanel(Panels.EditItemUI)
-                --             self:setState({
-                --                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                --             })
-                --         end,
-                --         OnClosePanel = function()
-                --             self:showPreviousPanel()
-                --         end,
-                --         UpdateDataset = function()
-                --             self:updateDataset(self.state.dataset)
-                --         end,
-                --         OnItemDeleteClicked = function(itemKey)
-                --             self:setState({
-                --                 showModal = true,
-                --                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                --                 modalConfirmationCallback = function()
-                --                     Dataset:removeItem(itemKey)
-                --                     self:setState({ showModal = false })
-                --                     self:updateDataset(self.state.dataset)
-                --                 end,
-                --                 modalCancellationCallback = function()
-                --                     self:setState({ showModal = false })
-                --                 end,
-                --                 modalTitle = "Do you want to remove " .. itemKey .. " from the dataset?",
-                --             })
-                --         end,
-                --     }),
 
                 EditItemUI = self.state.currentPanel == Panels.EditItemUI
                     and EditItemUI({

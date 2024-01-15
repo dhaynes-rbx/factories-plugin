@@ -5,32 +5,18 @@ local React = require(Packages.React)
 local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Dash = require(Packages.Dash)
-local Block = FishBloxComponents.Block
-local Row = FishBloxComponents.Row
-local Button = FishBloxComponents.Button
-local Column = FishBloxComponents.Column
-local Gap = FishBloxComponents.Gap
-local Panel = FishBloxComponents.Panel
-local Text = FishBloxComponents.Text
-local TextInput = FishBloxComponents.TextInput
 
-local TextInputModal = require(script.Parent.Modals.TextInputModal)
-local SmallButtonWithLabel = require(script.Parent.SubComponents.SmallButtonWithLabel)
-local SmallLabel = require(script.Parent.SubComponents.SmallLabel)
 local SidePanel = require(script.Parent.SubComponents.SidePanel)
-local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 local Manifest = require(script.Parent.Parent.Manifest)
 local Types = require(script.Parent.Parent.Types)
-local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local Incrementer = require(script.Parent.Parent.Incrementer)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 
-local layoutOrder = Incrementer.new()
 type Props = {
     Items: any,
     OnlyShowAvailableItems: boolean,
@@ -100,7 +86,6 @@ local function SelectItemUI(props: Props)
                 Label = item.locName,
                 LayoutOrder = layoutOrder:Increment(),
                 Thumbnail = item.thumb,
-                -- Unavailable = false,
 
                 OnClickEdit = function(itemToEdit: Types.Item)
                     props.OnClickEditItem(itemToEdit)
@@ -152,31 +137,6 @@ local function SelectItemUI(props: Props)
             )
         end
     end
-
-    -- table.insert(
-    --     itemChoices,
-    --     ItemListItem({
-    --         HideArrows = true,
-    --         Item = item,
-    --         Label = item.locName,
-    --         LayoutOrder = layoutOrder:Increment(),
-    --         Thumbnail = item.thumb,
-    --         Unavailable = unavailable,
-
-    --         OnClickEdit = not unavailable and function(itemToEdit: Types.Item)
-    --             props.OnClickEditItem(itemToEdit)
-    --         end,
-    --         OnClickRemove = not unavailable and function(itemToRemove)
-    --             Dataset:removeItem(itemToRemove.id)
-    --             props.UpdateDataset()
-    --         end,
-    --         OnActivated = not unavailable and function(itemChosen: Types.Item)
-    --             Dataset:addOutputToMachine(props.SelectedMachine, itemChosen)
-    --             props.UpdateDataset()
-    --             props.OnClosePanel()
-    --         end,
-    --     })
-    -- )
 
     scrollingFrameChildren = Dash.join(scrollingFrameChildren, itemChoices)
 
