@@ -33,6 +33,7 @@ local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local layoutOrder = Incrementer.new()
 type Props = {
     Items: any,
+    OnlyShowAvailableItems: boolean,
     OnClosePanel: () -> nil,
     OnChooseItem: (Types.Item) -> nil,
     OnClickEdit: (Types.Item) -> nil,
@@ -59,26 +60,31 @@ local function SelectItemUI(props: Props)
         }),
     }
 
-    local itemChoices = {}
+    --Sort all items by locName.
     local sortedItemKeys = Dash.keys(props.Items)
     table.sort(sortedItemKeys, function(a, b)
         return props.Items[a].locName:lower() < props.Items[b].locName:lower()
     end)
+
+    local itemChoices = {}
     --Check the unused items. Change the visual appearance based on whether or not the item is available to be used.
-    local availableItemKeys = Dash.keys(Dataset:getValidItems(true))
+    local availableItemKeys = Dash.keys(Dataset:getValidItems(props.OnlyShowAvailableItems))
     local unavailableItemKeys = {}
-    for i, itemKey in sortedItemKeys do
-        local item = props.Items[itemKey]
-        local unavailable = true
-        for _, availableItem in availableItemKeys do
-            if availableItem.id == item.id then
-                unavailable = false
+    if not props.OnlyShowAvailableItems then
+        for i, itemKey in sortedItemKeys do
+            local item = props.Items[itemKey]
+            local unavailable = true
+            for _, availableItem in availableItemKeys do
+                if availableItem.id == item.id then
+                    unavailable = false
+                end
+            end
+            if unavailable then
+                table.insert(unavailableItemKeys, item.id)
             end
         end
-        if unavailable then
-            table.insert(unavailableItemKeys, item.id)
-        end
     end
+
     for _, key in availableItemKeys do
         local item = props.Items[key]
         if key == "currency" or key == "none" then
@@ -108,9 +114,14 @@ local function SelectItemUI(props: Props)
                     props.UpdateDataset()
                     props.OnClosePanel()
                 end,
+                OnHover = function(anchor)
+                    props.OnHover(anchor)
+                end,
             })
         )
     end
+
+    --unavailableItemKeys will be empty of props.OnlyShowAvailableItems is true.
     for _, key in unavailableItemKeys do
         local item = props.Items[key]
         local skip = false

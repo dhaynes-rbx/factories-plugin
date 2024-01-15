@@ -22,7 +22,7 @@ local TextInput = FishBloxComponents.TextInput
 
 local EditDatasetUI = require(script.Parent.EditDatasetUI)
 local EditFactoryUI = require(script.Parent.EditFactoryUI)
-local EditItemsListUI = require(script.Parent.EditItemsListUI)
+-- local EditItemsListUI = require(script.Parent.EditItemsListUI)
 local EditItemUI = require(script.Parent.EditItemUI)
 local EditMachineUI = require(script.Parent.EditMachineUI)
 local ConfirmationModal = require(script.Parent.Modals.ConfirmationModal)
@@ -237,7 +237,7 @@ function App:render()
                         end,
 
                         ShowEditItemsListUI = function()
-                            self:changePanel(Panels.EditItemsListUI)
+                            self:changePanel(Panels.SelectItemUI)
                         end,
 
                         ExportDataset = function()
@@ -355,7 +355,7 @@ function App:render()
                 SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI
                     and SelectMachineUI({
                         Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
-                        SelectedMachine = self.state.selectedMachine,
+                        OnlyShowAvailableItems = self.state.selectedMachine and true or false,
 
                         OnClosePanel = function()
                             self:showPreviousPanel()
@@ -381,8 +381,6 @@ function App:render()
 
                 SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
                     Items = Dataset:getValidItems(false),
-                    -- Items = self.state.dataset.maps[self.state.currentMapIndex].items,
-                    SelectedMachine = self.state.selectedMachine,
 
                     OnChooseItem = function(item: Types.Item)
                         if not item then
@@ -409,39 +407,39 @@ function App:render()
                     end,
                 }),
 
-                EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
-                    and EditItemsListUI({
-                        CurrentMapIndex = self.state.currentMapIndex,
-                        Items = Dataset:getValidItems(false),
+                -- EditItemsListUI = self.state.currentPanel == Panels.EditItemsListUI
+                --     and EditItemsListUI({
+                --         CurrentMapIndex = self.state.currentMapIndex,
+                --         Items = Dataset:getValidItems(false),
 
-                        ShowEditItemPanel = function(itemKey)
-                            self:changePanel(Panels.EditItemUI)
-                            self:setState({
-                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                            })
-                        end,
-                        OnClosePanel = function()
-                            self:showPreviousPanel()
-                        end,
-                        UpdateDataset = function()
-                            self:updateDataset(self.state.dataset)
-                        end,
-                        OnItemDeleteClicked = function(itemKey)
-                            self:setState({
-                                showModal = true,
-                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                                modalConfirmationCallback = function()
-                                    Dataset:removeItem(itemKey)
-                                    self:setState({ showModal = false })
-                                    self:updateDataset(self.state.dataset)
-                                end,
-                                modalCancellationCallback = function()
-                                    self:setState({ showModal = false })
-                                end,
-                                modalTitle = "Do you want to remove " .. itemKey .. " from the dataset?",
-                            })
-                        end,
-                    }),
+                --         ShowEditItemPanel = function(itemKey)
+                --             self:changePanel(Panels.EditItemUI)
+                --             self:setState({
+                --                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                --             })
+                --         end,
+                --         OnClosePanel = function()
+                --             self:showPreviousPanel()
+                --         end,
+                --         UpdateDataset = function()
+                --             self:updateDataset(self.state.dataset)
+                --         end,
+                --         OnItemDeleteClicked = function(itemKey)
+                --             self:setState({
+                --                 showModal = true,
+                --                 selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
+                --                 modalConfirmationCallback = function()
+                --                     Dataset:removeItem(itemKey)
+                --                     self:setState({ showModal = false })
+                --                     self:updateDataset(self.state.dataset)
+                --                 end,
+                --                 modalCancellationCallback = function()
+                --                     self:setState({ showModal = false })
+                --                 end,
+                --                 modalTitle = "Do you want to remove " .. itemKey .. " from the dataset?",
+                --             })
+                --         end,
+                --     }),
 
                 EditItemUI = self.state.currentPanel == Panels.EditItemUI
                     and EditItemUI({
