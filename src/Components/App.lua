@@ -115,6 +115,7 @@ function App:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
+        choosingRequirementItem = false,
         datasetError = Dataset:checkForErrors(),
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
@@ -236,9 +237,9 @@ function App:render()
                             self:changePanel(Panels.EditFactoryUI)
                         end,
 
-                        ShowEditItemsListUI = function()
-                            self:changePanel(Panels.SelectItemUI)
-                        end,
+                        -- ShowEditItemsListUI = function()
+                        --     self:changePanel(Panels.SelectItemUI)
+                        -- end,
 
                         ExportDataset = function()
                             DatasetInstance.write(self.state.dataset)
@@ -307,6 +308,10 @@ function App:render()
 
                         OnClosePanel = function()
                             Selection:Set({})
+                            self:setState({
+                                selectedMachine = React.None,
+                                selectedItem = React.None,
+                            })
                             self:showPreviousPanel()
                         end,
                         OnAddInputMachine = function()
@@ -359,6 +364,8 @@ function App:render()
 
                 SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
                     Items = Dataset:getValidItems(false),
+                    SelectedMachine = self.state.selectedMachine,
+                    SelectedItem = self.state.selectedItem,
 
                     OnChooseItem = function(item: Types.Item)
                         if not item then
@@ -385,47 +392,44 @@ function App:render()
                     end,
                 }),
 
-                EditItemUI = self.state.currentPanel == Panels.EditItemUI
-                    and EditItemUI({
-                        CurrentMapIndex = self.state.currentMapIndex,
-                        Dataset = self.state.dataset,
-                        Item = self.state.selectedItem,
+                EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
+                    CurrentMapIndex = self.state.currentMapIndex,
+                    Dataset = self.state.dataset,
+                    Item = self.state.selectedItem,
 
-                        OnClosePanel = function()
-                            self:setState({ selectedItem = nil })
-                            self:showPreviousPanel()
-                        end,
-                        OnDeleteRequirementClicked = function(title, callback)
-                            self:setState({
-                                showModal = true,
-                                modalConfirmationCallback = function()
-                                    callback()
-                                    self:setState({
-                                        showModal = false,
-                                    })
-                                end,
-                                modalCancellationCallback = function()
-                                    self:setState({ showModal = false })
-                                end,
-                                modalTitle = title,
-                            })
-                        end,
-                        ShowEditItemPanel = function(itemKey)
-                            self:changePanel(Panels.EditItemUI)
-                            self:setState({
-                                selectedItem = self.state.dataset["maps"][self.state.currentMapIndex]["items"][itemKey],
-                            })
-                        end,
-                        OnClickThumbnail = function()
-                            self:changePanel(Panels.SelectThumbnailUI)
-                        end,
-                        UpdateSelectedItem = function(item: Types.Item)
-                            self:setState({ selectedItem = item })
-                        end,
-                        UpdateDataset = function()
-                            self:updateDataset(self.state.dataset)
-                        end,
-                    }),
+                    OnAddRequirement = function(item: Types.Item)
+                        self:changePanel(Panels.SelectItem)
+                    end,
+                    OnClosePanel = function()
+                        self:setState({ selectedItem = React.None })
+                        self:showPreviousPanel()
+                    end,
+                    OnDeleteRequirementClicked = function(title, callback)
+                        self:setState({
+                            showModal = true,
+                            modalConfirmationCallback = function()
+                                callback()
+                                self:setState({
+                                    showModal = false,
+                                })
+                            end,
+                            modalCancellationCallback = function()
+                                self:setState({ showModal = false })
+                            end,
+                            modalTitle = title,
+                        })
+                    end,
+
+                    OnClickThumbnail = function()
+                        self:changePanel(Panels.SelectThumbnailUI)
+                    end,
+                    SetNewItemAsSelectedItem = function(item: Types.Item)
+                        self:setState({ selectedItem = item })
+                    end,
+                    UpdateDataset = function()
+                        self:updateDataset(self.state.dataset)
+                    end,
+                }),
                 SelectThumbnailUI = self.state.currentPanel == Panels.SelectThumbnailUI and SelectThumbnailUI({
                     OnClosePanel = function()
                         self:showPreviousPanel()
@@ -475,6 +479,7 @@ function App:render()
                         self:setState({
                             selectedMachineAnchor = nil,
                             selectedMachine = nil,
+                            selectedItem = nil,
                         })
                         self:changePanel(Panels.EditDatasetUI)
                     end,

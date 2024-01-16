@@ -19,7 +19,8 @@ local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 
 type Props = {
     Items: any,
-    OnlyShowAvailableItems: boolean,
+    SelectedItem: Types.Item,
+    SelectedMachine: Types.Machine,
     OnClosePanel: () -> nil,
     OnChooseItem: (Types.Item) -> nil,
     OnClickEdit: (Types.Item) -> nil,
@@ -54,20 +55,18 @@ local function SelectItemUI(props: Props)
 
     local itemChoices = {}
     --Check the unused items. Change the visual appearance based on whether or not the item is available to be used.
-    local availableItemKeys = Dash.keys(Dataset:getValidItems(props.OnlyShowAvailableItems))
+    local availableItemKeys = Dash.keys(Dataset:getValidItems(true))
     local unavailableItemKeys = {}
-    if not props.OnlyShowAvailableItems then
-        for i, itemKey in sortedItemKeys do
-            local item = props.Items[itemKey]
-            local unavailable = true
-            for _, availableItem in availableItemKeys do
-                if availableItem.id == item.id then
-                    unavailable = false
-                end
+    for i, itemKey in sortedItemKeys do
+        local item = props.Items[itemKey]
+        local unavailable = true
+        for _, availableItem in availableItemKeys do
+            if availableItem.id == item.id then
+                unavailable = false
             end
-            if unavailable then
-                table.insert(unavailableItemKeys, item.id)
-            end
+        end
+        if unavailable then
+            table.insert(unavailableItemKeys, item.id)
         end
     end
 
@@ -95,8 +94,7 @@ local function SelectItemUI(props: Props)
                     props.UpdateDataset()
                 end,
                 OnActivated = function(itemChosen: Types.Item)
-                    Dataset:addOutputToMachine(props.SelectedMachine, itemChosen)
-                    props.UpdateDataset()
+                    props.OnClickItem(itemChosen)
                     props.OnClosePanel()
                 end,
                 OnHover = function(anchor)

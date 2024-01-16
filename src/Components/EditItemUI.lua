@@ -38,14 +38,15 @@ local InlineThumbnailSelect = require(script.Parent.SubComponents.InlineThumbnai
 local Types = require(script.Parent.Parent.Types)
 local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
+local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 type Props = {
     CurrentMapIndex: number,
     Dataset: table,
     Item: Types.Item,
     OnClosePanel: any,
     OnDeleteRequirementClicked: any,
-    ShowEditItemPanel: () -> nil,
     OnClickThumbnail: () -> nil,
+    SetNewItemAsSelectedItem: (Types.Item) -> nil,
     UpdateDataset: () -> nil,
 }
 
@@ -53,6 +54,9 @@ local function EditItemUI(props: Props)
     local itemId, setItemId = React.useState(props.Item.id)
     local itemCost, setItemCost = React.useState(nil)
     local itemSalePrice, setItemSalePrice = React.useState(nil)
+
+    local layoutOrder = Incrementer.new()
+    local items = Dataset:getValidItems(false)
 
     local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
     if not itemCost then
@@ -78,7 +82,32 @@ local function EditItemUI(props: Props)
         itemSalePrice = item.value.count
     end
 
-    local layoutOrder = Incrementer.new()
+    local requirementItems = {}
+    if item.requirements then
+        for _, requirement in item.requirements do
+            if requirement.itemId == "currency" or requirement.itemId == "none" then
+                continue
+            end
+            local requirementItem = items[requirement.itemId]
+            table.insert(
+                requirementItems,
+                ItemListItem({
+                    HideArrows = true,
+                    Item = requirementItem,
+                    Label = requirementItem.locName,
+                    LayoutOrder = layoutOrder:Increment(),
+                    Thumbnail = requirementItem.thumb,
+                    OnActivated = function() end,
+                    OnClickUp = function() end,
+                    OnClickDown = function() end,
+                    OnClickEdit = function() end,
+                    OnClickRemove = function() end,
+                    OnHover = function() end,
+                })
+            )
+        end
+    end
+
     local children = {
         ID = TextItem({
             Text = "ID: " .. item.id,
@@ -94,7 +123,7 @@ local function EditItemUI(props: Props)
             Placeholder = "Enter Localized Name",
             Size = UDim2.new(1, 0, 0, 50),
             Value = item.locName,
-            --Events
+
             OnChanged = function(text)
                 local newText = text
                 --prevent the id from being empty
@@ -107,7 +136,7 @@ local function EditItemUI(props: Props)
                 if updated then
                     newItem.locName = newText
                     setItemId(newItem.id)
-                    props.UpdateSelectedItem(newItem)
+                    props.SetNewItemAsSelectedItem(newItem)
                     props.UpdateDataset()
                 end
             end,
@@ -124,6 +153,8 @@ local function EditItemUI(props: Props)
         SalePrice = InlineNumberInput({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Sale Price",
+            Value = itemSalePrice,
+
             OnReset = function() end,
             OnChanged = function(value)
                 value = tonumber(FormatText.numbersOnly(value))
@@ -140,12 +171,13 @@ local function EditItemUI(props: Props)
                     props.UpdateDataset()
                 end
             end,
-            Value = itemSalePrice,
         }),
 
         Cost = InlineNumberInput({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Cost",
+            Value = itemCost,
+
             OnReset = function() end,
             OnChanged = function(value)
                 value = FormatText.numbersOnly(value)
@@ -160,7 +192,6 @@ local function EditItemUI(props: Props)
                     props.UpdateDataset()
                 end
             end,
-            Value = itemCost,
         }),
 
         AddRequirements = LabeledAddButton({
@@ -168,9 +199,16 @@ local function EditItemUI(props: Props)
             Label = "Requirements",
 
             OnActivated = function()
-                -- props.OnAddRequirement()
+                props.OnAddRequirement()
             end,
         }),
+
+        RequirementItems = Column({
+            Gaps = 8,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(1, 0, 0, 0),
+            LayoutOrder = layoutOrder:Increment(),
+        }, requirementItems),
     }
 
     return React.createElement(React.Fragment, {}, {
