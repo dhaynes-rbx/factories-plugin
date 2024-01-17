@@ -56,6 +56,9 @@ function App:setPanel()
 end
 
 function App:changePanel(panelId)
+    if not panelId then
+        warn("Trying to show a panel that does not exist!")
+    end
     Studio.setSelectionTool()
     if panelId == self.state.panelStack[#self.state.panelStack] then
         return
@@ -318,7 +321,7 @@ function App:render()
                             self:changePanel(Panels.SelectMachineUI)
                         end,
                         OnAddOutput = function(machine: Types.Machine)
-                            self:changePanel(Panels.SelectItemUI)
+                            self:changePanel(Panels.SelectOutputItemUI)
                         end,
                         OnClickEditItem = function(item: Types.Item)
                             self:setState({ selectedItem = item })
@@ -338,7 +341,7 @@ function App:render()
                 SelectMachineUI = self.state.currentPanel == Panels.SelectMachineUI
                     and SelectMachineUI({
                         Machines = self.state.dataset.maps[self.state.currentMapIndex].machines,
-                        OnlyShowAvailableItems = self.state.selectedMachine and true or false,
+                        SelectedMachine = self.state.selectedMachine,
 
                         OnClosePanel = function()
                             self:showPreviousPanel()
@@ -362,21 +365,25 @@ function App:render()
                         end,
                     }),
 
-                SelectItemUI = self.state.currentPanel == Panels.SelectItemUI and SelectItemUI({
+                SelectOutputItemUI = self.state.currentPanel == Panels.SelectOutputItemUI and SelectItemUI({
+                    Title = "Select Output Item",
                     Items = Dataset:getValidItems(false),
                     SelectedMachine = self.state.selectedMachine,
                     SelectedItem = self.state.selectedItem,
 
-                    OnChooseItem = function(item: Types.Item)
-                        if not item then
-                            item = React.None
-                        end
-                        self:setState({ selectedItem = item })
-                        self:showPreviousPanel()
-                    end,
                     OnClickEditItem = function(item: Types.Item)
                         self:setState({ selectedItem = item })
                         self:changePanel(Panels.EditItemUI)
+                    end,
+                    OnChooseItem = function(item: Types.Item)
+                        if self.state.selectedMachine then
+                            Dataset:addOutputToMachine(self.state.selectedMachine, item)
+                            self:updateDataset(self.state.dataset)
+                            self:showPreviousPanel()
+                        else
+                            print("Cannot add output item. No machine selected.")
+                        end
+                        self:showPreviousPanel()
                     end,
                     OnClosePanel = function()
                         self:showPreviousPanel()
@@ -392,13 +399,34 @@ function App:render()
                     end,
                 }),
 
+                SelectRequirementItemUI = self.state.currentPanel == Panels.SelectRequirementItemUI and SelectItemUI({
+                    Title = "Select Requirement Item",
+                    Items = self.state.dataset.maps[self.state.currentMapIndex].items,
+                    SelectedMachine = nil,
+                    SelectedItem = nil,
+
+                    OnChooseItem = function(item: Types.Item)
+                        print("Chosen")
+                        Dataset:addRequirementToItem(self.state.selectedItem, item)
+                        self:updateDataset(self.state.dataset)
+                    end,
+                    OnClosePanel = function()
+                        self:showPreviousPanel()
+                    end,
+                    OnHover = function() end,
+                    UpdateDataset = function()
+                        self:updateDataset(self.state.dataset)
+                    end,
+                }),
+
                 EditItemUI = self.state.currentPanel == Panels.EditItemUI and EditItemUI({
                     CurrentMapIndex = self.state.currentMapIndex,
                     Dataset = self.state.dataset,
                     Item = self.state.selectedItem,
 
                     OnAddRequirement = function(item: Types.Item)
-                        self:changePanel(Panels.SelectItem)
+                        self:setState({ selectedItem = item })
+                        self:changePanel(Panels.SelectRequirementItemUI)
                     end,
                     OnClosePanel = function()
                         self:setState({ selectedItem = React.None })

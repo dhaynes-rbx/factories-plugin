@@ -7,7 +7,8 @@ return {
         EditPowerupUI = "Edit Powerup",
         SelectThumbnailUI = "Select Thumbnail",
         SelectMachineUI = "Select Machine",
-        SelectItemUI = "Select Item",
+        SelectOutputItemUI = "Select Item",
+        SelectRequirementItemUI = "Select Requirement Item",
     },
     MachineTypes = {
         maker = "maker",

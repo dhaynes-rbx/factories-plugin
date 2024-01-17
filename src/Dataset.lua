@@ -14,7 +14,9 @@ Dataset.currentMap = {}
 Dataset.items = {}
 Dataset.machines = {}
 
-local function cleanMachines(machines: table, items: table)
+function Dataset:cleanMachines()
+    local machines = self.machines
+    local items = self.items
     --Clean the machine sources, make sure that it is nil if there are no source ids. We do this because machines in Factories, "sources" might == nil.
     for _, machine in machines do
         if machine["sources"] and #machine["sources"] == 0 then
@@ -56,6 +58,25 @@ local function cleanMachines(machines: table, items: table)
     end
 end
 
+function Dataset:cleanItems()
+    local items = self.items
+    for _, item in items do
+        --If there's more than one requirement, make sure one of them isn't "currency". If so this should be removed. You can't require currency AND another item.
+        if item.requirements and #item.requirements > 1 then
+            local indexToRemove = nil
+            for i, requirement in item.requirements do
+                if requirement.itemId == "currency" then
+                    indexToRemove = i
+                    print("Removing requirement", requirement.itemId, "at", i)
+                end
+            end
+            if indexToRemove then
+                table.remove(item.requirements, indexToRemove)
+            end
+        end
+    end
+end
+
 function Dataset:checkForErrors()
     local datasetError = Constants.Errors.None
     --Check for duplicate IDs
@@ -79,13 +100,16 @@ end
 function Dataset:updateDataset(dataset, currentMapIndex)
     assert(dataset, "Dataset error! Dataset is nil!")
 
+    print("Updating dataset...")
+
     DatasetInstance.write(dataset)
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
     self.machines = self.currentMap["machines"]
 
-    cleanMachines(self.machines, self.items)
+    self:cleanMachines()
+    self:cleanItems()
 end
 
 --TODO: Remove?
@@ -234,6 +258,27 @@ function Dataset:updateItemId(itemToUpdate: Types.Item, newId: string)
     --     end
     -- end
     return true, newItem
+end
+
+function Dataset:addRequirementToItem(itemToUpdate: Types.Item, requirementItem: Types.Item)
+    print("Adding", requirementItem.id, "to", itemToUpdate.id, "as a requirement")
+    local skip = false
+    if itemToUpdate.requirements then
+        for _, requirement in itemToUpdate.requirements do
+            if requirement.itemId == requirementItem.id then
+                skip = true
+            end
+        end
+        if skip then
+            print("Item already exists as a requirement. Skipping")
+            return
+        else
+            table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
+        end
+    else
+        itemToUpdate.requirements = {}
+        table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
+    end
 end
 
 --Returns items, minus the currency and none items

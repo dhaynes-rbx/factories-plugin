@@ -46,6 +46,7 @@ type Props = {
     OnClosePanel: any,
     OnDeleteRequirementClicked: any,
     OnClickThumbnail: () -> nil,
+    OnAddRequirement: (Types.Item) -> nil,
     SetNewItemAsSelectedItem: (Types.Item) -> nil,
     UpdateDataset: () -> nil,
 }
@@ -57,8 +58,8 @@ local function EditItemUI(props: Props)
 
     local layoutOrder = Incrementer.new()
     local items = Dataset:getValidItems(false)
-
     local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
+
     if not itemCost then
         if item.requirements then
             for _, requirement: Types.RequirementItem in item.requirements do
@@ -199,7 +200,8 @@ local function EditItemUI(props: Props)
             Label = "Requirements",
 
             OnActivated = function()
-                props.OnAddRequirement()
+                print("Add")
+                props.OnAddRequirement(item)
             end,
         }),
 

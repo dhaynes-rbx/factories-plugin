@@ -18,6 +18,7 @@ local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 
 type Props = {
+    Title: string,
     Items: any,
     SelectedItem: Types.Item,
     SelectedMachine: Types.Machine,
@@ -94,8 +95,7 @@ local function SelectItemUI(props: Props)
                     props.UpdateDataset()
                 end,
                 OnActivated = function(itemChosen: Types.Item)
-                    props.OnClickItem(itemChosen)
-                    props.OnClosePanel()
+                    props.OnChooseItem(itemChosen)
                 end,
                 OnHover = function(anchor)
                     props.OnHover(anchor)
@@ -177,7 +177,7 @@ local function SelectItemUI(props: Props)
     return React.createElement(React.Fragment, nil, {
         SidePanel({
             Gaps = 12,
-            Title = "Select Item",
+            Title = props.Title,
             ShowClose = true,
             OnClosePanel = props.OnClosePanel,
         }, children),
