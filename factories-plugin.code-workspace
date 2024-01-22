@@ -16,6 +16,7 @@
         "robloxLsp.intelliSense.searchDepth": 50,
         "robloxLsp.completion.displayContext": 50,
         "robloxLsp.typeChecking.showFullType": true,
-        "robloxLsp.workspace.rojoProjectFile": "default"
+        "robloxLsp.workspace.rojoProjectFile": "default",
+        "stylua.targetReleaseVersion": "latest"
 	}
 }
