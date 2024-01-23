@@ -261,7 +261,10 @@ function Dataset:updateItemId(itemToUpdate: Types.Item, newId: string)
 end
 
 function Dataset:addRequirementToItem(itemToUpdate: Types.Item, requirementItem: Types.Item)
-    print("Adding", requirementItem.id, "to", itemToUpdate.id, "as a requirement")
+    if itemToUpdate.id == requirementItem.id then
+        print("You cannot add an item to itself as a requirement. Skipping")
+        return
+    end
     local skip = false
     if itemToUpdate.requirements then
         for _, requirement in itemToUpdate.requirements do
@@ -273,12 +276,34 @@ function Dataset:addRequirementToItem(itemToUpdate: Types.Item, requirementItem:
             print("Item already exists as a requirement. Skipping")
             return
         else
+            print("Adding", requirementItem.id, "to", itemToUpdate.id, "as a requirement")
             table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
         end
     else
         itemToUpdate.requirements = {}
         table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
     end
+end
+
+function Dataset:removeRequirementFromItem(itemToUpdate: Types.Item, requirementId: string)
+    local requirementItem = self.items[requirementId]
+    if not requirementItem then
+        print("Requirement id ", requirementId, "does not have a corresponding item!")
+        return
+    end
+    if not itemToUpdate.requirements or #itemToUpdate.requirements == 0 then
+        print("Error! Item has no requirements!")
+        return
+    end
+    local indexToRemove = 0
+    for i, requirement in ipairs(itemToUpdate.requirements) do
+        if requirement.itemId == requirementId then
+            indexToRemove = i
+            print("Index to remove:", indexToRemove)
+        end
+    end
+    table.remove(itemToUpdate.requirements, indexToRemove)
+    print("Result:", itemToUpdate.requirements)
 end
 
 --Returns items, minus the currency and none items

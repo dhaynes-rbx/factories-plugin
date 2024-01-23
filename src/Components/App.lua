@@ -370,6 +370,7 @@ function App:render()
                     Items = Dataset:getValidItems(false),
                     SelectedMachine = self.state.selectedMachine,
                     SelectedItem = self.state.selectedItem,
+                    ShowAsListOfRequirements = false,
 
                     OnClickEditItem = function(item: Types.Item)
                         self:setState({ selectedItem = item })
@@ -402,13 +403,17 @@ function App:render()
                 SelectRequirementItemUI = self.state.currentPanel == Panels.SelectRequirementItemUI and SelectItemUI({
                     Title = "Select Requirement Item",
                     Items = self.state.dataset.maps[self.state.currentMapIndex].items,
-                    SelectedMachine = nil,
-                    SelectedItem = nil,
+                    -- SelectedMachine = nil,
+                    -- SelectedItem = nil,
+                    HideEditButtons = true,
+                    HideDeleteButtons = true,
+                    ShowAsListOfRequirements = true,
 
                     OnChooseItem = function(item: Types.Item)
                         print("Chosen")
                         Dataset:addRequirementToItem(self.state.selectedItem, item)
                         self:updateDataset(self.state.dataset)
+                        self:showPreviousPanel()
                     end,
                     OnClosePanel = function()
                         self:showPreviousPanel()

@@ -55,6 +55,8 @@ local function EditItemUI(props: Props)
     local itemId, setItemId = React.useState(props.Item.id)
     local itemCost, setItemCost = React.useState(nil)
     local itemSalePrice, setItemSalePrice = React.useState(nil)
+    local numRequirements, setNumRequirements =
+        React.useState(props.Item.requirements and #props.Item.requirements or 0)
 
     local layoutOrder = Incrementer.new()
     local items = Dataset:getValidItems(false)
@@ -84,6 +86,7 @@ local function EditItemUI(props: Props)
     end
 
     local requirementItems = {}
+
     if item.requirements then
         for _, requirement in item.requirements do
             if requirement.itemId == "currency" or requirement.itemId == "none" then
@@ -94,6 +97,7 @@ local function EditItemUI(props: Props)
                 requirementItems,
                 ItemListItem({
                     HideArrows = true,
+                    HideEditButton = true,
                     Item = requirementItem,
                     Label = requirementItem.locName,
                     LayoutOrder = layoutOrder:Increment(),
@@ -102,7 +106,12 @@ local function EditItemUI(props: Props)
                     OnClickUp = function() end,
                     OnClickDown = function() end,
                     OnClickEdit = function() end,
-                    OnClickRemove = function() end,
+                    OnClickRemove = function()
+                        Dataset:removeRequirementFromItem(item, requirement.itemId)
+                        setNumRequirements(#item.requirements)
+                        print(#item.requirements)
+                        props.UpdateDataset()
+                    end,
                     OnHover = function() end,
                 })
             )

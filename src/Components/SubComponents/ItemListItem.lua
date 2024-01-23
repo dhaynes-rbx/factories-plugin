@@ -19,6 +19,8 @@ local FishBloxComponents = FishBlox.Components
 
 type Props = {
     HideArrows: boolean,
+    HideEditButton: boolean,
+    HideDeleteButton: boolean,
     Item: Types.Item,
     Label: string,
     LayoutOrder: number,
@@ -92,7 +94,7 @@ function ItemListItem(props: Props)
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                 }),
 
-                delete = React.createElement("Frame", {
+                delete = not props.HideDeleteButton and React.createElement("Frame", {
                     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BackgroundTransparency = 1,
                     BorderColor3 = Color3.fromRGB(0, 0, 0),
@@ -149,34 +151,35 @@ function ItemListItem(props: Props)
                 --         }),
                 --     }),
 
-                edit = React.createElement("Frame", {
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    BackgroundTransparency = 1,
-                    BorderColor3 = Color3.fromRGB(0, 0, 0),
-                    BorderSizePixel = 0,
-                    Size = UDim2.fromOffset(25, 30),
-                    LayoutOrder = 1,
-                }, {
-                    imageLabel1 = React.createElement("ImageButton", {
-                        Image = "rbxassetid://15627733392",
-                        ImageColor3 = Color3.fromRGB(79, 159, 243),
-                        AnchorPoint = Vector2.new(0.5, 0.5),
+                edit = not props.HideEditButton
+                    and React.createElement("Frame", {
                         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                         BackgroundTransparency = 1,
                         BorderColor3 = Color3.fromRGB(0, 0, 0),
                         BorderSizePixel = 0,
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromOffset(15, 20),
-
-                        [ReactRoblox.Event.Activated] = function()
-                            props.OnClickEdit(props.Item)
-                        end,
+                        Size = UDim2.fromOffset(25, 30),
+                        LayoutOrder = 1,
                     }, {
-                        uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint", {
-                            AspectRatio = 0.74,
+                        imageLabel1 = React.createElement("ImageButton", {
+                            Image = "rbxassetid://15627733392",
+                            ImageColor3 = Color3.fromRGB(79, 159, 243),
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Position = UDim2.fromScale(0.5, 0.5),
+                            Size = UDim2.fromOffset(15, 20),
+
+                            [ReactRoblox.Event.Activated] = function()
+                                props.OnClickEdit(props.Item)
+                            end,
+                        }, {
+                            uIAspectRatioConstraint1 = React.createElement("UIAspectRatioConstraint", {
+                                AspectRatio = 0.74,
+                            }),
                         }),
                     }),
-                }),
             }),
 
         Frame = React.createElement("Frame", {

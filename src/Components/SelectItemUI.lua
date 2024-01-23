@@ -20,8 +20,12 @@ local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 type Props = {
     Title: string,
     Items: any,
-    SelectedItem: Types.Item,
-    SelectedMachine: Types.Machine,
+    -- SelectedItem: Types.Item,
+    -- SelectedMachine: Types.Machine,
+    HideEditButtons: boolean,
+    HideDeleteButtons: boolean,
+    ExcludeItemsInUse: boolean,
+
     OnClosePanel: () -> nil,
     OnChooseItem: (Types.Item) -> nil,
     OnClickEdit: (Types.Item) -> nil,
@@ -56,7 +60,8 @@ local function SelectItemUI(props: Props)
 
     local itemChoices = {}
     --Check the unused items. Change the visual appearance based on whether or not the item is available to be used.
-    local availableItemKeys = Dash.keys(Dataset:getValidItems(true))
+    local availableItemKeys = Dash.keys(Dataset:getValidItems(not props.ShowAsListOfRequirements))
+
     local unavailableItemKeys = {}
     for i, itemKey in sortedItemKeys do
         local item = props.Items[itemKey]
@@ -66,6 +71,7 @@ local function SelectItemUI(props: Props)
                 unavailable = false
             end
         end
+
         if unavailable then
             table.insert(unavailableItemKeys, item.id)
         end
@@ -81,7 +87,8 @@ local function SelectItemUI(props: Props)
             itemChoices,
             ItemListItem({
                 HideArrows = true,
-                ShowTrashButton = true,
+                HideEditButton = props.HideEditButtons,
+                HideDeleteButtons = props.HideDeleteButtons,
                 Item = item,
                 Label = item.locName,
                 LayoutOrder = layoutOrder:Increment(),
@@ -104,7 +111,6 @@ local function SelectItemUI(props: Props)
         )
     end
 
-    --unavailableItemKeys will be empty of props.OnlyShowAvailableItems is true.
     for _, key in unavailableItemKeys do
         local item = props.Items[key]
         local skip = false
