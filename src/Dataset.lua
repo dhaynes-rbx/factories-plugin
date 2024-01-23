@@ -22,39 +22,62 @@ function Dataset:cleanMachines()
         if machine["sources"] and #machine["sources"] == 0 then
             machine["sources"] = nil
         end
+        if machine["type"] == Constants.MachineTypes.purchaser then
+            machine.sources = nil
+        end
     end
 
     for _, machine in machines do
-        local machineType = Constants.MachineTypes.maker
-        for _, itemId in machine["outputs"] do
-            if items[itemId]["value"] then
-                --If this machine has an output that has a value, then it's a makerSeller.
-                machineType = Constants.MachineTypes.makerSeller
-                --TODO: Check other machines to see if they use this machine as a source. If so, something is wrong.
+        --If this is a purchaser, then it should not have any inputs.
+        local machineType = machine["type"]
+        if machineType == Constants.MachineTypes.maker then
+            --Loop through the machines and see if another machine uses this machine as a source.
+            --If no machines have this machine as a source, then there's an error.
+            local machineIsASourceForAnotherMachine = false
+            for _, otherMachine in machines do
+                if otherMachine.sources then
+                    for _, sourceId in otherMachine.sources do
+                        if sourceId == machine.id then
+                            machineIsASourceForAnotherMachine = true
+                        end
+                    end
+                end
+            end
+            if not machineIsASourceForAnotherMachine then
+                warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
             end
         end
-        if machine["sources"] == nil then
-            if machineType == Constants.MachineTypes.makerSeller then
-                machineType = Constants.MachineTypes.invalid
-            else
-                machineType = Constants.MachineTypes.purchaser
-            end
-        end
-        if machine["sources"] == nil and #machine["outputs"] == 0 then
-            machineType = Constants.MachineTypes.invalid
-        end
-        machine["type"] = machineType
 
-        if machineType == Constants.MachineTypes.makerSeller then
-            machine["asset"] = Constants.MachineAssetPaths.makerSeller
-        elseif machineType == Constants.MachineTypes.purchaser then
-            machine["asset"] = Constants.MachineAssetPaths.purchaser
-        elseif machineType == Constants.MachineTypes.maker then
-            machine["asset"] = Constants.MachineAssetPaths.maker
-        else
-            --Machine is invalid
-            machine["asset"] = Constants.MachineAssetPaths.placeholder
-        end
+        -- local machineType = Constants.MachineTypes.maker
+        -- for _, itemId in machine["outputs"] do
+        --     if items[itemId]["value"] then
+        --         --If this machine has an output that has a value, then it's a makerSeller.
+        --         machineType = Constants.MachineTypes.makerSeller
+        --         --TODO: Check other machines to see if they use this machine as a source. If so, something is wrong.
+        --     end
+        -- end
+        -- if machine["sources"] == nil then
+        --     if machineType == Constants.MachineTypes.makerSeller then
+        --         machineType = Constants.MachineTypes.invalid
+        --     else
+        --         machineType = Constants.MachineTypes.purchaser
+        --     end
+        -- end
+        -- if machine["sources"] == nil and #machine["outputs"] == 0 then
+        --     machineType = Constants.MachineTypes.invalid
+        -- end
+        -- machine["type"] = machineType
+
+        -- if machineType == Constants.MachineTypes.makerSeller then
+        --     machine["asset"] = Constants.MachineAssetPaths.makerSeller
+        -- elseif machineType == Constants.MachineTypes.purchaser then
+        --     machine["asset"] = Constants.MachineAssetPaths.purchaser
+        -- elseif machineType == Constants.MachineTypes.maker then
+        --     machine["asset"] = Constants.MachineAssetPaths.maker
+        -- else
+        --     --Machine is invalid
+        --     machine["asset"] = Constants.MachineAssetPaths.placeholder
+        -- end
     end
 end
 
@@ -67,7 +90,7 @@ function Dataset:cleanItems()
             for i, requirement in item.requirements do
                 if requirement.itemId == "currency" then
                     indexToRemove = i
-                    print("Removing requirement", requirement.itemId, "at", i)
+                    print("Removing requirement", requirement.itemId, "from", item.id, "at", i)
                 end
             end
             if indexToRemove then
@@ -102,7 +125,6 @@ function Dataset:updateDataset(dataset, currentMapIndex)
 
     print("Updating dataset...")
 
-    DatasetInstance.write(dataset)
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
@@ -110,6 +132,8 @@ function Dataset:updateDataset(dataset, currentMapIndex)
 
     self:cleanMachines()
     self:cleanItems()
+
+    DatasetInstance.write(dataset)
 end
 
 --TODO: Remove?
@@ -447,6 +471,11 @@ function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
         end
     end
     return true
+end
+
+function Dataset:setMachineType(machineToUpdate: Types.Machine, machineType: string)
+    print("Updating", machineToUpdate.id, "type to", machineType)
+    machineToUpdate["type"] = machineType
 end
 
 function Dataset:updateMachineProperty(machineToUpdate: Types.Machine, property: string, value: string | number)

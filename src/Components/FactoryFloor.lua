@@ -146,8 +146,8 @@ local FactoryFloor = function(props: Props)
                     end
                 end
             end
-        else
-            --If there's no sources, then it's a purchaser. Its belt should be coming in from the left side of the Factory.
+        elseif machine["type"] == Constants.MachineTypes.purchaser then
+            --If it's a purchaser, then its belt should be coming in from the left side of the Factory.
             local conveyorName = Scene.getConveyorBeltName(machine)
             if conveyorName then
                 table.insert(beltsIn, {

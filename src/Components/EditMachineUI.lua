@@ -34,6 +34,7 @@ local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
+local RadioButtonGroup = require(script.Parent.SubComponents.RadioButtonGroup)
 
 type Props = {
     AddMachineAnchor: any,
@@ -47,16 +48,29 @@ type Props = {
     UpdateDataset: any,
 }
 
+local MachineTypes = {
+    purchaser = 1,
+    maker = 2,
+    makerSeller = 3,
+    invalid = 0,
+}
+
 local function EditMachineUI(props: Props)
     --use this to create a consistent layout order that plays nice with Roact
     local layoutOrder = Incrementer.new()
 
     local id, setMachineId = React.useState("")
     local currentOutputCount, setCurrentOutputCount = React.useState(props.Machine.currentOutputCount)
+    local machineTypeIndex, setMachineTypeIndex = React.useState(MachineTypes[props.Machine["type"]])
     local machine = props.Machine
 
+    React.useEffect(function()
+        setMachineTypeIndex(MachineTypes[props.Machine["type"]])
+    end, { props.Machine["type"] })
+
+    local showInputs = machineTypeIndex ~= 1
     local machineInputs = {}
-    if machine.sources then
+    if showInputs and machine.sources then
         for i, sourceMachineId in machine.sources do
             local sourceMachine: Types.Machine = Dataset:getMachineFromId(sourceMachineId)
             table.insert(
@@ -125,7 +139,6 @@ local function EditMachineUI(props: Props)
     local gapAmount = 16
 
     local children = {
-
         ID = TextItem({
             Text = "ID: " .. props.Machine.id,
             LayoutOrder = layoutOrder:Increment(),
@@ -158,13 +171,29 @@ local function EditMachineUI(props: Props)
             end,
         }),
 
-        Gap1 = React.createElement("Frame", {
+        MachineTypeButtons = RadioButtonGroup({
+            ToggleIndex = machineTypeIndex,
+            LayoutOrder = layoutOrder:Increment(),
+            OnRadioButtonToggled = function(index)
+                local newMachineType = nil
+                for key, typeIndex in MachineTypes do
+                    if typeIndex == index then
+                        newMachineType = key
+                    end
+                end
+                Dataset:setMachineType(props.Machine, newMachineType)
+                -- setMachineTypeIndex(MachineTypes[newMachineType])
+                props.UpdateDataset()
+            end,
+        }),
+
+        Gap1 = showInputs and React.createElement("Frame", {
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, gapAmount),
             LayoutOrder = layoutOrder:Increment(),
         }),
 
-        AddInputMachines = LabeledAddButton({
+        AddInputMachines = showInputs and LabeledAddButton({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Input Machines",
 
@@ -173,7 +202,7 @@ local function EditMachineUI(props: Props)
             end,
         }),
 
-        InputMachines = Column({
+        InputMachines = showInputs and Column({
             Gaps = 8,
             AutomaticSize = Enum.AutomaticSize.Y,
             Size = UDim2.new(1, 0, 0, 0),

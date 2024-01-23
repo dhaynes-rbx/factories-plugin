@@ -410,7 +410,6 @@ function App:render()
                     ShowAsListOfRequirements = true,
 
                     OnChooseItem = function(item: Types.Item)
-                        print("Chosen")
                         Dataset:addRequirementToItem(self.state.selectedItem, item)
                         self:updateDataset(self.state.dataset)
                         self:showPreviousPanel()

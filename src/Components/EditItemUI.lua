@@ -53,37 +53,52 @@ type Props = {
 
 local function EditItemUI(props: Props)
     local itemId, setItemId = React.useState(props.Item.id)
-    local itemCost, setItemCost = React.useState(nil)
-    local itemSalePrice, setItemSalePrice = React.useState(nil)
+    -- local itemCost, setItemCost = React.useState(nil) --Item has a "requirement" of type "currency"
+    -- local itemSalePrice, setItemSalePrice = React.useState(nil) --Item has a "value"
     local numRequirements, setNumRequirements =
         React.useState(props.Item.requirements and #props.Item.requirements or 0)
 
     local layoutOrder = Incrementer.new()
     local items = Dataset:getValidItems(false)
     local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
+    local itemSalePrice = item.value and item.value.count or 0
 
-    if not itemCost then
-        if item.requirements then
-            for _, requirement: Types.RequirementItem in item.requirements do
-                if requirement.itemId == "currency" then
-                    itemCost = requirement.count
-                end
+    -- if item.value then
+    --     itemSalePrice = item.value.count
+    -- setItemSalePrice(itemSalePrice)
+    -- end
+    local itemCost = 0
+    if item.requirements then
+        for _, requirement in item.requirements do
+            if requirement.itemId == "currency" then
+                itemCost = requirement.count
+                -- setItemCost(itemCost)
             end
-        else
-            item.requirements = {
-                {
-                    itemId = "currency",
-                    count = 0,
-                },
-            }
         end
     end
-    if not itemSalePrice then
-        if not item.value then
-            item.value = { itemId = "currency", count = 0 }
-        end
-        itemSalePrice = item.value.count
-    end
+
+    -- if not itemCost then
+    --     if item.requirements then
+    --         for _, requirement: Types.RequirementItem in item.requirements do
+    --             if requirement.itemId == "currency" then
+    --                 itemCost = requirement.count
+    --             end
+    --         end
+    --     else
+    --         item.requirements = {
+    --             {
+    --                 itemId = "currency",
+    --                 count = 0,
+    --             },
+    --         }
+    --     end
+    -- end
+    -- if not itemSalePrice then
+    --     if not item.value then
+    --         item.value = { itemId = "currency", count = 0 }
+    --     end
+    --     itemSalePrice = item.value.count
+    -- end
 
     local requirementItems = {}
 
@@ -109,7 +124,6 @@ local function EditItemUI(props: Props)
                     OnClickRemove = function()
                         Dataset:removeRequirementFromItem(item, requirement.itemId)
                         setNumRequirements(#item.requirements)
-                        print(#item.requirements)
                         props.UpdateDataset()
                     end,
                     OnHover = function() end,
@@ -177,7 +191,7 @@ local function EditItemUI(props: Props)
                             count = value,
                         }
                     end
-                    setItemSalePrice(value)
+                    -- setItemSalePrice(value)
                     props.UpdateDataset()
                 end
             end,
@@ -198,7 +212,7 @@ local function EditItemUI(props: Props)
                             count = value,
                         },
                     }
-                    setItemCost(value)
+                    -- setItemCost(value)
                     props.UpdateDataset()
                 end
             end,
@@ -209,7 +223,6 @@ local function EditItemUI(props: Props)
             Label = "Requirements",
 
             OnActivated = function()
-                print("Add")
                 props.OnAddRequirement(item)
             end,
         }),
