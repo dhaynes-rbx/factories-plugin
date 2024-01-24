@@ -35,6 +35,8 @@ local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local RadioButtonGroup = require(script.Parent.SubComponents.RadioButtonGroup)
+local Slider = require(script.Parent.SubComponents.Slider)
+local SliderWithLabel = require(script.Parent.SubComponents.SliderWithLabel)
 
 type Props = {
     AddMachineAnchor: any,
@@ -334,6 +336,78 @@ local function EditMachineUI(props: Props)
                 props.UpdateDataset()
             end,
         }),
+
+        ConveyorAdjustment = InlineNumberInput({
+            Value = 1,
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Conveyor",
+            OnReset = function() end,
+            OnChanged = function(value)
+                if not tonumber(value) then
+                    return
+                end
+                value = tonumber(value)
+            end,
+        }),
+
+        -- Slider = SliderWithLabel({}),
+
+        -- Slider = Slider({
+        --     -- Active = props.IsInputEnabled("MakerMachineEditorCount") and props.PowerupsFocused == false,
+        --     Active = true,
+        --     LayoutOrder = 5,
+        --     MeterSize = UDim2.new(1, 0, 0, 12),
+        --     OnIncrement = function()
+        --         -- if props.Machine.currentOutputCount < currentMax then
+        --         --     local newCount = props.Machine.currentOutputCount + 1
+        --         --     setPendingCount(newCount)
+        --         --     if not tryCompleteCountTutorial(newCount) then
+        --         --         props.OnChangeCountClient(newCount)
+        --         --     end
+        --         -- end
+        --     end,
+        --     OnDecrement = function()
+        --         -- if props.Machine.currentOutputCount > outputRange.min then
+        --         --     local newCount = props.Machine.currentOutputCount - 1
+        --         --     setPendingCount(newCount)
+        --         --     if not tryCompleteCountTutorial(newCount) then
+        --         --         props.OnChangeCountClient(newCount)
+        --         --     end
+        --         -- end
+        --     end,
+        --     OnSet = function(value: number)
+        --         -- setPendingCount(-1)
+        --         -- local newCount = getSliderValue(value)
+        --         -- if not tryCompleteCountTutorial(newCount) then
+        --         --     props.OnChangeCountServer(newCount)
+        --         -- end
+        --     end,
+        --     OnDragged = function(value: number)
+        --         -- setPendingCount(-1)
+        --         -- value = getSliderValue(value)
+        --         -- if value == props.Machine.currentOutputCount then
+        --         --     return
+        --         -- end
+        --         -- props.OnChangeCountClient(value)
+        --     end,
+        --     OnMouseLeave = function()
+        --         -- if pendingCount ~= -1 then
+        --         --     local newCount = pendingCount
+        --         --     setPendingCount(-1)
+        --         --     if not tryCompleteCountTutorial(newCount) then
+        --         --         props.OnChangeCountServer(newCount)
+        --         --     end
+        --         -- end
+        --     end,
+        --     ScrubberDiameter = 40,
+        --     -- Range = NumberRange.new(outputRange.min, currentMax),
+        --     Range = NumberRange.new(0, 1),
+        --     -- ShowScrubber = props.PowerupsFocused == false,
+        --     ShowScrubber = true,
+        --     Value = props.Machine.currentOutputCount,
+        --     -- ZIndex = contentZIndex,
+        --     ZIndex = 1,
+        -- }),
     }
 
     local scrollingFrameChildren = {

@@ -115,17 +115,18 @@ local FactoryFloor = function(props: Props)
         })
     end
 
-    local machineConveyorMap = {}
+    local factoryConveyorMap = {}
     local entryPoints = {}
     local exitPoints = {}
     for _, machine: Types.Machine in props.Machines do
         local machinePosition = worldPositionToVector3(machine.worldPosition)
         --For each machine, get information on the conveyors that enter from the left, and the conveyors that exit to the right.
-        machineConveyorMap[machine.id] = {}
-        machineConveyorMap[machine.id]["beltsIn"] = {}
-        local beltsIn = machineConveyorMap[machine.id]["beltsIn"]
-        machineConveyorMap[machine.id]["beltsOut"] = {}
-        local beltsOut = machineConveyorMap[machine.id]["beltsOut"]
+        local machineConveyorMap = {}
+        factoryConveyorMap[machine.id] = machineConveyorMap
+        machineConveyorMap.beltsIn = {}
+        local beltsIn = machineConveyorMap.beltsIn
+        machineConveyorMap.beltsOut = {}
+        local beltsOut = machineConveyorMap.beltsOut
         --Find the "in" belts, which are the belts that come in from the left side of the machine.
         --"Sources" should never be empty and always nil if there are no sources. But checking just in case.
         --TODO: Throw an error if #sources is 0 rather than nil.
@@ -140,7 +141,7 @@ local FactoryFloor = function(props: Props)
                             table.insert(beltsIn, {
                                 name = conveyorName,
                                 sourceId = sourceId,
-                                sortingPosition = worldPositionToVector3(sourceMachine.worldPosition), --This is just for sorting.
+                                sortingPosition = worldPositionToVector3(sourceMachine.worldPosition),
                             })
                         end
                     end
@@ -241,7 +242,7 @@ local FactoryFloor = function(props: Props)
     end
 
     local conveyorComponents = {}
-    for id, conveyorMap in machineConveyorMap do
+    for id, conveyorMap in factoryConveyorMap do
         if conveyorComponents[id] ~= nil then
             print("Skipping...")
             continue
@@ -260,7 +261,7 @@ local FactoryFloor = function(props: Props)
                 end
             else
                 --Check the other machines, and see where the belt coming in attaches to.
-                for _, sourceMachine in machineConveyorMap do
+                for _, sourceMachine in factoryConveyorMap do
                     for _, beltLeavingSource in sourceMachine.beltsOut do
                         if beltLeavingSource.name == beltComingIn.name then
                             conveyorComponents[beltComingIn.name] = Conveyor({
@@ -284,7 +285,6 @@ local FactoryFloor = function(props: Props)
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)
-    -- children = Dash.join(children, machineComponents)
     getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
 
     return React.createElement(React.Fragment, {}, children)

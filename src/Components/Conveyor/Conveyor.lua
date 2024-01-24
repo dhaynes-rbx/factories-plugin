@@ -85,6 +85,7 @@ end
 function Conveyor(props: Props)
     local conveyorFolder: Model, setConveyorFolder: (Model) -> nil = React.useState(nil)
     local controlPoints: { ControlPoint }, setControlPoints: ({ ControlPoint }) -> nil = React.useState({})
+    local midpointAdjustment: NumberValue, setMidpointAdjustment: (NumberValue) -> nil = React.useState(nil)
 
     local children = {}
 
@@ -112,6 +113,16 @@ function Conveyor(props: Props)
 
         setConveyorFolder(folder)
         setControlPoints(controlPoints)
+
+        --Create a value object to capture the conveyor midpoint adjustment.
+        midpointAdjustment = folder:FindFirstChild("MidpointAdjustment")
+        if not midpointAdjustment then
+            midpointAdjustment = Instance.new("NumberValue")
+            midpointAdjustment.Value = 1
+            midpointAdjustment.Name = "MidpointAdjustment"
+            midpointAdjustment.Parent = folder
+        end
+        setMidpointAdjustment(midpointAdjustment)
 
         return function()
             if folder then
