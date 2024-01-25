@@ -193,6 +193,38 @@ function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
 end
 
+function Scene.getConveyorDataFolder(name: string)
+    local beltDataFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
+    if beltDataFolder then
+        return beltDataFolder:FindFirstChild(name)
+    end
+    return nil
+end
+
+function Scene.getConveyorsConnectedToMachine(anchorName: string)
+    local conveyors = {}
+    local beltDataFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
+    for _, child in beltDataFolder:GetChildren() do
+        local splitName = child.Name:split("-")
+        for _, name in splitName do
+            if name == anchorName then
+                table.insert(conveyors, child)
+            end
+        end
+    end
+    return conveyors
+end
+
+function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
+    local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
+    local midpointAdjustment: NumberValue = conveyorFolder:FindFirstChild("MidpointAdjustment")
+    if midpointAdjustment then
+        return midpointAdjustment
+    else
+        return nil
+    end
+end
+
 function Scene.getConveyorBeltName(machine1, machine2)
     local machine1Anchor = Scene.getAnchorFromMachine(machine1)
     local machine2Anchor = machine2 and Scene.getAnchorFromMachine(machine2) or nil

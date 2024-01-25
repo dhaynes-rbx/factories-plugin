@@ -37,6 +37,7 @@ local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local RadioButtonGroup = require(script.Parent.SubComponents.RadioButtonGroup)
 local Slider = require(script.Parent.SubComponents.Slider)
 local SliderWithLabel = require(script.Parent.SubComponents.SliderWithLabel)
+local Utilities = require(script.Parent.Parent.Packages.Utilities)
 
 type Props = {
     AddMachineAnchor: any,
@@ -337,17 +338,10 @@ local function EditMachineUI(props: Props)
             end,
         }),
 
-        ConveyorAdjustment = InlineNumberInput({
-            Value = 1,
+        Gap4 = React.createElement("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, gapAmount),
             LayoutOrder = layoutOrder:Increment(),
-            Label = "Conveyor",
-            OnReset = function() end,
-            OnChanged = function(value)
-                if not tonumber(value) then
-                    return
-                end
-                value = tonumber(value)
-            end,
         }),
 
         -- Slider = SliderWithLabel({}),
@@ -425,7 +419,7 @@ local function EditMachineUI(props: Props)
         }),
     }
 
-    children = Dash.join(scrollingFrameChildren, children)
+    children = Dash.join(scrollingFrameChildren, children, midpointAdjustments)
 
     return React.createElement(React.Fragment, {}, {
         EditMachineUI = SidePanel({

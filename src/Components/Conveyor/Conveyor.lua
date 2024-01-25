@@ -9,15 +9,17 @@ local getOrCreateFolder = require(script.Parent.Parent.Parent.Helpers.getOrCreat
 local worldPositionToVector3 = require(script.Parent.Parent.Parent.Helpers.worldPositionToVector3)
 
 local Types = require(script.Parent.Parent.Parent.Types)
+local Scene = require(script.Parent.Parent.Parent.Scene)
 
 type Props = {
     ClickRect: Rect,
     Creating: boolean,
     Editing: boolean,
     Name: string,
-    Subdivisions: number,
+    -- Subdivisions: number,
     StartPosition: Vector3,
     EndPosition: Vector3,
+    -- MidpointAdjustment: number,
 }
 
 type ControlPoint = {
@@ -86,6 +88,7 @@ function Conveyor(props: Props)
     local conveyorFolder: Model, setConveyorFolder: (Model) -> nil = React.useState(nil)
     local controlPoints: { ControlPoint }, setControlPoints: ({ ControlPoint }) -> nil = React.useState({})
     local midpointAdjustment: NumberValue, setMidpointAdjustment: (NumberValue) -> nil = React.useState(nil)
+    local midpointValue: number, setMidpointValue: (number) -> nil = React.useState(nil)
 
     local children = {}
 
@@ -115,16 +118,26 @@ function Conveyor(props: Props)
         setControlPoints(controlPoints)
 
         --Create a value object to capture the conveyor midpoint adjustment.
-        midpointAdjustment = folder:FindFirstChild("MidpointAdjustment")
+        midpointAdjustment = Scene.getMidpointAdjustment(props.Name)
         if not midpointAdjustment then
             midpointAdjustment = Instance.new("NumberValue")
-            midpointAdjustment.Value = 1
+            midpointAdjustment.Value = 0.5
             midpointAdjustment.Name = "MidpointAdjustment"
             midpointAdjustment.Parent = folder
         end
         setMidpointAdjustment(midpointAdjustment)
+        setMidpointValue(midpointAdjustment.Value)
+
+        local connection: RBXScriptConnection = midpointAdjustment.Changed:Connect(function(number)
+            print("Midpoint changed:", number)
+            setMidpointValue(number)
+        end)
 
         return function()
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
             if folder then
                 folder:Destroy()
             end
@@ -132,37 +145,37 @@ function Conveyor(props: Props)
     end, {})
 
     --Subdivide hook
-    React.useEffect(function()
-        if not conveyorFolder then
-            return
-        end
+    -- React.useEffect(function()
+    --     if not conveyorFolder then
+    --         return
+    --     end
 
-        local newControlPoints = {}
-        --Subdivide the conveyor belt.
-        local keys: table = Dash.keys(controlPoints)
-        table.sort(keys, function(a, b)
-            return a < b
-        end)
+    --     local newControlPoints = {}
+    --     --Subdivide the conveyor belt.
+    --     local keys: table = Dash.keys(controlPoints)
+    --     table.sort(keys, function(a, b)
+    --         return a < b
+    --     end)
 
-        local startPoint = table.clone(controlPoints[keys[1]])
-        local endPoint = table.clone(controlPoints[keys[#keys]])
+    --     local startPoint = table.clone(controlPoints[keys[1]])
+    --     local endPoint = table.clone(controlPoints[keys[#keys]])
 
-        local numPoints = 2 + props.Subdivisions
-        endPoint.Name = "ControlPoint" .. numPoints
+    --     local numPoints = 2 + props.Subdivisions
+    --     endPoint.Name = "ControlPoint" .. numPoints
 
-        newControlPoints[startPoint.Name] = startPoint
-        newControlPoints[endPoint.Name] = endPoint
+    --     newControlPoints[startPoint.Name] = startPoint
+    --     newControlPoints[endPoint.Name] = endPoint
 
-        for i = 1, numPoints, 1 do
-            newControlPoints["ControlPoint" .. i] = {
-                Name = "ControlPoint" .. i,
-                Position = startPoint.Position:Lerp(endPoint.Position, (i - 1) / (numPoints - 1)),
-            }
-        end
+    --     for i = 1, numPoints, 1 do
+    --         newControlPoints["ControlPoint" .. i] = {
+    --             Name = "ControlPoint" .. i,
+    --             Position = startPoint.Position:Lerp(endPoint.Position, (i - 1) / (numPoints - 1)),
+    --         }
+    --     end
 
-        conveyorFolder:FindFirstChild("BeltSegments"):ClearAllChildren()
-        setControlPoints(newControlPoints)
-    end, { props.Subdivisions })
+    --     conveyorFolder:FindFirstChild("BeltSegments"):ClearAllChildren()
+    --     setControlPoints(newControlPoints)
+    -- end, { props.Subdivisions })
 
     React.useEffect(function()
         local keys: table = Dash.keys(controlPoints)
@@ -208,6 +221,7 @@ function Conveyor(props: Props)
             Conveyor = conveyorFolder,
             StartPoint = table.clone(segment.StartPoint),
             EndPoint = table.clone(segment.EndPoint),
+            MidpointAdjustment = midpointValue,
         })
     end
 

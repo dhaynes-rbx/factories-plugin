@@ -474,7 +474,6 @@ function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
 end
 
 function Dataset:setMachineType(machineToUpdate: Types.Machine, machineType: string)
-    print("Updating", machineToUpdate.id, "type to", machineType)
     machineToUpdate["type"] = machineType
 end
 
@@ -579,14 +578,14 @@ function Dataset:getCoordinatesFromAnchorName(name)
 end
 
 --returns the machine data in the dataset, based on the coordinates provided
--- function Dataset:getMachineFromCoordinates(x, y)
---     local machine = nil
---     for _,v in self.machines do
---         if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
---             machine = v
---         end
---     end
---     return machine
--- end
+function Dataset:getMachineFromCoordinates(x, y)
+    local machine = nil
+    for _, v in self.machines do
+        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
+            machine = v
+        end
+    end
+    return machine
+end
 
 return Dataset

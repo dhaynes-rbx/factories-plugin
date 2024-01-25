@@ -12,6 +12,7 @@ type Props = {
     Name: string,
     EndPoint: table,
     StartPoint: table,
+    MidpointAdjustment: number,
 }
 
 function BeltSegment(props: Props)
@@ -27,6 +28,7 @@ function BeltSegment(props: Props)
         local part = PathGenerator.GenerateBasicPath(
             props.StartPoint.Position,
             props.EndPoint.Position,
+            props.MidpointAdjustment,
             width,
             thickness,
             desiredRadius,
@@ -52,6 +54,7 @@ function BeltSegment(props: Props)
             local newPart = PathGenerator.GenerateBasicPath(
                 props.StartPoint.Position,
                 props.EndPoint.Position,
+                props.MidpointAdjustment,
                 width,
                 thickness,
                 desiredRadius,
@@ -66,6 +69,7 @@ function BeltSegment(props: Props)
         props.StartPoint.Position.Z,
         props.EndPoint.Position.X,
         props.EndPoint.Position.Z,
+        props.MidpointAdjustment,
     })
 
     return React.createElement(React.Fragment, {}, children)

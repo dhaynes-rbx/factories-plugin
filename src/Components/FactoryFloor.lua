@@ -116,8 +116,8 @@ local FactoryFloor = function(props: Props)
     end
 
     local factoryConveyorMap = {}
-    local entryPoints = {}
-    local exitPoints = {}
+    local factoryEntryPoints = {}
+    local factoryExitPoints = {}
     for _, machine: Types.Machine in props.Machines do
         local machinePosition = worldPositionToVector3(machine.worldPosition)
         --For each machine, get information on the conveyors that enter from the left, and the conveyors that exit to the right.
@@ -156,7 +156,7 @@ local FactoryFloor = function(props: Props)
                     sourceId = "enter",
                     sortingPosition = machinePosition,
                 })
-                table.insert(entryPoints, {
+                table.insert(factoryEntryPoints, {
                     name = conveyorName,
                     destinationId = machine.id,
                     sortingPosition = machinePosition,
@@ -203,7 +203,7 @@ local FactoryFloor = function(props: Props)
             local conveyorName = Scene.getConveyorBeltName(machine)
             --conveyorName might be nil because a machine is in the process of being deleted.
             if conveyorName then
-                table.insert(exitPoints, {
+                table.insert(factoryExitPoints, {
                     name = conveyorName,
                     sourceId = machine.id,
                     sortingPosition = machinePosition,
@@ -212,7 +212,7 @@ local FactoryFloor = function(props: Props)
         end
     end
 
-    table.sort(entryPoints, function(a, b)
+    table.sort(factoryEntryPoints, function(a, b)
         return a.sortingPosition.X > b.sortingPosition.X
     end)
     local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
@@ -220,7 +220,7 @@ local FactoryFloor = function(props: Props)
     table.sort(entryNodes, function(a, b)
         return a.WorldCFrame.X > b.WorldCFrame.X
     end)
-    for i, point in ipairs(entryPoints) do
+    for i, point in ipairs(factoryEntryPoints) do
         local attachment = entryNodes[i]
         if not attachment then
             attachment = entryNodes[#entryNodes]
@@ -228,7 +228,7 @@ local FactoryFloor = function(props: Props)
         point.position = attachment.WorldCFrame.Position
     end
 
-    table.sort(exitPoints, function(a, b)
+    table.sort(factoryExitPoints, function(a, b)
         return a.sortingPosition.X > b.sortingPosition.X
     end)
     local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
@@ -236,7 +236,7 @@ local FactoryFloor = function(props: Props)
     table.sort(exitNodes, function(a, b)
         return a.WorldCFrame.X > b.WorldCFrame.X
     end)
-    for i, point in ipairs(exitPoints) do
+    for i, point in ipairs(factoryExitPoints) do
         local attachment = exitNodes[i]
         point.position = attachment.WorldCFrame.Position
     end
@@ -250,12 +250,13 @@ local FactoryFloor = function(props: Props)
         for i, beltComingIn in conveyorMap.beltsIn do
             if beltComingIn.sourceId == "enter" then
                 --this belt is coming from the left, offscreen.
-                for _, entryPoint in entryPoints do
+                for _, entryPoint in factoryEntryPoints do
                     if beltComingIn.name == entryPoint.name then
                         conveyorComponents[beltComingIn.name] = Conveyor({
                             Name = beltComingIn.name,
                             StartPosition = beltComingIn.inPosition,
                             EndPosition = entryPoint.position,
+                            -- MidpointAdjustment = Scene.getMidpointAdjustmentValue(beltComingIn.name),
                         })
                     end
                 end
@@ -268,6 +269,7 @@ local FactoryFloor = function(props: Props)
                                 Name = beltComingIn.name,
                                 StartPosition = beltComingIn.inPosition,
                                 EndPosition = beltLeavingSource.outPosition,
+                                -- MidpointAdjustment = 0.25,
                             })
                         end
                     end
@@ -276,11 +278,12 @@ local FactoryFloor = function(props: Props)
         end
     end
 
-    for _, exitPoint in exitPoints do
+    for _, exitPoint in factoryExitPoints do
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
             EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition),
+            -- MidpointAdjustment = 0.25,
         })
     end
 
