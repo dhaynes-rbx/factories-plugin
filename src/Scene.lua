@@ -201,28 +201,23 @@ function Scene.getConveyorDataFolder(name: string)
     return nil
 end
 
-function Scene.getConveyorsConnectedToMachine(anchorName: string)
-    local conveyors = {}
-    local beltDataFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
-    for _, child in beltDataFolder:GetChildren() do
-        local splitName = child.Name:split("-")
-        for _, name in splitName do
-            if name == anchorName then
-                table.insert(conveyors, child)
-            end
-        end
+function Scene.getConveyorMeshFromName(conveyorName: string)
+    local beltSegment = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName .. ".BeltSegments")
+    if beltSegment then
+        return beltSegment:GetChildren()[1]
     end
-    return conveyors
+    return nil
 end
 
 function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
     local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
-    local midpointAdjustment: NumberValue = conveyorFolder:FindFirstChild("MidpointAdjustment")
-    if midpointAdjustment then
-        return midpointAdjustment
-    else
-        return nil
+    if conveyorFolder then
+        local midpointAdjustment: NumberValue = conveyorFolder:FindFirstChild("MidpointAdjustment")
+        if midpointAdjustment then
+            return midpointAdjustment
+        end
     end
+    return nil
 end
 
 function Scene.getConveyorBeltName(machine1, machine2)

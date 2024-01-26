@@ -578,7 +578,7 @@ function Dataset:getCoordinatesFromAnchorName(name)
 end
 
 --returns the machine data in the dataset, based on the coordinates provided
-function Dataset:getMachineFromCoordinates(x, y)
+function Dataset:getMachineFromCoordinates(x: number, y: number)
     local machine = nil
     for _, v in self.machines do
         if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then

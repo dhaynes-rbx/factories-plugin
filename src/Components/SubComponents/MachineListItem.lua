@@ -22,6 +22,7 @@ type Props = {
     OnClickDown: () -> nil,
     OnClickEdit: () -> nil,
     OnClickRemove: () -> nil,
+    OnHover: () -> nil,
     HideArrows: boolean,
     HideEditButton: boolean,
     HideRemoveButton: boolean,

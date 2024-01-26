@@ -41,7 +41,8 @@ local Utilities = require(script.Parent.Parent.Packages.Utilities)
 
 type Props = {
     AddMachineAnchor: any,
-    CurrentMap: table,
+    -- CurrentMap: table,
+    CurrentMapIndex: number,
     Dataset: table,
     Machine: Types.Machine,
     MachineAnchor: Instance,
@@ -65,11 +66,18 @@ local function EditMachineUI(props: Props)
     local id, setMachineId = React.useState("")
     local currentOutputCount, setCurrentOutputCount = React.useState(props.Machine.currentOutputCount)
     local machineTypeIndex, setMachineTypeIndex = React.useState(MachineTypes[props.Machine["type"]])
+    -- local numConveyorsConnected, setNumConveyorsConnected =
+    --     React.useState(#Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name))
     local machine = props.Machine
 
     React.useEffect(function()
         setMachineTypeIndex(MachineTypes[props.Machine["type"]])
     end, { props.Machine["type"] })
+
+    -- React.useEffect(function()
+    --     local conveyors = Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name)
+    --     print("Conveyors:", conveyors)
+    -- end, { numConveyorsConnected })
 
     local showInputs = machineTypeIndex ~= 1
     local machineInputs = {}
@@ -95,6 +103,7 @@ local function EditMachineUI(props: Props)
                     OnClickRemove = function(sourceToRemove)
                         Dataset:removeSourceFromMachine(machine, sourceToRemove)
                         props.UpdateDataset()
+                        -- setNumConveyorsConnected(numConveyorsConnected - 1)
                     end,
                     OnHover = function(hoveredMachine: Types.Machine)
                         local anchor = hoveredMachine and Scene.getAnchorFromMachine(hoveredMachine)
@@ -139,8 +148,110 @@ local function EditMachineUI(props: Props)
         end
     end
 
-    local gapAmount = 16
+    local midpointAdjustments = {}
+    local conveyorsConnected = {}
+    if props.Machine.sources then
+        for _, sourceId in props.Machine.sources do
+            local otherMachine = Dataset:getMachineFromId(sourceId)
+            local conveyorName: string = Scene.getConveyorBeltName(otherMachine, props.Machine)
+            table.insert(conveyorsConnected, conveyorName)
+        end
+    end
+    local machines = props.Dataset.maps[props.CurrentMapIndex].machines
+    -- local coords = props.Machine.coordinates
+    for _, otherMachine: Types.Machine in machines do
+        if otherMachine.sources then
+            for _, sourceId: string in otherMachine.sources do
+                if sourceId == props.Machine.id then
+                    local conveyorName: string = Scene.getConveyorBeltName(props.Machine, otherMachine)
+                    table.insert(conveyorsConnected, conveyorName)
+                end
+            end
+        end
+    end
+    if props.Machine["type"] == "purchaser" or props.Machine["type"] == "makerSeller" then
+        table.insert(conveyorsConnected, Scene.getConveyorBeltName(props.Machine))
+    end
 
+    -- for _, conveyor in Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name) do
+    for _, conveyorName: string in conveyorsConnected do
+        local midpoint: NumberValue = Scene.getMidpointAdjustment(conveyorName)
+        local midpointValue = midpoint and midpoint.Value or 0.5
+        table.insert(
+            midpointAdjustments,
+            InlineNumberInput({
+                Value = midpointValue,
+                LayoutOrder = layoutOrder:Increment() + 100,
+                Label = "Conveyor",
+                SubLabel = conveyorName,
+                OnReset = function()
+                    --The midpoint value object might not be created yet.
+                    midpoint = Scene.getMidpointAdjustment(conveyorName)
+                    midpoint.Value = 0.5
+                end,
+                OnHover = function(bool)
+                    -- local splitName = conveyorName:split("-")
+                    -- print(splitName)
+                    -- local anchor = nil
+                    -- for _, name in splitName do
+                    --     print(name)
+                    --     name = name:gsub("[%(%)%[%]{}]", "")
+                    --     print(name)
+                    --     local coords = name:split(",")
+                    --     print(coords)
+                    --     local hoveredMachine =
+                    --         Dataset:getMachineFromCoordinates(tonumber(coords[1]), tonumber(coords[2]))
+                    --     print(hoveredMachine.id)
+                    --     if hoveredMachine.id ~= props.Machine.id then
+                    --         anchor = Scene.getAnchorFromMachine(hoveredMachine)
+                    --     end
+                    -- end
+                    local hover = nil
+                    if bool then
+                        hover = Scene.getConveyorMeshFromName(conveyorName)
+                    end
+                    props.OnHover(hover)
+                end,
+                OnChanged = function(value)
+                    if not tonumber(value) then
+                        return
+                    end
+                    value = tonumber(value)
+                    --The midpoint value object might not be created yet.
+                    midpoint = Scene.getMidpointAdjustment(conveyorName)
+                    midpoint.Value = value
+                end,
+            })
+        )
+    end
+    -- if not conveyorsConnected then
+    --     setConveyorsConnected(Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name))
+    -- else
+    --     for _, conveyor in conveyorsConnected do
+    --         local name = conveyor.Name
+    --         local midpoint: NumberValue = conveyor:FindFirstChild("MidpointAdjustment")
+    --         table.insert(
+    --             midpointAdjustments,
+    --             InlineNumberInput({
+    --                 Value = conveyor:FindFirstChild("MidpointAdjustment").Value,
+    --                 LayoutOrder = layoutOrder:Increment() + 100,
+    --                 Label = "Conveyor " .. conveyor.Name,
+    --                 OnReset = function()
+    --                     midpoint.Value = 0.5
+    --                 end,
+    --                 OnChanged = function(value)
+    --                     if not tonumber(value) then
+    --                         return
+    --                     end
+    --                     value = tonumber(value)
+    --                     midpoint.Value = value
+    --                 end,
+    --             })
+    --         )
+    --     end
+    -- end
+
+    local gapAmount = 16
     local children = {
         ID = TextItem({
             Text = "ID: " .. props.Machine.id,
