@@ -272,8 +272,8 @@ function App:render()
                             end)
 
                             local currentMap = dataset["maps"][self.state.currentMapIndex]
-                            self:setState({ dataset = dataset, datasetIsLoaded = true, currentMap = currentMap })
                             Scene.updateAllMapAssets(currentMap)
+                            self:setState({ dataset = dataset, datasetIsLoaded = true, currentMap = currentMap })
                             self:updateDataset(dataset)
                         end,
 

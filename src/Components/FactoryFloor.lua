@@ -29,7 +29,7 @@ local FactoryFloor = function(props: Props)
 
     --Instantiation Hook
     React.useEffect(function()
-        local folder = getOrCreateFolder("Belts", game.Workspace.Scene.FactoryLayout)
+        local folder = Scene.getBeltsFolder()
     end, {})
 
     --Connections Hook.

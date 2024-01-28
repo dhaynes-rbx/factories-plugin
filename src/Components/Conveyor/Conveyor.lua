@@ -118,12 +118,13 @@ function Conveyor(props: Props)
         setControlPoints(controlPoints)
 
         --Create a value object to capture the conveyor midpoint adjustment.
+        local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder()
         midpointAdjustment = Scene.getMidpointAdjustment(props.Name)
         if not midpointAdjustment then
             midpointAdjustment = Instance.new("NumberValue")
             midpointAdjustment.Value = 0.5
-            midpointAdjustment.Name = "MidpointAdjustment"
-            midpointAdjustment.Parent = folder
+            midpointAdjustment.Name = props.Name
+            midpointAdjustment.Parent = midpointAdjustmentsFolder
         end
         setMidpointAdjustment(midpointAdjustment)
         setMidpointValue(midpointAdjustment.Value)
@@ -138,9 +139,9 @@ function Conveyor(props: Props)
                 connection:Disconnect()
                 connection = nil
             end
-            -- if folder then
-            --     folder:Destroy()
-            -- end
+            if folder then
+                folder:Destroy()
+            end
         end
     end, {})
 
