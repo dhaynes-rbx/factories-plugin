@@ -79,6 +79,8 @@ end
 function App:init()
     Studio.setSelectionTool()
 
+    Scene.initScene()
+
     local dataset = "NONE"
     local datasetIsLoaded = false
     local currentMap = nil
@@ -89,24 +91,19 @@ function App:init()
     if DatasetInstance.checkIfDatasetInstanceExists() then
         dataset = Dataset:getDataset()
         if not dataset then
-            warn("Dataset error!") 
+            warn("Dataset error!")
         else
             datasetIsLoaded = true
             currentMap = dataset["maps"][currentMapIndex]
             Dataset:updateDataset(dataset, currentMapIndex)
         end
     else
-        Scene.loadScene()
         --if there's no scene and no dataset instance, then load everything.
         local templateDataset, newDatasetInstance = DatasetInstance.loadTemplateDataset()
 
         if not newDatasetInstance then
             return
         end
-        --if for some reason the dataset is deleted, then make sure that the app state reflects that.
-        newDatasetInstance.AncestryChanged:Connect(function(_, _)
-            self:setState({ dataset = "NONE", datasetIsLoaded = false })
-        end)
 
         currentMap = templateDataset["maps"][currentMapIndex]
         Scene.updateAllMapAssets(currentMap)
@@ -136,7 +133,7 @@ end
 
 --TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
 --and passed around. This could cause problems down the road.
-function App:updateDataset(dataset, currentMapIndex:number?)
+function App:updateDataset(dataset, currentMapIndex: number?)
     local map = currentMapIndex and currentMapIndex or self.state.currentMapIndex
     Dataset:updateDataset(dataset, map)
     self:setState({
@@ -166,7 +163,7 @@ end
 
 function App:setCurrentMap(mapIndex)
     game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
-    
+
     local currentMap = self.state.dataset["maps"][mapIndex]
     -- self.state.currentMapIndex = mapIndex
     Scene.updateAllMapAssets(currentMap)
@@ -180,7 +177,6 @@ function App:setCurrentMap(mapIndex)
         selectedMachineAnchor = nil,
         showModal = false,
     })
-
 end
 
 function App:render()

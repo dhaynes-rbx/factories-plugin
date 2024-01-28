@@ -10,6 +10,7 @@ local worldPositionToVector3 = require(script.Parent.Parent.Parent.Helpers.world
 
 local Types = require(script.Parent.Parent.Parent.Types)
 local Scene = require(script.Parent.Parent.Parent.Scene)
+local Utilities = require(script.Parent.Parent.Parent.Packages.Utilities)
 
 type Props = {
     ClickRect: Rect,
@@ -94,14 +95,13 @@ function Conveyor(props: Props)
 
     React.useEffect(function()
         --Create a model to hold the control points
-        
-        local folder: Folder = Scene.getConveyorFolder(props.Name)
-        if folder then
-            controlPoints = refreshControlPoints(folder)
+
+        local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getCurrentMapFolder())
+        local controlPointsFolder: Folder = Utilities.getValueAtPath(conveyorFolder, "ControlPoints")
+        if controlPointsFolder then
+            controlPoints = refreshControlPoints(conveyorFolder)
         else
-            folder = Instance.new("Folder")
-            folder.Name = props.Name
-            folder.Parent = getOrCreateFolder("BeltData", game.Workspace)
+            getOrCreateFolder("ControlPoints", conveyorFolder)
 
             controlPoints["ControlPoint1"] = {}
             controlPoints["ControlPoint1"].Name = "ControlPoint1"
@@ -111,14 +111,11 @@ function Conveyor(props: Props)
             controlPoints["ControlPoint2"].Position = props.EndPosition
         end
 
-        getOrCreateFolder("ControlPoints", folder)
-        getOrCreateFolder("BeltSegments", folder):ClearAllChildren()
-
-        setConveyorFolder(folder)
+        setConveyorFolder(conveyorFolder)
         setControlPoints(controlPoints)
 
         --Create a value object to capture the conveyor midpoint adjustment.
-        local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder()
+        local midpointAdjustmentsFolder = getOrCreateFolder("MidpointAdjustments", conveyorFolder)
         midpointAdjustment = Scene.getMidpointAdjustment(props.Name)
         if not midpointAdjustment then
             midpointAdjustment = Instance.new("NumberValue")
@@ -139,9 +136,9 @@ function Conveyor(props: Props)
                 connection:Disconnect()
                 connection = nil
             end
-            if folder then
-                folder:Destroy()
-            end
+            -- if conveyorFolder then
+            --     conveyorFolder:Destroy()
+            -- end
         end
     end, {})
 

@@ -92,27 +92,29 @@ local function EditDatasetUI(props: Props)
                 OnChanged = props.UpdateSceneName,
             })
         )
-        add(
-            children,
-            Block({
-                Size = UDim2.new(1, 0, 0, 80),
-                LayoutOrder = incrementLayoutOrder(),
-                Corner = UDim.new(0, 8),
-                BackgroundColor = Color3.new(1, 1, 1),
-                BackgroundTransparency = 0.95,
-                ZIndex = 2,
-            }, {
-                RadioButtonGroup({
-                    AsRow = true,
-                    Choices = radioButtons,
-                    CurrentValue = currentMapIndex,
-                    OnChanged = function(num, val)
-                        setCurrentMapIndex(val)
-                        props.SetCurrentMap(val)
-                    end,
-                }),
-            })
-        )
+
+        --TODO: Implement more robust map switching functionality.
+        -- add(
+        --     children,
+        --     Block({
+        --         Size = UDim2.new(1, 0, 0, 80),
+        --         LayoutOrder = incrementLayoutOrder(),
+        --         Corner = UDim.new(0, 8),
+        --         BackgroundColor = Color3.new(1, 1, 1),
+        --         BackgroundTransparency = 0.95,
+        --         ZIndex = 2,
+        --     }, {
+        --         RadioButtonGroup({
+        --             AsRow = true,
+        --             Choices = radioButtons,
+        --             CurrentValue = currentMapIndex,
+        --             OnChanged = function(num, val)
+        --                 setCurrentMapIndex(val)
+        --                 props.SetCurrentMap(val)
+        --             end,
+        --         }),
+        --     })
+        -- )
 
         add(
             children,

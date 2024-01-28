@@ -12,14 +12,13 @@ local FishBloxComponents = FishBlox.Components
 local Types = script.Parent.Parent.Types
 
 type Props = {
-    Id:string,
-    OnHover:(Types.Machine, Instance) -> nil,
-    MachineData:Types.Machine,
-    UpdateDataset:() -> nil,
+    Id: string,
+    OnHover: (Types.Machine, Instance) -> nil,
+    MachineData: Types.Machine,
+    UpdateDataset: () -> nil,
 }
 
-local Machine = function(props:Props)
-
+local Machine = function(props: Props)
     local machinePart: Part, setMachinePart: (Part) -> nil = React.useState(nil)
 
     local children = {}
@@ -29,7 +28,7 @@ local Machine = function(props:Props)
     React.useEffect(function()
         local folder = Scene.getMachinesFolder()
         local part = nil
-        for _,child in folder:GetChildren() do
+        for _, child in folder:GetChildren() do
             local machineToCheck = Dataset:getMachineFromMachineAnchor(child)
             if machineToCheck and machineToCheck.id == machine.id then
                 part = child
@@ -38,17 +37,17 @@ local Machine = function(props:Props)
         end
 
         if not part then
+            print("Instantiating...")
             part = Scene.instantiateMachineAnchor(props.MachineData)
             props.UpdateDataset()
         end
-               
-        setMachinePart(part)
 
+        setMachinePart(part)
     end, {})
 
     return React.createElement(React.Fragment, {}, children)
 end
 
-return function(props:Props)
+return function(props: Props)
     return React.createElement(Machine, props)
 end

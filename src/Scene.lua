@@ -15,11 +15,6 @@ end
 
 local Scene = {}
 
-local function instantiateEnvironmentArt()
-    local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
-    scene.Parent = game.Workspace
-end
-
 function Scene.isLoaded()
     return game.Workspace:FindFirstChild("Scene") ~= nil
 end
@@ -45,14 +40,11 @@ function Scene.setCamera()
     Camera.CFrame = cf
     Camera.CameraType = Enum.CameraType.Custom
 end
-function Scene.loadScene()
-    if Scene.isLoaded() then
-        print("Scene is already loaded!")
-        return
-    end
 
+function Scene.initScene()
     if not game.Workspace:FindFirstChild("Scene") then
-        instantiateEnvironmentArt()
+        local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
+        scene.Parent = game.Workspace
     end
 
     if game.Workspace:FindFirstChild("Baseplate") then
@@ -60,6 +52,12 @@ function Scene.loadScene()
     end
     if game.Workspace:FindFirstChild("SpawnLocation") then
         game.Workspace.SpawnLocation:Destroy()
+    end
+
+    local pluginDataFolder = getOrCreateFolder("FactoriesPluginData", ReplicatedStorage)
+    local mapsFolder = getOrCreateFolder("Maps", pluginDataFolder)
+    for i = 1, 2, 1 do
+        local mapFolder = getOrCreateFolder(tostring(i), mapsFolder)
     end
 
     --Update the lighting and camera
@@ -77,7 +75,7 @@ function Scene.loadScene()
 
     Scene.setCamera()
 
-    ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
+    -- ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
 end
 
 function Scene.getMachinesFolder()
@@ -147,6 +145,7 @@ end
 
 function Scene.instantiateMachineAnchor(machine: table)
     local folder = Scene.getMachinesFolder()
+    print("Instantiating...", machine.id)
 
     -- local assetPath = string.split(machine["asset"], ".")[3]
     local position = Vector3.new()
@@ -183,17 +182,27 @@ function Scene.updateAllMapAssets(map: table)
     Scene.getBeltsFolder():ClearAllChildren()
     -- Scene.getBeltDataFolder():ClearAllChildren()
 
-    for _, machine in map["machines"] do
-        Scene.instantiateMachineAnchor(machine)
-    end
-
+    -- for _, machine in map["machines"] do
+    --     Scene.instantiateMachineAnchor(machine)
+    -- end
 end
 
-function Scene.getMidpointAdjustmentsFolder()
-    local folder = Utilities.getValueAtPath(ReplicatedStorage, "MidpointAdjustments")
-    if not folder then
-        folder = getOrCreateFolder("MidpointAdjustments", ReplicatedStorage)
-    end
+function Scene.getPluginDataFolder()
+    return Utilities.getValueAtPath(ReplicatedStorage, "FactoriesPluginData")
+end
+
+function Scene.getMapFolder(mapIndex)
+    local folder = Utilities.getValueAtPath(Scene.getPluginDataFolder(), "Maps." .. tostring(mapIndex))
+    return folder
+end
+
+function Scene.getCurrentMapFolder()
+    local folder = Scene.getMapFolder(Scene.getCurrentMapIndexAccordingToScene())
+    return folder
+end
+
+function Scene.getMidpointAdjustmentsFolder(conveyorName)
+    local folder = Utilities.getValueAtPath(Scene.getConveyorFolder(conveyorName), "MidpointAdjustments")
     return folder
 end
 
@@ -206,23 +215,24 @@ function Scene.getBeltDataFolder()
 end
 
 function Scene.getConveyorFolder(name: string)
-    local beltDataFolder: Folder = getOrCreateFolder("BeltData", game.Workspace)
-    if beltDataFolder then
-        return beltDataFolder:FindFirstChild(name)
+    local folder = Scene.getCurrentMapFolder()
+    local beltFolder = folder:FindFirstChild(name)
+    if beltFolder then
+        return beltFolder
     end
     return nil
 end
 
 function Scene.getConveyorMeshFromName(conveyorName: string)
-    local beltSegment = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName .. ".BeltSegments")
+    local beltSegment = Utilities.getValueAtPath(Scene.getBeltsFolder(), conveyorName)
     if beltSegment then
-        return beltSegment:GetChildren()[1]
+        return beltSegment
     end
     return nil
 end
 
 function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
-    local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder()
+    local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder(conveyorName)
     -- local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
     -- if conveyorFolder then
     if not midpointAdjustmentsFolder then
@@ -250,8 +260,8 @@ function Scene.getConveyorBeltName(machine1, machine2)
 end
 
 function Scene.removeConveyors(machine: Types.Machine)
-    local folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
     local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+    local folder = Utilities.getConveyorFolder(conveyorName)
     for _, conveyor: Folder in folder:GetChildren() do
         local splitName = conveyor.Name:split("-")
         if splitName[1] == conveyorName then
