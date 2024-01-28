@@ -279,6 +279,9 @@ local FactoryFloor = function(props: Props)
     end
 
     for _, exitPoint in factoryExitPoints do
+        local machine = Dataset:getMachineFromId(exitPoint.sourceId)
+        local machinePosition = machine.worldPosition
+        local endPosition = worldPositionToVector3(machinePosition)
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
@@ -288,7 +291,7 @@ local FactoryFloor = function(props: Props)
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)
-    getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
+    -- getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
 
     return React.createElement(React.Fragment, {}, children)
 end

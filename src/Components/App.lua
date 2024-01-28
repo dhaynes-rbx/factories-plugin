@@ -88,7 +88,7 @@ function App:init()
     if DatasetInstance.checkIfDatasetInstanceExists() then
         dataset = Dataset:getDataset()
         if not dataset then
-            warn("Dataset error!") --TODO: Find out why sometimes the DatasetInstance source gets deleted.
+            warn("Dataset error!") 
         else
             datasetIsLoaded = true
             currentMap = dataset["maps"][currentMapIndex]
@@ -118,7 +118,6 @@ function App:init()
         currentMap = currentMap, --TODO: remove this, use index instead
         currentMapIndex = currentMapIndex,
         currentPanel = currentPanel,
-        choosingRequirementItem = false,
         datasetError = Dataset:checkForErrors(),
         dataset = dataset,
         datasetIsLoaded = datasetIsLoaded,
@@ -136,8 +135,9 @@ end
 
 --TODO: Anything that modifies the dataset should be done via the Dataset class. Currently the dataset is being modified here
 --and passed around. This could cause problems down the road.
-function App:updateDataset(dataset)
-    Dataset:updateDataset(dataset, self.state.currentMapIndex)
+function App:updateDataset(dataset, currentMapIndex:number?)
+    local map = currentMapIndex and currentMapIndex or self.state.currentMapIndex
+    Dataset:updateDataset(dataset, map)
     self:setState({
         dataset = dataset,
         datasetError = Dataset:checkForErrors(),
@@ -167,7 +167,7 @@ function App:setCurrentMap(mapIndex)
     local currentMap = self.state.dataset["maps"][mapIndex]
     -- self.state.currentMapIndex = mapIndex
     Scene.updateAllMapAssets(currentMap)
-    self:updateDataset(self.state.dataset)
+    self:updateDataset(self.state.dataset, mapIndex)
     self:setState({
         currentMapIndex = mapIndex,
         currentMap = currentMap,

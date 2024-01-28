@@ -193,8 +193,8 @@ function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
 end
 
-function Scene.getConveyorDataFolder(name: string)
-    local beltDataFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
+function Scene.getConveyorFolder(name: string)
+    local beltDataFolder: Folder = getOrCreateFolder("BeltData", game.Workspace)
     if beltDataFolder then
         return beltDataFolder:FindFirstChild(name)
     end

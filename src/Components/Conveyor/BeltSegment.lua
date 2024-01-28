@@ -3,12 +3,14 @@ local Packages = script.Parent.Parent.Parent.Packages
 local React = require(Packages.React)
 
 local PathGenerator = require(script.Parent.Parent.Parent.PathGenerator)
+local getOrCreateFolder = require(script.Parent.Parent.Parent.Helpers.getOrCreateFolder)
+local Scene = require(script.Parent.Parent.Parent.Scene)
 local thickness = 0.5
 local width = 1.5
 local desiredRadius = 4
 
 type Props = {
-    Conveyor: Folder,
+    -- ConveyorFolder: Folder,
     Name: string,
     EndPoint: table,
     StartPoint: table,
@@ -18,9 +20,11 @@ type Props = {
 function BeltSegment(props: Props)
     local beltPart, setBeltPart = React.useState(nil)
     local children = {}
+    local beltsFolder = Scene.getBeltsFolder()
+    local conveyorFolder: Folder = Scene.getConveyorFolder(props.Name)
 
     React.useEffect(function()
-        for _, child in props.Conveyor.BeltSegments:GetChildren() do
+        for _, child in beltsFolder:GetChildren() do
             if child.Name == props.Name then
                 child:Destroy()
             end
@@ -32,11 +36,11 @@ function BeltSegment(props: Props)
             width,
             thickness,
             desiredRadius,
-            props.Conveyor
+            conveyorFolder
         )
         if part then
             part.Name = props.Name
-            part.Parent = props.Conveyor.BeltSegments
+            part.Parent = beltsFolder
             setBeltPart(part)
         else
             print("Belt Segment part is invalid. Check to see if the segment length was too short.")
@@ -44,7 +48,7 @@ function BeltSegment(props: Props)
     end, {})
 
     React.useEffect(function()
-        if not props.Conveyor then
+        if not conveyorFolder then
             return
         end
 
@@ -58,10 +62,10 @@ function BeltSegment(props: Props)
                 width,
                 thickness,
                 desiredRadius,
-                props.Conveyor
+                conveyorFolder
             )
             newPart.Name = props.Name
-            newPart.Parent = props.Conveyor.BeltSegments
+            newPart.Parent = beltsFolder
             setBeltPart(newPart)
         end
     end, {
