@@ -84,6 +84,17 @@ function Scene.getMachinesFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
 end
 
+function Scene.getCurrentMapIndexAccordingToScene()
+    local currentMapIndex = 2
+    local datasetInstance = Utilities.getValueAtPath(game.Workspace, "Dataset")
+    if datasetInstance then
+        if datasetInstance:GetAttribute("CurrentMapIndex") then
+            currentMapIndex = datasetInstance:GetAttribute("CurrentMapIndex")
+        end
+    end
+    return currentMapIndex
+end
+
 -- function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
 --     local machines = Scene.getMachineAnchors()
 --     for _,v in machines do
@@ -183,6 +194,7 @@ function Scene.getMidpointAdjustmentsFolder()
     if not folder then
         folder = getOrCreateFolder("MidpointAdjustments", ReplicatedStorage)
     end
+    return folder
 end
 
 function Scene.getBeltsFolder()
@@ -213,6 +225,10 @@ function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
     local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder()
     -- local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
     -- if conveyorFolder then
+    if not midpointAdjustmentsFolder then
+        print("No midpoint adjustments folder")
+        return nil
+    end
     local midpointAdjustment: NumberValue = midpointAdjustmentsFolder:FindFirstChild(conveyorName)
     if midpointAdjustment then
         return midpointAdjustment

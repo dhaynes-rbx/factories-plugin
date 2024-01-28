@@ -84,7 +84,8 @@ function App:init()
     local currentMap = nil
     --If the map index has been saved as an attribute, load this map when reloading the plugin.
     -- local currentMapIndex = (game.Workspace:FindFirstChild("Dataset") and game.Workspace.Dataset:GetAttribute("CurrentMapIndex")) or 1
-    local currentMapIndex = 2
+    local currentMapIndex = Scene.getCurrentMapIndexAccordingToScene()
+
     if DatasetInstance.checkIfDatasetInstanceExists() then
         dataset = Dataset:getDataset()
         if not dataset then
@@ -164,6 +165,8 @@ function App:deleteMachine(machine: Types.Machine, anchor)
 end
 
 function App:setCurrentMap(mapIndex)
+    game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
+    
     local currentMap = self.state.dataset["maps"][mapIndex]
     -- self.state.currentMapIndex = mapIndex
     Scene.updateAllMapAssets(currentMap)
@@ -178,7 +181,6 @@ function App:setCurrentMap(mapIndex)
         showModal = false,
     })
 
-    game.Workspace.Dataset:SetAttribute("CurrentMapIndex", mapIndex)
 end
 
 function App:render()
