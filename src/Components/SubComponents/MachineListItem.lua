@@ -155,19 +155,19 @@ function MachineListItem(props: Props)
                 PaddingTop = UDim.new(0, 4),
             }),
 
-            imageLabel = React.createElement("ImageLabel", {
-                Image = "rbxassetid://10057564594",
-                AnchorPoint = Vector2.new(0, 0.5),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                BorderColor3 = Color3.fromRGB(0, 0, 0),
-                BorderSizePixel = 0,
-                LayoutOrder = 1,
-                Position = UDim2.fromScale(0, 0.5),
-                Size = UDim2.new(1, 0, 0, 50),
-            }, {
-                uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
-            }),
+            -- imageLabel = React.createElement("ImageLabel", {
+            --     Image = "rbxassetid://10057564594",
+            --     AnchorPoint = Vector2.new(0, 0.5),
+            --     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            --     BackgroundTransparency = 1,
+            --     BorderColor3 = Color3.fromRGB(0, 0, 0),
+            --     BorderSizePixel = 0,
+            --     LayoutOrder = 1,
+            --     Position = UDim2.fromScale(0, 0.5),
+            --     Size = UDim2.new(1, 0, 0, 50),
+            -- }, {
+            --     uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
+            -- }),
 
             uIListLayout = React.createElement("UIListLayout", {
                 FillDirection = Enum.FillDirection.Horizontal,

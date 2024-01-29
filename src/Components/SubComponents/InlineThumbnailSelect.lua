@@ -20,9 +20,9 @@ local function InlineThumbnailSelect(props: Props)
     return React.createElement("Frame", {
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        LayoutOrder = 2,
         Position = UDim2.fromOffset(0, 150),
         Size = UDim2.new(1, 0, 0, 100),
+        LayoutOrder = props.LayoutOrder,
     }, {
         thumbnail = React.createElement("Frame", {
             AnchorPoint = Vector2.new(1, 0),

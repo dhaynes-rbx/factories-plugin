@@ -47,37 +47,6 @@ function Dataset:cleanMachines()
                 warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
             end
         end
-
-        -- local machineType = Constants.MachineTypes.maker
-        -- for _, itemId in machine["outputs"] do
-        --     if items[itemId]["value"] then
-        --         --If this machine has an output that has a value, then it's a makerSeller.
-        --         machineType = Constants.MachineTypes.makerSeller
-        --         --TODO: Check other machines to see if they use this machine as a source. If so, something is wrong.
-        --     end
-        -- end
-        -- if machine["sources"] == nil then
-        --     if machineType == Constants.MachineTypes.makerSeller then
-        --         machineType = Constants.MachineTypes.invalid
-        --     else
-        --         machineType = Constants.MachineTypes.purchaser
-        --     end
-        -- end
-        -- if machine["sources"] == nil and #machine["outputs"] == 0 then
-        --     machineType = Constants.MachineTypes.invalid
-        -- end
-        -- machine["type"] = machineType
-
-        -- if machineType == Constants.MachineTypes.makerSeller then
-        --     machine["asset"] = Constants.MachineAssetPaths.makerSeller
-        -- elseif machineType == Constants.MachineTypes.purchaser then
-        --     machine["asset"] = Constants.MachineAssetPaths.purchaser
-        -- elseif machineType == Constants.MachineTypes.maker then
-        --     machine["asset"] = Constants.MachineAssetPaths.maker
-        -- else
-        --     --Machine is invalid
-        --     machine["asset"] = Constants.MachineAssetPaths.placeholder
-        -- end
     end
 end
 
@@ -109,7 +78,7 @@ function Dataset:cleanItems()
                 requirement.count = tonumber(requirement.count)
             end
         else
-            --Requirements should never be 0, unless it's currency.
+            --An item should always have a requirement
             if item.id == "currency" or item.id == "none" then
                 item.requirements = nil
             else
