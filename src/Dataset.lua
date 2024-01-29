@@ -85,19 +85,40 @@ function Dataset:cleanItems()
     local items = self.items
     for _, item in items do
         --If there's more than one requirement, make sure one of them isn't "currency". If so this should be removed. You can't require currency AND another item.
-        if item.requirements and #item.requirements > 1 then
-            local indexToRemove = nil
-            for i, requirement in item.requirements do
-                if requirement.itemId == "currency" then
-                    indexToRemove = i
-                    print("Removing requirement", requirement.itemId, "from", item.id, "at", i)
+        if item.requirements then
+            if #item.requirements > 1 then
+                local indexToRemove = nil
+                for i, requirement in ipairs(item.requirements) do
+                    if requirement.itemId == "currency" then
+                        indexToRemove = i
+                    end
                 end
+                if indexToRemove then
+                    -- print("Removing item from requirements...", item.requirements[indexToRemove].itemId, indexToRemove)
+                    if item.requirements[indexToRemove].itemId == "currency" then
+                        table.remove(item.requirements, indexToRemove)
+                    end
+                    -- print("Result:", item.requirements)
+                end
+            elseif #item.requirements == 0 then
+                item.requirements[1] = { itemId = "currency", count = 0 }
             end
-            if indexToRemove then
-                table.remove(item.requirements, indexToRemove)
+
+            --Make sure the count is a number, not a string.
+            for _, requirement in item.requirements do
+                requirement.count = tonumber(requirement.count)
+            end
+        else
+            --Requirements should never be 0, unless it's currency.
+            if item.id == "currency" or item.id == "none" then
+                item.requirements = nil
+            else
+                item.requirements = {}
+                item.requirements[1] = { itemId = "currency", count = 0 }
             end
         end
     end
+    print("Items:", items)
 end
 
 function Dataset:checkForErrors()
@@ -312,11 +333,11 @@ end
 function Dataset:removeRequirementFromItem(itemToUpdate: Types.Item, requirementId: string)
     local requirementItem = self.items[requirementId]
     if not requirementItem then
-        print("Requirement id ", requirementId, "does not have a corresponding item!")
+        warn("Requirement id ", requirementId, "does not have a corresponding item!")
         return
     end
     if not itemToUpdate.requirements or #itemToUpdate.requirements == 0 then
-        print("Error! Item has no requirements!")
+        warn("Error! Item has no requirements!")
         return
     end
     local indexToRemove = 0
@@ -327,7 +348,6 @@ function Dataset:removeRequirementFromItem(itemToUpdate: Types.Item, requirement
         end
     end
     table.remove(itemToUpdate.requirements, indexToRemove)
-    print("Result:", itemToUpdate.requirements)
 end
 
 --Returns items, minus the currency and none items

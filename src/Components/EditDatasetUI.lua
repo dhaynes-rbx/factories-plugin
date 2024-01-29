@@ -33,7 +33,7 @@ type Props = {
     CurrentMapIndex: number,
     Error: string,
     Title: string,
-    UpdateDatasetName: any,
+    -- UpdateDatasetName: any,
     UpdateSceneName: any,
     ShowEditFactoryUI: any,
     -- ShowEditMachinesListUI:any,

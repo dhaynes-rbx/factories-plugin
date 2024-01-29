@@ -168,6 +168,7 @@ local function EditItemUI(props: Props)
 
         ThumbnailSelect = InlineThumbnailSelect({
             Label = "Thumbnail",
+            LayoutOrder = layoutOrder:Increment(),
             Thumbnail = item.thumb,
             OnActivated = function()
                 props.OnClickThumbnail()

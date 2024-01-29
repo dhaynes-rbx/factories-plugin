@@ -380,9 +380,10 @@ function App:render()
                             self:updateDataset(self.state.dataset)
                             self:showPreviousPanel()
                         else
-                            print("Cannot add output item. No machine selected.")
+                            warn("Cannot add output item. No machine selected.")
+                            self:showPreviousPanel()
                         end
-                        self:showPreviousPanel()
+                        -- self:showPreviousPanel()
                     end,
                     OnClosePanel = function()
                         self:showPreviousPanel()
