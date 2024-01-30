@@ -158,6 +158,17 @@ local function EditDatasetUI(props: Props)
                     TextXAlignment = Enum.TextXAlignment.Center,
                 })
             )
+            add(
+                children,
+                Button({
+                    -- Active = false,
+                    Label = "Export MapData",
+                    LayoutOrder = incrementLayoutOrder(),
+                    OnActivated = props.ExportMapData,
+                    Size = buttonSize,
+                    TextXAlignment = Enum.TextXAlignment.Center,
+                })
+            )
         else
             add(
                 children,

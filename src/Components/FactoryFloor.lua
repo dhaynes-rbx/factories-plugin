@@ -17,6 +17,8 @@ local Scene = require(script.Parent.Parent.Scene)
 local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder)
 local FishBloxComponents = FishBlox.Components
 
+local conveyorEndpointOffsetAmount = 2
+
 type Props = {
     Machines: { Types.Machine },
     OnMachineSelect: (Types.Machine, Instance) -> nil,
@@ -168,7 +170,8 @@ local FactoryFloor = function(props: Props)
             return a.sortingPosition.X < b.sortingPosition.X
         end)
         for i, belt in ipairs(beltsIn) do
-            belt.inPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsIn - 1) * 3 / 2), 0, -5)
+            belt.inPosition = machinePosition
+                + Vector3.new((i - 1) * 3 - ((#beltsIn - 1) * 3 / 2), 0, -conveyorEndpointOffsetAmount)
         end
 
         --Find the "out" belts, which are on the right side of the machine.
@@ -194,7 +197,8 @@ local FactoryFloor = function(props: Props)
             return a.destinationPosition.X < b.destinationPosition.X
         end)
         for i, belt in ipairs(beltsOut) do
-            belt.outPosition = machinePosition + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, 5)
+            belt.outPosition = machinePosition
+                + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, conveyorEndpointOffsetAmount)
         end
 
         --If this machine is a makerSeller, then that means it outputs a product that has a value, and it also is not the source of any other machines.

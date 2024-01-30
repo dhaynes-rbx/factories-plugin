@@ -4,15 +4,15 @@
             "powerups": [
                 {
                     "locDesc": "",
-                    "type": "scaleMaxStorage",
+                    "maxUsage": -1,
+                    "value": 2,
                     "cost": {
                         "count": 1,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-storage-max",
                     "id": "doubleStorage",
-                    "maxUsage": -1,
-                    "value": 2,
+                    "type": "scaleMaxStorage",
+                    "thumb": "powerup-storage-max",
                     "locName": "2x Storage Max"
                 }
             ],
@@ -23,253 +23,25 @@
             "currentStep": 0,
             "id": "tutorialMap",
             "locName": "Factory",
-            "locDesc": "",
-            "machines": [
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": 25.1812744140625,
-                        "Z": -22.713777542114259
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": false,
-                    "machineAnchor": "0_862677",
-                    "asset": "Assets.Machines.Purchaser",
-                    "storage": [],
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    },
-                    "coordinates": {
-                        "Y": 0,
-                        "X": 0
-                    },
-                    "currentOutputCount": 15,
-                    "id": "peanutButterPurchaser",
-                    "locName": "Peanut Butter Purchaser",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "type": "purchaser",
-                    "defaultMaxStorage": 1000,
-                    "outputs": [
-                        "peanutButter"
-                    ]
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": 5.226836204528809,
-                        "Z": -23.117555618286134
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": false,
-                    "machineAnchor": "0_862679",
-                    "asset": "Assets.Machines.Purchaser",
-                    "storage": [],
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    },
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 0
-                    },
-                    "currentOutputCount": 24,
-                    "id": "doughPurchaser",
-                    "locName": "Dough Purchaser",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "type": "purchaser",
-                    "defaultMaxStorage": 1000,
-                    "outputs": [
-                        "dough"
-                    ]
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": -14.454659461975098,
-                        "Z": -23.117555618286134
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": false,
-                    "machineAnchor": "0_862681",
-                    "asset": "Assets.Machines.Purchaser",
-                    "storage": [],
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    },
-                    "coordinates": {
-                        "Y": 4,
-                        "X": 0
-                    },
-                    "currentOutputCount": 30,
-                    "id": "sugarPurchaser",
-                    "locName": "Sugar Purchaser",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "type": "purchaser",
-                    "defaultMaxStorage": 1000,
-                    "outputs": [
-                        "sugar"
-                    ]
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": -34.185176849365237,
-                        "Z": -23.117555618286134
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": false,
-                    "machineAnchor": "0_862683",
-                    "asset": "Assets.Machines.Purchaser",
-                    "storage": [],
-                    "outputRange": {
-                        "min": 0,
-                        "max": 500
-                    },
-                    "coordinates": {
-                        "Y": 6,
-                        "X": 0
-                    },
-                    "currentOutputCount": 20,
-                    "id": "grapePurchaser",
-                    "locName": "Grape Purchaser",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "type": "purchaser",
-                    "defaultMaxStorage": 1000,
-                    "outputs": [
-                        "grapes"
-                    ]
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": 5.226836204528809,
-                        "Z": -3.7738914489746095
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": true,
-                    "machineAnchor": "0_862685",
-                    "asset": "Assets.Machines.Machine-Default",
-                    "sources": [
-                        "doughPurchaser"
-                    ],
-                    "storage": [],
-                    "outputs": [
-                        "crustyBread",
-                        "crustlessBread"
-                    ],
-                    "type": "maker",
-                    "currentOutputCount": 10,
-                    "id": "breadMaker",
-                    "locName": "Bread Maker",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "defaultMaxStorage": 100,
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 2
-                    },
-                    "outputRange": {
-                        "min": 0,
-                        "max": 50
-                    }
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": -14.479378700256348,
-                        "Z": -3.7738914489746095
-                    },
-                    "defaultProductionDelay": 1,
-                    "supportsPowerup": true,
-                    "machineAnchor": "0_862687",
-                    "asset": "Assets.Machines.Machine-Default",
-                    "sources": [
-                        "sugarPurchaser",
-                        "grapePurchaser"
-                    ],
-                    "storage": [],
-                    "outputs": [
-                        "jelly"
-                    ],
-                    "type": "maker",
-                    "currentOutputCount": 20,
-                    "id": "jellyMaker",
-                    "locName": "Jelly Maker",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "defaultMaxStorage": 100,
-                    "coordinates": {
-                        "Y": 4,
-                        "X": 2
-                    },
-                    "outputRange": {
-                        "min": 0,
-                        "max": 50
-                    }
-                },
-                {
-                    "worldPosition": {
-                        "Y": 0.147902250289917,
-                        "X": 5.226836204528809,
-                        "Z": 22.206966400146486
-                    },
-                    "defaultProductionDelay": 0,
-                    "supportsPowerup": false,
-                    "machineAnchor": "0_862689",
-                    "asset": "Assets.Machines.Seller",
-                    "sources": [
-                        "peanutButterPurchaser",
-                        "breadMaker",
-                        "jellyMaker"
-                    ],
-                    "storage": [],
-                    "outputs": [
-                        "crustySandwich",
-                        "crustlessSandwich"
-                    ],
-                    "type": "makerSeller",
-                    "currentOutputCount": 12,
-                    "id": "sandwichMaker",
-                    "locName": "Sandwich Maker",
-                    "state": "ready",
-                    "currentOutputIndex": 1,
-                    "thumb": "",
-                    "defaultMaxStorage": 100,
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 6
-                    },
-                    "outputRange": {
-                        "min": 0,
-                        "max": 50
-                    }
-                }
-            ],
-            "thumb": "",
             "items": {
-                "sugar": {
-                    "thumb": "icon-sugar",
-                    "id": "sugar",
+                "jelly": {
+                    "thumb": "icon-jelly",
+                    "id": "jelly",
                     "requirements": [
                         {
-                            "count": 0.2,
-                            "itemId": "currency"
+                            "count": 3,
+                            "itemId": "sugar"
+                        },
+                        {
+                            "count": 2,
+                            "itemId": "grapes"
                         }
                     ],
                     "asset": "",
-                    "locName": "Sugar"
+                    "locName": {
+                        "plural": "Jelly",
+                        "singular": "Jelly"
+                    }
                 },
                 "creamyPeanutButter": {
                     "thumb": "icon-printedSheet",
@@ -461,36 +233,17 @@
                     "asset": "",
                     "locName": "Crunchy Peanut Butter"
                 },
-                "jelly": {
-                    "thumb": "icon-jelly",
-                    "id": "jelly",
+                "sugar": {
+                    "thumb": "icon-sugar",
+                    "id": "sugar",
                     "requirements": [
                         {
-                            "count": 3,
-                            "itemId": "sugar"
-                        },
-                        {
-                            "count": 2,
-                            "itemId": "grapes"
+                            "count": 0.2,
+                            "itemId": "currency"
                         }
                     ],
                     "asset": "",
-                    "locName": {
-                        "plural": "Jelly",
-                        "singular": "Jelly"
-                    }
-                },
-                "crustlessBread": {
-                    "thumb": "icon-doubleBreadNoCrust",
-                    "id": "crustlessBread",
-                    "requirements": [
-                        {
-                            "count": 2,
-                            "itemId": "dough"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Crustless Bread"
+                    "locName": "Sugar"
                 },
                 "peanuts": {
                     "thumb": "icon-paper",
@@ -506,6 +259,18 @@
                         "plural": "Peanuts",
                         "singular": "Peanut"
                     }
+                },
+                "crustlessBread": {
+                    "thumb": "icon-doubleBreadNoCrust",
+                    "id": "crustlessBread",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crustless Bread"
                 },
                 "dough": {
                     "thumb": "icon-dough",
@@ -527,52 +292,287 @@
                     "locName": "None"
                 }
             },
+            "totalStepsRun": 0,
+            "machines": [
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 25.1812744140625,
+                        "Z": -22.71377754211426
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862677",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "max": 500,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "currentOutputCount": 15,
+                    "id": "peanutButterPurchaser",
+                    "locName": "Peanut Butter Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "purchaser",
+                    "outputs": [
+                        "peanutButter"
+                    ],
+                    "defaultMaxStorage": 1000
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -23.117555618286138
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862679",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "max": 500,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "currentOutputCount": 24,
+                    "id": "doughPurchaser",
+                    "locName": "Dough Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "purchaser",
+                    "outputs": [
+                        "dough"
+                    ],
+                    "defaultMaxStorage": 1000
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.454659461975098,
+                        "Z": -23.117555618286138
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862681",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "max": 500,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "currentOutputCount": 30,
+                    "id": "sugarPurchaser",
+                    "locName": "Sugar Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "purchaser",
+                    "outputs": [
+                        "sugar"
+                    ],
+                    "defaultMaxStorage": 1000
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -34.185176849365237,
+                        "Z": -23.117555618286138
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862683",
+                    "asset": "Assets.Machines.Purchaser",
+                    "storage": [],
+                    "outputRange": {
+                        "max": 500,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 6,
+                        "X": 0
+                    },
+                    "currentOutputCount": 20,
+                    "id": "grapePurchaser",
+                    "locName": "Grape Purchaser",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "purchaser",
+                    "outputs": [
+                        "grapes"
+                    ],
+                    "defaultMaxStorage": 1000
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": -3.77389144897461
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_862685",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "doughPurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "max": 50,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 2
+                    },
+                    "currentOutputCount": 10,
+                    "id": "breadMaker",
+                    "locName": "Bread Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "maker",
+                    "outputs": [
+                        "crustyBread",
+                        "crustlessBread"
+                    ],
+                    "defaultMaxStorage": 100
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": -14.479378700256348,
+                        "Z": -3.77389144897461
+                    },
+                    "defaultProductionDelay": 1,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_862687",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "sources": [
+                        "sugarPurchaser",
+                        "grapePurchaser"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "max": 50,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 2
+                    },
+                    "currentOutputCount": 20,
+                    "id": "jellyMaker",
+                    "locName": "Jelly Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "maker",
+                    "outputs": [
+                        "jelly"
+                    ],
+                    "defaultMaxStorage": 100
+                },
+                {
+                    "worldPosition": {
+                        "Y": 0.147902250289917,
+                        "X": 5.226836204528809,
+                        "Z": 22.206966400146489
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": false,
+                    "machineAnchor": "0_862689",
+                    "asset": "Assets.Machines.Seller",
+                    "sources": [
+                        "peanutButterPurchaser",
+                        "breadMaker",
+                        "jellyMaker"
+                    ],
+                    "storage": [],
+                    "outputRange": {
+                        "max": 50,
+                        "min": 0
+                    },
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 6
+                    },
+                    "currentOutputCount": 12,
+                    "id": "sandwichMaker",
+                    "locName": "Sandwich Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "type": "makerSeller",
+                    "outputs": [
+                        "crustySandwich",
+                        "crustlessSandwich"
+                    ],
+                    "defaultMaxStorage": 100
+                }
+            ],
+            "thumb": "",
+            "locDesc": "",
             "stepUnit": {
                 "plural": "hours",
                 "singular": "hour"
             },
-            "totalStepsRun": 0,
             "stepsPerRun": 24
         },
         {
             "powerups": [
                 {
                     "locDesc": "",
-                    "type": "scaleMaxOutput",
+                    "maxUsage": -1,
+                    "value": 2,
                     "cost": {
                         "count": 3,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-production-max",
                     "id": "doubleMaxOutput",
-                    "maxUsage": -1,
-                    "value": 2,
+                    "type": "scaleMaxOutput",
+                    "thumb": "powerup-production-max",
                     "locName": "2x Output Max"
                 },
                 {
                     "locDesc": "",
-                    "type": "scaleRequirements",
+                    "maxUsage": -1,
+                    "value": 0.5,
                     "cost": {
                         "count": 5,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-half-input-costs",
                     "id": "halfInputs",
-                    "maxUsage": -1,
-                    "value": 0.5,
+                    "type": "scaleRequirements",
+                    "thumb": "powerup-half-input-costs",
                     "locName": "1/2 Materials Needed"
                 },
                 {
                     "locDesc": "",
-                    "type": "scaleProductionSteps",
+                    "maxUsage": -1,
+                    "value": 0,
                     "cost": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "thumb": "powerup-production-speed",
                     "id": "zeroProductionSteps",
-                    "maxUsage": -1,
-                    "value": 0,
+                    "type": "scaleProductionSteps",
+                    "thumb": "powerup-production-speed",
                     "locName": "1 Hour Production Time"
                 }
             ],
@@ -583,19 +583,118 @@
             "currentStep": 0,
             "id": "mapA",
             "locName": "Factory",
-            "locDesc": "",
+            "items": {
+                "fluff": {
+                    "thumb": "icon-bread",
+                    "id": "fluff",
+                    "requirements": [
+                        {
+                            "count": 10,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Fluff"
+                },
+                "demoncat": {
+                    "value": {
+                        "count": 100,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-led",
+                    "id": "demoncat",
+                    "requirements": [
+                        {
+                            "count": 5,
+                            "itemId": "kitten"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Demon Cat"
+                },
+                "fish": {
+                    "thumb": "icon-bikeWheels",
+                    "id": "fish",
+                    "requirements": [
+                        {
+                            "count": 4,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Fish"
+                },
+                "currency": {
+                    "thumb": "",
+                    "id": "currency",
+                    "asset": "",
+                    "locName": "Money"
+                },
+                "cat": {
+                    "value": {
+                        "count": 20,
+                        "itemId": "currency"
+                    },
+                    "thumb": "icon-rock",
+                    "id": "cat",
+                    "requirements": [
+                        {
+                            "count": 10,
+                            "itemId": "kitten"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Cat"
+                },
+                "milk": {
+                    "thumb": "icon-tree",
+                    "id": "milk",
+                    "requirements": [
+                        {
+                            "count": 5,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Milk"
+                },
+                "kitten": {
+                    "thumb": "icon-robotParts",
+                    "id": "kitten",
+                    "requirements": [
+                        {
+                            "count": 5,
+                            "itemId": "fluff"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Kitten"
+                },
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [
+                        {
+                            "count": 0,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "None"
+                }
+            },
+            "totalStepsRun": 0,
             "machines": [
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": 8.280792236328125,
+                        "X": 22.280792236328126,
                         "Z": -29.61737060546875
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_870778",
-                    "asset": "Assets.Machines.Purchaser",
-                    "sources": [],
+                    "machineAnchor": "0_1110310",
+                    "asset": "Assets.Machines.Machine-Default",
                     "storage": [],
                     "outputRange": {
                         "min": 0,
@@ -603,14 +702,14 @@
                     },
                     "type": "purchaser",
                     "defaultMaxStorage": 100,
-                    "id": "buttsMaker",
-                    "locName": "None",
+                    "id": "fluffmaker",
+                    "locName": "Fluff Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "currentOutputCount": 40,
+                    "currentOutputCount": 5,
                     "outputs": [
-                        "butts"
+                        "fluff"
                     ],
                     "coordinates": {
                         "Y": 0,
@@ -620,14 +719,18 @@
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": -24.168128967285158,
-                        "Z": -29.61737060546875
+                        "X": 12.280792236328125,
+                        "Z": -1.5106658935546876
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_872723",
+                    "machineAnchor": "0_1120514",
                     "asset": "Assets.Machines.Machine-Default",
-                    "sources": [],
+                    "sources": [
+                        "fluffmaker",
+                        "milkmaker",
+                        "fishmaker"
+                    ],
                     "storage": [],
                     "outputRange": {
                         "min": 0,
@@ -635,32 +738,32 @@
                     },
                     "type": "maker",
                     "defaultMaxStorage": 100,
-                    "id": "fartMaker",
-                    "locName": "None",
+                    "id": "kittenmaker",
+                    "locName": "Kitten Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "currentOutputCount": 40,
-                    "outputs": [
-                        "farts"
-                    ],
                     "coordinates": {
-                        "Y": 4,
+                        "Y": 1,
                         "X": 0
-                    }
+                    },
+                    "outputs": [
+                        "kitten"
+                    ],
+                    "currentOutputCount": 10
                 },
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": -7.168128967285156,
+                        "X": 6.280792236328125,
                         "Z": 26.489334106445314
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_875480",
-                    "asset": "Assets.Machines.Seller",
+                    "machineAnchor": "0_1125038",
+                    "asset": "Assets.Machines.Machine-Default",
                     "sources": [
-                        "poopMaker"
+                        "kittenmaker"
                     ],
                     "storage": [],
                     "outputRange": {
@@ -669,129 +772,90 @@
                     },
                     "type": "makerSeller",
                     "defaultMaxStorage": 100,
-                    "id": "joshMaker",
-                    "locName": "None",
+                    "id": "catmaker",
+                    "locName": "Cat Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "currentOutputCount": 40,
-                    "outputs": [
-                        "josh"
-                    ],
                     "coordinates": {
                         "Y": 2,
-                        "X": 4
-                    }
+                        "X": 0
+                    },
+                    "outputs": [
+                        "cat",
+                        "demoncat"
+                    ],
+                    "currentOutputCount": 40
                 },
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": -7.168128967285156,
-                        "Z": -2.5106658935546877
+                        "X": 2.280792236328125,
+                        "Z": -31.61737060546875
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_874766",
+                    "machineAnchor": "0_1130459",
                     "asset": "Assets.Machines.Machine-Default",
-                    "sources": [
-                        "buttsMaker",
-                        "fartMaker"
-                    ],
                     "storage": [],
                     "outputRange": {
                         "min": 0,
                         "max": 50
                     },
-                    "type": "maker",
+                    "type": "purchaser",
                     "defaultMaxStorage": 100,
-                    "id": "poopMaker",
-                    "locName": "None",
+                    "id": "milkmaker",
+                    "locName": "Milk Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "currentOutputCount": 40,
-                    "outputs": [
-                        "poop"
-                    ],
                     "coordinates": {
-                        "Y": 2,
-                        "X": 2
-                    }
+                        "Y": 3,
+                        "X": 0
+                    },
+                    "outputs": [
+                        "milk"
+                    ],
+                    "currentOutputCount": 40
+                },
+                {
+                    "worldPosition": {
+                        "Y": 1.0499999523162842,
+                        "X": -29.168128967285158,
+                        "Z": -27.617368698120118
+                    },
+                    "defaultProductionDelay": 0,
+                    "supportsPowerup": true,
+                    "machineAnchor": "0_1140378",
+                    "asset": "Assets.Machines.Machine-Default",
+                    "storage": [],
+                    "outputRange": {
+                        "min": 0,
+                        "max": 50
+                    },
+                    "type": "purchaser",
+                    "defaultMaxStorage": 100,
+                    "id": "fishmaker",
+                    "locName": "Fish Maker",
+                    "state": "ready",
+                    "currentOutputIndex": 1,
+                    "thumb": "",
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "outputs": [
+                        "fish"
+                    ],
+                    "currentOutputCount": 40
                 }
             ],
             "thumb": "",
-            "items": {
-                "currency": {
-                    "id": "currency",
-                    "thumb": "",
-                    "asset": "",
-                    "locName": "Money"
-                },
-                "josh": {
-                    "thumb": "icon-bread",
-                    "id": "josh",
-                    "requirements": [
-                        {
-                            "count": 0.2,
-                            "itemId": "poop"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Template Item"
-                },
-                "butts": {
-                    "thumb": "icon-computerChip",
-                    "id": "butts",
-                    "requirements": [
-                        {
-                            "count": 0.2,
-                            "itemId": "currency"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Template Item"
-                },
-                "farts": {
-                    "thumb": "icon-paintedPopStar",
-                    "id": "farts",
-                    "requirements": [
-                        {
-                            "count": 0.2,
-                            "itemId": "currency"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Template Item"
-                },
-                "poop": {
-                    "thumb": "icon-mountainPlayset5",
-                    "id": "poop",
-                    "requirements": [
-                        {
-                            "count": 0.2,
-                            "itemId": "butts"
-                        },
-                        {
-                            "count": 0.2,
-                            "itemId": "farts"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Template Item"
-                },
-                "none": {
-                    "thumb": "",
-                    "id": "none",
-                    "requirements": [],
-                    "asset": "",
-                    "locName": "None"
-                }
-            },
+            "locDesc": "",
             "stepUnit": {
                 "plural": "hours",
                 "singular": "hour"
             },
-            "totalStepsRun": 0,
             "stepsPerRun": 24
         }
     ],

@@ -45,6 +45,7 @@ local FactoryFloor = require(script.Parent.FactoryFloor)
 local Types = require(script.Parent.Parent.Types)
 local SelectMachineUI = require(script.Parent.SelectMachineUI)
 local SelectItemUI = require(script.Parent.SelectItemUI)
+local GetMapData = require(script.Parent.Parent.GetMapData)
 
 function App:setPanel()
     Studio.setSelectionTool()
@@ -238,10 +239,6 @@ function App:render()
                             self:changePanel(Panels.EditFactoryUI)
                         end,
 
-                        -- ShowEditItemsListUI = function()
-                        --     self:changePanel(Panels.SelectItemUI)
-                        -- end,
-
                         ExportDataset = function()
                             DatasetInstance.write(self.state.dataset)
                             local datasetInstance = DatasetInstance.getDatasetInstance()
@@ -273,6 +270,23 @@ function App:render()
                             Scene.updateAllMapAssets(currentMap)
                             self:setState({ dataset = dataset, datasetIsLoaded = true, currentMap = currentMap })
                             self:updateDataset(dataset)
+                        end,
+
+                        ExportMapData = function()
+                            local mapData = GetMapData()
+                            local tempMapDataInstance = Instance.new("ModuleScript")
+                            tempMapDataInstance.Source = "return "
+                                .. Dash.pretty(mapData, { multiline = true, indent = "\t", depth = 10 })
+                            tempMapDataInstance.Name = self.state.dataset.maps[self.state.currentMapIndex].scene
+                                .. "-Data"
+                            tempMapDataInstance.Parent = game.Workspace
+                            Selection:Set({ tempMapDataInstance })
+                            local fileSaved = getfenv(0).plugin:PromptSaveSelection()
+                            if fileSaved then
+                                print("MapData File saved")
+                            end
+                            Selection:Set({})
+                            tempMapDataInstance:Destroy()
                         end,
 
                         UpdateDataset = function(dataset)

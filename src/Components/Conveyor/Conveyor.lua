@@ -96,9 +96,9 @@ function Conveyor(props: Props)
     React.useEffect(function()
         --Create a model to hold the control points
 
-        local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getCurrentMapFolder())
+        local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getConveyorFolderForCurrentMap())
         local controlPointsFolder: Folder = Utilities.getValueAtPath(conveyorFolder, "ControlPoints")
-        if controlPointsFolder then
+        if controlPointsFolder and #controlPointsFolder:GetChildren() > 1 then
             controlPoints = refreshControlPoints(conveyorFolder)
         else
             getOrCreateFolder("ControlPoints", conveyorFolder)
@@ -127,7 +127,6 @@ function Conveyor(props: Props)
         setMidpointValue(midpointAdjustment.Value)
 
         local connection: RBXScriptConnection = midpointAdjustment.Changed:Connect(function(number)
-            print("Midpoint changed:", number)
             setMidpointValue(number)
         end)
 
@@ -201,7 +200,6 @@ function Conveyor(props: Props)
         controlPointComponents[point.Name] = ControlPoint({
             Name = point.Name,
             Conveyor = conveyorFolder,
-            PartRef = point.PartRef,
             Position = point.Position,
             UpdatePosition = function(controlPointName: string, position: Vector3)
                 local updatedControlPoints = table.clone(controlPoints)

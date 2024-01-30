@@ -44,7 +44,8 @@ function Dataset:cleanMachines()
                 end
             end
             if not machineIsASourceForAnotherMachine then
-                warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
+                --Make an error, here
+                -- warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
             end
         end
     end
@@ -87,7 +88,6 @@ function Dataset:cleanItems()
             end
         end
     end
-    print("Items:", items)
 end
 
 function Dataset:checkForErrors()
@@ -112,8 +112,6 @@ end
 
 function Dataset:updateDataset(dataset, currentMapIndex)
     assert(dataset, "Dataset error! Dataset is nil!")
-
-    print("Updating dataset...")
 
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]

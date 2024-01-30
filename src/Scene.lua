@@ -196,7 +196,7 @@ function Scene.getMapFolder(mapIndex)
     return folder
 end
 
-function Scene.getCurrentMapFolder()
+function Scene.getConveyorFolderForCurrentMap()
     local folder = Scene.getMapFolder(Scene.getCurrentMapIndexAccordingToScene())
     return folder
 end
@@ -215,7 +215,7 @@ function Scene.getBeltDataFolder()
 end
 
 function Scene.getConveyorFolder(name: string)
-    local folder = Scene.getCurrentMapFolder()
+    local folder = Scene.getConveyorFolderForCurrentMap()
     local beltFolder = folder:FindFirstChild(name)
     if beltFolder then
         return beltFolder
@@ -236,7 +236,6 @@ function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
     -- local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
     -- if conveyorFolder then
     if not midpointAdjustmentsFolder then
-        print("No midpoint adjustments folder")
         return nil
     end
     local midpointAdjustment: NumberValue = midpointAdjustmentsFolder:FindFirstChild(conveyorName)
@@ -261,16 +260,33 @@ end
 
 function Scene.removeConveyors(machine: Types.Machine)
     local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
-    local folder = Utilities.getConveyorFolder(conveyorName)
-    for _, conveyor: Folder in folder:GetChildren() do
+    --find a conveyor with this name
+    local folder = Scene.getConveyorFolderForCurrentMap()
+    local beltsFolder = Scene.getBeltsFolder()
+    local beltDataFolder = Scene.getBeltDataFolder()
+    for _, conveyor in folder:GetChildren() do
         local splitName = conveyor.Name:split("-")
         if splitName[1] == conveyorName then
+            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
+            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
-        end
-        if #splitName > 1 and splitName[2] == conveyorName then
+        elseif #splitName > 1 and splitName[2] == conveyorName then
+            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
+            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
         end
     end
+    -- local folder = Scene.getConveyorFolder(conveyorName)
+
+    -- for _, conveyor: Folder in folder:GetChildren() do
+    --     local splitName = conveyor.Name:split("-")
+    --     if splitName[1] == conveyorName then
+    --         conveyor:Destroy()
+    --     end
+    --     if #splitName > 1 and splitName[2] == conveyorName then
+    --         conveyor:Destroy()
+    --     end
+    -- end
 end
 
 return Scene
