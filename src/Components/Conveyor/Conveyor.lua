@@ -95,7 +95,6 @@ function Conveyor(props: Props)
 
     React.useEffect(function()
         --Create a model to hold the control points
-        print("Conveyor created")
 
         local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getConveyorFolderForCurrentMap())
         local controlPointsFolder: Folder = Utilities.getValueAtPath(conveyorFolder, "ControlPoints")

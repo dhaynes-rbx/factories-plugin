@@ -355,6 +355,20 @@ function Dataset:getValidItems(excludeOutputsInUse: boolean)
     return result
 end
 
+function Dataset:getMachineTypeFromItemId(itemId: string)
+    local machineType = Constants.MachineTypes.invalid
+    for _, machine in self.machines do
+        if machine.outputs then
+            for _, outputId in machine.outputs do
+                if outputId == itemId then
+                    machineType = machine.type
+                end
+            end
+        end
+    end
+    return machineType
+end
+
 function Dataset:resolveDuplicateId(idToCheck: string, tableToCheck: table)
     local dupeCounter = 0
     local function checkIds(id)

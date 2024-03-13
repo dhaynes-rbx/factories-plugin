@@ -39,6 +39,7 @@ local Types = require(script.Parent.Parent.Types)
 local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
+local Constants = require(script.Parent.Parent.Constants)
 type Props = {
     CurrentMapIndex: number,
     Dataset: table,
@@ -63,10 +64,6 @@ local function EditItemUI(props: Props)
     local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
     local itemSalePrice = item.value and item.value.count or 0
 
-    -- if item.value then
-    --     itemSalePrice = item.value.count
-    -- setItemSalePrice(itemSalePrice)
-    -- end
     local itemCost = 0
     if item.requirements then
         for _, requirement in item.requirements do
@@ -141,6 +138,10 @@ local function EditItemUI(props: Props)
         end
     end
 
+    local showCost = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.purchaser
+    local showSalePrice = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.makerSeller
+    local hideRequirements = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.purchaser
+
     local children = {
         ID = TextItem({
             Text = "ID: " .. item.id,
@@ -184,56 +185,72 @@ local function EditItemUI(props: Props)
             end,
         }),
 
-        SalePrice = InlineNumberInput({
-            LayoutOrder = layoutOrder:Increment(),
-            Label = "Sale Price",
-            Value = itemSalePrice,
+        SalePrice = showSalePrice
+                and InlineNumberInput({
+                    LayoutOrder = layoutOrder:Increment(),
+                    Label = "Sale Price",
+                    Value = itemSalePrice,
 
-            OnReset = function() end,
-            OnChanged = function(value)
-                value = tonumber(FormatText.numbersOnly(value))
-                if value then
-                    if value == 0 then
-                        item.value = nil
-                    else
-                        item.value = {
-                            itemId = "currency",
-                            count = value,
-                        }
-                    end
-                    -- setItemSalePrice(value)
-                    props.UpdateDataset()
-                end
-            end,
-        }),
-
-        Cost = InlineNumberInput({
-            LayoutOrder = layoutOrder:Increment(),
-            Label = "Cost",
-            Value = itemCost,
-
-            OnReset = function() end,
-            OnChanged = function(value)
-                value = FormatText.numbersOnly(value)
-                if tonumber(value) then
-                    for _, requirement in ipairs(item.requirements) do
-                        if requirement.itemId == "currency" then
-                            requirement.count = value
+                    OnReset = function() end,
+                    OnChanged = function(value)
+                        value = tonumber(FormatText.numbersOnly(value))
+                        if value then
+                            if value == 0 then
+                                item.value = nil
+                            else
+                                item.value = {
+                                    itemId = "currency",
+                                    count = value,
+                                }
+                            end
+                            -- setItemSalePrice(value)
+                            props.UpdateDataset()
                         end
-                    end
-                    -- setItemCost(value)
-                    props.UpdateDataset()
-                end
-            end,
-        }),
+                    end,
+                })
+            or TextItem({
+                Text = "Sale Price: An item will only have a sale price if it is the output of a makerSeller.",
+                TextSize = 12,
+                LayoutOrder = layoutOrder:Increment(),
+            }),
 
-        AddRequirements = LabeledAddButton({
+        Cost = showCost
+                and InlineNumberInput({
+                    LayoutOrder = layoutOrder:Increment(),
+                    Label = "Cost",
+                    Value = itemCost,
+
+                    OnReset = function() end,
+                    OnChanged = function(value)
+                        value = FormatText.numbersOnly(value)
+                        if tonumber(value) then
+                            for _, requirement in ipairs(item.requirements) do
+                                if requirement.itemId == "currency" then
+                                    requirement.count = value
+                                end
+                            end
+                            -- setItemCost(value)
+                            props.UpdateDataset()
+                        end
+                    end,
+                })
+            or TextItem({
+                Text = "Cost: An item only has a cost if it is the output of a purchaser.",
+                TextSize = 12,
+                LayoutOrder = layoutOrder:Increment(),
+            }),
+
+        AddRequirements = not hideRequirements and LabeledAddButton({
             LayoutOrder = layoutOrder:Increment(),
             Label = "Requirements",
 
             OnActivated = function()
                 props.OnAddRequirement(item)
             end,
+        }) or TextItem({
+            Text = "Requirements: An item outputted by a purchaser should not have any requirements.",
+            TextSize = 12,
+            LayoutOrder = layoutOrder:Increment(),
         }),
 
         RequirementItems = Column({
