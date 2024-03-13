@@ -53,7 +53,52 @@ end
 
 function Dataset:cleanItems()
     local items = self.items
-    for _, item in items do
+    for key, item in pairs(items) do
+        --Check the items based on machine type. There are certain requirements for certain machines.
+        --PUrchasers: Each item should have a cost, and no requirements.
+        --Makers: Each item should have requirements, and no cost (Requirement of Currency) and no value (Sale Price)
+        --MakerSellers: Each item should have requirements, and a value (Sale Price), but no cost (Requirement of Currency)
+        local machineType = self:getMachineTypeFromItemId(item.id)
+        if machineType == Constants.MachineTypes.purchaser then
+            --Prune the requirements array of anything that is not "currency"
+            if #item.requirements == 1 and item.requirements[1].itemId == "currency" then
+                --Do nothing
+            elseif #item.requirements > 0 then
+                local currencyAmount = nil
+                for i, requirement in ipairs(items[key].requirements) do
+                    if requirement.itemId == "currency" then
+                        currencyAmount = requirement.count
+                    end
+                end
+                if currencyAmount then
+                    print("Updating requirement for purchaser item to make sure it's only currency...", item.id)
+                    items[key].requirements = {}
+                    items[key].requirements[1] = { itemId = "currency", count = currencyAmount }
+                else
+                    print("Adding currency requirement (Sale Cost) to purchaser item...", item.id)
+                    items[key].requirements = getTemplateItem().requirements
+                end
+                if item.value ~= nil then
+                    print("Removing value from purchaser item...", item.id)
+                    items[key].value = nil
+                end
+            end
+        elseif machineType == Constants.MachineTypes.maker then
+            if item.value ~= nil then
+                print("Removing value from maker item...", item.id)
+                items[key].value = nil
+            end
+        elseif machineType == Constants.MachineTypes.makerSeller then
+            if item.value == nil then
+                print("Adding value to makerSeller item...", item.id)
+                items[key].value = {
+                    count = 5,
+                    itemId = "currency",
+                }
+            end
+        end
+
+        item = items[key]
         --If there's more than one requirement, make sure one of them isn't "currency". If so this should be removed. You can't require currency AND another item.
         if item.requirements then
             if #item.requirements > 1 then
@@ -86,6 +131,7 @@ function Dataset:cleanItems()
                     local resetRequirement = table.clone(getTemplateItem().requirements)[1]
                     item.requirements[i] = resetRequirement
                 else
+                    --TODO: Fix this. Does it even work? It should be modifying the item table directly, not the local "requirement" variable
                     requirement.count = tonumber(requirement.count)
                 end
             end
@@ -356,7 +402,7 @@ function Dataset:getValidItems(excludeOutputsInUse: boolean)
 end
 
 function Dataset:getMachineTypeFromItemId(itemId: string)
-    local machineType = Constants.MachineTypes.invalid
+    local machineType = Constants.None
     for _, machine in self.machines do
         if machine.outputs then
             for _, outputId in machine.outputs do

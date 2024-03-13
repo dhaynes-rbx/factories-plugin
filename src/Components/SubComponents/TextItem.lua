@@ -27,7 +27,7 @@ local function TextItem(props: Props)
             BackgroundTransparency = 1,
             Size = UDim2.fromScale(0, 1),
 
-            [ReactRoblox.Event.Activated] = function()
+            [ReactRoblox.Event.Activated] = props.OnActivate and function()
                 props.OnActivate()
             end,
         }),

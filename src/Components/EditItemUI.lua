@@ -40,6 +40,7 @@ local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local Constants = require(script.Parent.Parent.Constants)
+local getTemplateItem = require(script.Parent.Parent.Helpers.getTemplateItem)
 type Props = {
     CurrentMapIndex: number,
     Dataset: table,
@@ -138,9 +139,11 @@ local function EditItemUI(props: Props)
         end
     end
 
-    local showCost = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.purchaser
-    local showSalePrice = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.makerSeller
-    local hideRequirements = Dataset:getMachineTypeFromItemId(item.id) == Constants.MachineTypes.purchaser
+    local machineType = Dataset:getMachineTypeFromItemId(item.id)
+    local showCost = (machineType == Constants.None) or (machineType == Constants.MachineTypes.purchaser)
+    local showSalePrice = (machineType == Constants.None) or (machineType == Constants.MachineTypes.makerSeller)
+    local hideRequirements = machineType == Constants.MachineTypes.purchaser
+    print(machineType)
 
     local children = {
         ID = TextItem({
@@ -220,7 +223,10 @@ local function EditItemUI(props: Props)
                     Label = "Cost",
                     Value = itemCost,
 
-                    OnReset = function() end,
+                    OnReset = function()
+                        item.requirements = getTemplateItem().requirements
+                        props.UpdateDataset()
+                    end,
                     OnChanged = function(value)
                         value = FormatText.numbersOnly(value)
                         if tonumber(value) then

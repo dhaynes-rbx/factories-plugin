@@ -35,4 +35,5 @@ return {
             max = 100,
         },
     },
+    None = "None",
 }
