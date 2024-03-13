@@ -75,8 +75,19 @@ function Dataset:cleanItems()
             end
 
             --Make sure the count is a number, not a string.
-            for _, requirement in item.requirements do
-                requirement.count = tonumber(requirement.count)
+            for i, requirement in ipairs(item.requirements) do
+                if not requirement.count then
+                    print(
+                        "Error! Requirement count is nil! Resetting to default requirement.",
+                        item.id,
+                        item,
+                        requirement
+                    )
+                    local resetRequirement = table.clone(getTemplateItem().requirements)[1]
+                    item.requirements[i] = resetRequirement
+                else
+                    requirement.count = tonumber(requirement.count)
+                end
             end
         else
             --An item should always have a requirement
