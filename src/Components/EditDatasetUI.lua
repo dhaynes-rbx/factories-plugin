@@ -193,16 +193,16 @@ local function EditDatasetUI(props: Props)
         end
     end
 
-    add(
-        children,
-        Button({
-            Label = "Import Dataset",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = props.ImportDataset,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        })
-    )
+    -- add(
+    --     children,
+    --     Button({
+    --         Label = "Import Dataset",
+    --         LayoutOrder = incrementLayoutOrder(),
+    --         OnActivated = props.ImportDataset,
+    --         Size = buttonSize,
+    --         TextXAlignment = Enum.TextXAlignment.Center,
+    --     })
+    -- )
 
     if datasetIsLoaded then
         add(
