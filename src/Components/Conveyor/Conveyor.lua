@@ -93,8 +93,11 @@ function Conveyor(props: Props)
 
     local children = {}
 
+    print("Conveyor...")
+
     React.useEffect(function()
         --Create a model to hold the control points
+        print("Conveyor created")
 
         local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getConveyorFolderForCurrentMap())
         local controlPointsFolder: Folder = Utilities.getValueAtPath(conveyorFolder, "ControlPoints")
@@ -131,13 +134,14 @@ function Conveyor(props: Props)
         end)
 
         return function()
+            print("Conveyor destroyed")
             if connection then
                 connection:Disconnect()
                 connection = nil
             end
-            -- if conveyorFolder then
-            --     conveyorFolder:Destroy()
-            -- end
+            if conveyorFolder then
+                conveyorFolder:Destroy()
+            end
         end
     end, {})
 
