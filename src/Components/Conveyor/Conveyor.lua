@@ -93,8 +93,6 @@ function Conveyor(props: Props)
 
     local children = {}
 
-    print("Conveyor...")
-
     React.useEffect(function()
         --Create a model to hold the control points
         print("Conveyor created")

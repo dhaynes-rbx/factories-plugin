@@ -24,7 +24,6 @@ function BeltSegment(props: Props)
     local conveyorFolder: Folder = Scene.getConveyorFolder(props.Name)
 
     React.useEffect(function()
-        print("Creating belt segment....")
         for _, child in beltsFolder:GetChildren() do
             if child.Name == props.Name then
                 child:Destroy()
@@ -48,7 +47,6 @@ function BeltSegment(props: Props)
         end
 
         return function()
-            print("Cleanup belt segment: ", props, beltPart)
             --get the belt part by the name of the belt segment
             local beltSegmentToDestroy = beltsFolder:FindFirstChild(props.Name)
             if beltSegmentToDestroy then
