@@ -47,6 +47,9 @@ local SelectMachineUI = require(script.Parent.SelectMachineUI)
 local SelectItemUI = require(script.Parent.SelectItemUI)
 local GetMapData = require(script.Parent.Parent.GetMapData)
 
+local pluginVersion = require(script.Parent.Parent.Version)
+local TextItem = require(script.Parent.SubComponents.TextItem)
+
 function App:setPanel()
     Studio.setSelectionTool()
     self:setState({
@@ -198,6 +201,16 @@ function App:render()
                 Position = UDim2.new(0, 0, 0, 42),
                 AutomaticSize = Enum.AutomaticSize.X,
             }, {
+                VersionBlock = Block({
+                    Position = UDim2.fromScale(1, 0),
+                    AnchorPoint = Vector2.new(1, 0),
+                    AutomaticSize = Enum.AutomaticSize.XY,
+                }, {
+                    Version = TextItem({
+                        Text = "Version: " .. pluginVersion,
+                        TextSize = 10,
+                    }),
+                }),
                 AddMachineButton = Block({
                     AnchorPoint = Vector2.new(1, 1),
                     AutomaticSize = Enum.AutomaticSize.XY,
@@ -358,13 +371,7 @@ function App:render()
                         OnClosePanel = function()
                             self:showPreviousPanel()
                         end,
-                        -- OnClick = function(imageKey)
-                        --     -- local item =
-                        --     --     self.state.dataset["maps"][self.state.currentMapIndex]["items"][self.state.selectedItem["id"]]
-                        --     -- item["thumb"] = imageKey
-                        --     -- self:updateDataset(self.state.dataset)
-                        --     self:showPreviousPanel()
-                        -- end,
+
                         OnNewInputMachineChosen = function()
                             self:updateDataset(self.state.dataset)
                             self:showPreviousPanel()
