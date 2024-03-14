@@ -1,4 +1,5 @@
 local module = {}
+local PhysicsService = game:GetService("PhysicsService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
@@ -15,7 +16,12 @@ cylinderTemplate.Shape = Enum.PartType.Cylinder
 local tau = math.pi * 2
 local abs = math.abs
 
-local nodeDensity = 2
+local nodeDensity = 1
+local nodeTemplate = Instance.new("Part")
+nodeTemplate.Size = Vector3.new(0.25, 1, 0.25)
+nodeTemplate.Color = Color3.new(1, 0, 0)
+nodeTemplate.Transparency = 0.85
+nodeTemplate.Locked = true
 
 function generateBend(innerRadius, width, thickness, angle, debugMode)
     if angle <= 0 or angle > tau * (3 / 4) then
@@ -117,9 +123,7 @@ function generateBasicPath(p1: Vector3, p2: Vector3, midpointAdjustment, width, 
 
         local density = math.floor(part1Length * nodeDensity)
         for i = 0, density - 1, 1 do
-            local node = Instance.new("Part")
-            node.Size = Vector3.new(0.25, 1, 0.25)
-            node.Color = Color3.new(1, 0, 0)
+            local node = nodeTemplate:Clone()
             node.CFrame = CFrame.new(p1:Lerp(p1 + Vector3.new(0, 0, part1Length), i / density))
             node.Parent = nodeFolder
             table.insert(nodes, node)
@@ -141,10 +145,7 @@ function generateBasicPath(p1: Vector3, p2: Vector3, midpointAdjustment, width, 
 
         local density = math.floor(magnitude * nodeDensity)
         for i = 0, density, 1 do
-            local node = Instance.new("Part")
-            node.Size = Vector3.new(0.25, 1, 0.25)
-            node.Color = Color3.new(1, 0, 0)
-            -- node.CFrame = CFrame.new(startBend:Lerp(endBend, i / density))
+            local node = nodeTemplate:Clone()
             local xPos = startBend:Lerp(endBend, -math.cos((i / density) * math.pi / 2))
             local zPos = startBend:Lerp(endBend, math.sin((i / density) * math.pi / 2))
             node.CFrame = CFrame.new(Vector3.new(xPos.X + centerRadius * bendingUp, p1.Y, zPos.Z))
@@ -162,9 +163,7 @@ function generateBasicPath(p1: Vector3, p2: Vector3, midpointAdjustment, width, 
 
         local density = math.floor(vertPartLength * nodeDensity)
         for i = 1, density - 1, 1 do
-            local node = Instance.new("Part")
-            node.Size = Vector3.new(0.25, 1, 0.25)
-            node.Color = Color3.new(1, 0, 0)
+            local node = nodeTemplate:Clone()
             node.CFrame = vertPart.CFrame:ToWorldSpace(
                 CFrame.new(
                     Vector3.new(0, 0, -vertPartLength / 2):Lerp(Vector3.new(0, 0, vertPartLength / 2), i / density)
@@ -191,10 +190,7 @@ function generateBasicPath(p1: Vector3, p2: Vector3, midpointAdjustment, width, 
 
         local density = math.floor(magnitude * nodeDensity)
         for i = 0, density, 1 do
-            local node = Instance.new("Part")
-            node.Size = Vector3.new(0.25, 1, 0.25)
-            node.Color = Color3.new(1, 0, 0)
-            -- node.CFrame = CFrame.new(startBend:Lerp(endBend, (i-1) / density))
+            local node = nodeTemplate:Clone()
             local xPos = startBend:Lerp(endBend, math.sin((i / density) * math.pi / 2))
             local zPos = startBend:Lerp(endBend, -math.cos((i / density) * math.pi / 2))
             node.CFrame = CFrame.new(Vector3.new(xPos.X, p1.Y, zPos.Z + centerRadius))
@@ -212,17 +208,12 @@ function generateBasicPath(p1: Vector3, p2: Vector3, midpointAdjustment, width, 
 
         local density = math.floor(part2Length * nodeDensity)
         for i = 0, density - 1, 1 do
-            local node = Instance.new("Part")
-            node.Size = Vector3.new(0.25, 1, 0.25)
-            node.Color = Color3.new(1, 0, 0)
+            local node = nodeTemplate:Clone()
             node.CFrame = CFrame.new(p2:Lerp(p2 - Vector3.new(0, 0, part2Length), i / density))
             node.Parent = nodeFolder
             table.insert(nodes, node)
             node.Name = #nodes
         end
-    end
-    for _, node in nodes do
-        node.Transparency = 0.25
     end
 
     local primaryPart = table.remove(components, 1)

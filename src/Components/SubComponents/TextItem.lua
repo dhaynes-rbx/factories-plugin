@@ -17,7 +17,7 @@ local function TextItem(props: Props)
         AutomaticSize = Enum.AutomaticSize.Y,
     }, {
         label = React.createElement("TextButton", {
-            Active = props.Activate and true or false,
+            Active = props.OnActivate and true or false,
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
             Text = props.Text,
             TextColor3 = Color3.fromRGB(255, 255, 255),
