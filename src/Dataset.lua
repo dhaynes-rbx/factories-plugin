@@ -275,7 +275,7 @@ function Dataset:updateItemId(itemToUpdate: Types.Item, newId: string)
     if itemToUpdate.id == newId then
         return true, itemToUpdate
     end
-    newId = Dataset:resolveDuplicateId(newId, self.machines)
+    newId = Dataset:resolveDuplicateId(newId, self.items)
 
     local originalId = itemToUpdate.id
     local newItem = table.clone(self.items[originalId])

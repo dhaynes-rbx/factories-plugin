@@ -143,7 +143,6 @@ local function EditItemUI(props: Props)
     local showCost = (machineType == Constants.None) or (machineType == Constants.MachineTypes.purchaser)
     local showSalePrice = (machineType == Constants.None) or (machineType == Constants.MachineTypes.makerSeller)
     local hideRequirements = machineType == Constants.MachineTypes.purchaser
-    print(machineType)
 
     local children = {
         ID = TextItem({
