@@ -22,8 +22,14 @@ function Dataset:cleanMachines()
         if machine["sources"] and #machine["sources"] == 0 then
             machine["sources"] = nil
         end
-        if machine["type"] == Constants.MachineTypes.purchaser then
+        local machineType = machine["type"]
+        if machineType == Constants.MachineTypes.purchaser then
             machine.sources = nil
+            machine["asset"] = Constants.MachineAssetPaths.purchaser
+        elseif machineType == Constants.MachineTypes.maker then
+            machine["asset"] = Constants.MachineAssetPaths.maker
+        elseif machineType == Constants.MachineTypes.makerSeller then
+            machine["asset"] = Constants.MachineAssetPaths.makerSeller
         end
     end
 
