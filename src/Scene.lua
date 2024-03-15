@@ -43,7 +43,8 @@ end
 
 function Scene.initScene()
     if not game.Workspace:FindFirstChild("Scene") then
-        local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
+        local scene = script.Parent.Assets.SceneHierarchy:Clone()
+        scene.Name = "Scene"
         scene.Parent = game.Workspace
     end
 
