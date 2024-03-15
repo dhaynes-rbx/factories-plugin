@@ -271,7 +271,8 @@ function Scene.removeConveyors(machine: Types.Machine)
             beltsFolder:FindFirstChild(conveyor.Name):Destroy()
             beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
-        elseif #splitName > 1 and splitName[2] == conveyorName then
+        end
+        if #splitName > 1 and splitName[2] == conveyorName then
             beltsFolder:FindFirstChild(conveyor.Name):Destroy()
             beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
