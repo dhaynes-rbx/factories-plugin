@@ -94,7 +94,6 @@ local function EditMachineUI(props: Props)
                     OnClickRemove = function(sourceToRemove)
                         Dataset:removeSourceFromMachine(machine, sourceToRemove)
                         props.UpdateDataset()
-                        -- setNumConveyorsConnected(numConveyorsConnected - 1)
                     end,
                     OnHover = function(hoveredMachine: Types.Machine)
                         local anchor = hoveredMachine and Scene.getAnchorFromMachine(hoveredMachine)
@@ -181,22 +180,6 @@ local function EditMachineUI(props: Props)
                     midpoint.Value = 0.5
                 end,
                 OnHover = function(bool)
-                    -- local splitName = conveyorName:split("-")
-                    -- print(splitName)
-                    -- local anchor = nil
-                    -- for _, name in splitName do
-                    --     print(name)
-                    --     name = name:gsub("[%(%)%[%]{}]", "")
-                    --     print(name)
-                    --     local coords = name:split(",")
-                    --     print(coords)
-                    --     local hoveredMachine =
-                    --         Dataset:getMachineFromCoordinates(tonumber(coords[1]), tonumber(coords[2]))
-                    --     print(hoveredMachine.id)
-                    --     if hoveredMachine.id ~= props.Machine.id then
-                    --         anchor = Scene.getAnchorFromMachine(hoveredMachine)
-                    --     end
-                    -- end
                     local hover = nil
                     if bool then
                         hover = Scene.getConveyorMeshFromName(conveyorName)

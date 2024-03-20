@@ -121,18 +121,6 @@ function Scene.getMachineAnchors()
     local machinesFolder = Scene.getMachinesFolder()
     return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
 end
--- function Scene.getAnchorFromMachine(machine: table)
---     local result = nil
---     local machineAnchors = Scene.getMachineAnchors()
---     local machineAnchorId = machine["machineAnchor"]
---     for _, machineAnchor in machineAnchors do
---         local debugId = machineAnchor:GetAttribute("debugId")
---         if debugId == machineAnchorId then
---             result = machineAnchor
---         end
---     end
---     return result
--- end
 
 function Scene.getAnchorFromMachine(machine: Types.Machine)
     local anchor = nil
@@ -169,6 +157,7 @@ function Scene.instantiateMachineAnchor(machine: table)
         anchor.Name = anchorName
         anchor.Parent = folder
     end
+    --TODO: Have this be handled by the Machine component.
     -- local machineMeshAssetId = Manifest.machines[Constants.MachineAssetPaths[machine["type"]]]
     -- local success, model = pcall(InsertService.LoadAsset, InsertService, machineMeshAssetId)
     -- if success then
