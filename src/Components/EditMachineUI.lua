@@ -57,7 +57,6 @@ local MachineTypes = {
 }
 
 local function EditMachineUI(props: Props)
-    --use this to create a consistent layout order that plays nice with Roact
     local layoutOrder = Incrementer.new()
 
     local id, setMachineId = React.useState("")
@@ -148,7 +147,6 @@ local function EditMachineUI(props: Props)
         end
     end
     local machines = props.Dataset.maps[props.CurrentMapIndex].machines
-    -- local coords = props.Machine.coordinates
     for _, otherMachine: Types.Machine in machines do
         if otherMachine.sources then
             for _, sourceId: string in otherMachine.sources do
@@ -163,7 +161,6 @@ local function EditMachineUI(props: Props)
         table.insert(conveyorsConnected, Scene.getConveyorBeltName(props.Machine))
     end
 
-    -- for _, conveyor in Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name) do
     for _, conveyorName: string in conveyorsConnected do
         local midpoint: NumberValue = Scene.getMidpointAdjustment(conveyorName)
         local midpointValue = midpoint and midpoint.Value or 0.5
@@ -198,32 +195,6 @@ local function EditMachineUI(props: Props)
             })
         )
     end
-    -- if not conveyorsConnected then
-    --     setConveyorsConnected(Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name))
-    -- else
-    --     for _, conveyor in conveyorsConnected do
-    --         local name = conveyor.Name
-    --         local midpoint: NumberValue = conveyor:FindFirstChild("MidpointAdjustment")
-    --         table.insert(
-    --             midpointAdjustments,
-    --             InlineNumberInput({
-    --                 Value = conveyor:FindFirstChild("MidpointAdjustment").Value,
-    --                 LayoutOrder = layoutOrder:Increment() + 100,
-    --                 Label = "Conveyor " .. conveyor.Name,
-    --                 OnReset = function()
-    --                     midpoint.Value = 0.5
-    --                 end,
-    --                 OnChanged = function(value)
-    --                     if not tonumber(value) then
-    --                         return
-    --                     end
-    --                     value = tonumber(value)
-    --                     midpoint.Value = value
-    --                 end,
-    --             })
-    --         )
-    --     end
-    -- end
 
     local gapAmount = 16
     local children = {
