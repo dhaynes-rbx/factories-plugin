@@ -37,7 +37,6 @@ local Machine = function(props: Props)
         end
 
         if not part then
-            print("Instantiating...")
             part = Scene.instantiateMachineAnchor(props.MachineData)
             props.UpdateDataset()
         end

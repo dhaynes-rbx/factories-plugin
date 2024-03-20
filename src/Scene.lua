@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local InsertService = game:GetService("InsertService")
 
 -- local Dataset = require(script.Parent.Dataset)
 local Utilities = require(script.Parent.Packages.Utilities)
@@ -8,6 +9,8 @@ local MapData = require(script.Parent.MapData)
 local Constants = require(script.Parent.Constants)
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 local Types = require(script.Parent.Types)
+local Manifest = require(script.Parent.Manifest)
+local CollisionGroupManager = require(script.Parent.CollisionGroupManager)
 
 local function registerDebugId(instance: Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
@@ -146,29 +149,44 @@ end
 
 function Scene.instantiateMachineAnchor(machine: table)
     local folder = Scene.getMachinesFolder()
-    print("Instantiating...", machine.id)
 
-    -- local assetPath = string.split(machine["asset"], ".")[3]
     local position = Vector3.new()
     if machine["worldPosition"] then
         position =
             Vector3.new(machine["worldPosition"]["X"], machine["worldPosition"]["Y"], machine["worldPosition"]["Z"])
     end
-    -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
-    --TODO: Figure out why mesh machines are not importing correctly
     local anchor = Scene.getAnchorFromMachine(machine)
+    local anchorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
     if not anchor then
         -- anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
         anchor = Instance.new("Part")
         anchor.Anchored = true
         anchor.Size = Vector3.new(8, 2, 12)
         anchor.Color = Color3.new(0.1, 0.1, 0.1)
-        -- anchor.Transparency = 0.1
+
         local cframe = CFrame.new(position)
         anchor:PivotTo(cframe)
-        anchor.Name = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+        anchor.Name = anchorName
         anchor.Parent = folder
     end
+    -- local machineMeshAssetId = Manifest.machines[Constants.MachineAssetPaths[machine["type"]]]
+    -- local success, model = pcall(InsertService.LoadAsset, InsertService, machineMeshAssetId)
+    -- if success then
+    --     anchor.Transparency = 1
+
+    --     model = model:GetChildren()[1]
+    --     model:FindFirstChild("HighlightMesh"):Destroy()
+    --     local meter = model:FindFirstChild("RadialMeter")
+    --     if meter then
+    --         meter:Destroy()
+    --     end
+
+    --     model:PivotTo(anchor:GetPivot())
+    --     CollisionGroupManager:MakeUnselectable(model)
+    --     model.Parent = game.Workspace
+    -- else
+    --     warn("Could not load machine mesh for machine: " .. anchorName .. ", " .. machine.asset)
+    -- end
 
     local debugId = anchor:GetDebugId()
     machine["machineAnchor"] = debugId
