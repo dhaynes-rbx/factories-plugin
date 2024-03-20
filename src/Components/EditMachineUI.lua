@@ -412,6 +412,31 @@ local function EditMachineUI(props: Props)
             end,
         }),
 
+        DefaultMaxStorage = InlineNumberInput({
+            Value = props.Machine.defaultMaxStorage,
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Storage",
+            OnReset = function()
+                Dataset:updateMachineProperty(
+                    props.Machine,
+                    "defaultMaxStorage",
+                    Constants.Defaults.MachineDefaultMaxStorage
+                )
+                props.UpdateDataset()
+            end,
+            OnChanged = function(value)
+                if not tonumber(value) then
+                    return
+                end
+                value = tonumber(value)
+                if value < 1 then
+                    value = 1
+                end
+                Dataset:updateMachineProperty(props.Machine, "defaultMaxStorage", value)
+                props.UpdateDataset()
+            end,
+        }),
+
         Gap4 = React.createElement("Frame", {
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, gapAmount),
