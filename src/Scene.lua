@@ -146,7 +146,6 @@ function Scene.instantiateMachineAnchor(machine: table)
     local anchor = Scene.getAnchorFromMachine(machine)
     local anchorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
     if not anchor then
-        -- anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
         anchor = Instance.new("Part")
         anchor.Anchored = true
         anchor.Size = Vector3.new(8, 2, 12)

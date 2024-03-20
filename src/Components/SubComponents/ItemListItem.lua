@@ -15,10 +15,6 @@ local Scene = require(script.Parent.Parent.Parent.Scene)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local FishBloxComponents = FishBlox.Components
 
--- local SmallLabel = require(script.Parent.SmallLabel)
--- local SmallButton = require(script.Parent.SmallButton)
--- return React.createElement
-
 type Props = {
     HideArrows: boolean,
     HideEditButton: boolean,
@@ -36,7 +32,6 @@ type Props = {
     OnClickRemove: () -> nil,
     OnHover: () -> nil,
     OnRequirementCountChanged: () -> nil,
-    -- OnResetRequirementCount: () -> nil,
 }
 
 function ItemListItem(props: Props)
