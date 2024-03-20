@@ -109,12 +109,15 @@ local function EditMachineUI(props: Props)
     if machine.outputs then
         for i, outputItem in machine.outputs do
             local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[outputItem]
+            local validRequirements = Dataset:getValidRequirementsForItem(item)
+
             table.insert(
                 outputItems,
                 ItemListItem({
                     Item = item,
                     Label = item.locName,
                     LayoutOrder = i,
+                    Requirements = validRequirements,
                     Thumbnail = item.thumb,
                     OnClickUp = function()
                         --
@@ -131,6 +134,13 @@ local function EditMachineUI(props: Props)
                     end,
                     OnActivated = function()
                         Dash.noop()
+                    end,
+                    OnRequirementCountChanged = function(value, requirement)
+                        for _, changedRequirement in ipairs(item.requirements) do
+                            if changedRequirement.itemId == requirement.itemId then
+                                requirement.count = value
+                            end
+                        end
                     end,
                 })
             )

@@ -228,6 +228,9 @@ end
 
 -- return newName
 -- end
+function Dataset:getItemFromId(id)
+    return self.items[id]
+end
 
 function Dataset:addItem()
     local items = self.items
@@ -403,6 +406,18 @@ function Dataset:getValidItems(excludeOutputsInUse: boolean)
             continue
         end
         result[item.id] = item
+    end
+    return result
+end
+
+function Dataset:getValidRequirementsForItem(item: Types.Item)
+    local result = {}
+    for _, requirement in ipairs(item.requirements) do
+        if requirement.itemId == "currency" or requirement.itemId == "none" then
+            continue
+        else
+            table.insert(result, requirement)
+        end
     end
     return result
 end

@@ -114,6 +114,14 @@ local function EditDatasetUI(props: Props)
                 TextXAlignment = Enum.TextXAlignment.Center,
             })
         end
+
+        children["ImportDatasetButton"] = Button({
+            Label = "Import Dataset",
+            LayoutOrder = layoutOrder:Increment(),
+            OnActivated = props.ImportDataset,
+            Size = buttonSize,
+            TextXAlignment = Enum.TextXAlignment.Center,
+        })
     end
 
     if datasetIsLoaded then

@@ -13,6 +13,7 @@ local TextItem = require(script.Parent.TextItem)
 local Dataset = require(script.Parent.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Parent.Scene)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
+local Incrementer = require(script.Parent.Parent.Parent.Incrementer)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -22,6 +23,7 @@ type Props = {
     Item: Types.Item,
     Label: string,
     RequirementCount: number,
+    Requirements: table,
     LayoutOrder: number,
     Thumbnail: string,
     Unavailable: boolean,
@@ -34,15 +36,151 @@ type Props = {
     OnRequirementCountChanged: () -> nil,
 }
 
+function Requirement(requirement: table, layoutOrder: number, callback: () -> nil)
+    local itemId = requirement.itemId
+    local item = Dataset:getItemFromId(itemId)
+    local locName = item.locName
+    local thumb = item.thumb
+    local count = requirement.count
+    return React.createElement("Frame", {
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        BorderColor3 = Color3.fromRGB(0, 0, 0),
+        BorderSizePixel = 0,
+        LayoutOrder = layoutOrder,
+        Size = UDim2.new(1, 0, 0, 64),
+    }, {
+        uICorner = React.createElement("UICorner", {
+            CornerRadius = UDim.new(0, 6),
+        }),
+
+        uIStroke = React.createElement("UIStroke", {
+            Color = Color3.fromRGB(243, 243, 243),
+            Thickness = 2,
+            Transparency = 0.85,
+        }),
+
+        uIPadding = React.createElement("UIPadding", {
+            PaddingBottom = UDim.new(0, 8),
+            PaddingLeft = UDim.new(0, 8),
+            PaddingRight = UDim.new(0, 8),
+            PaddingTop = UDim.new(0, 8),
+        }),
+
+        labels = React.createElement("Frame", {
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BackgroundTransparency = 1,
+            BorderColor3 = Color3.fromRGB(0, 0, 0),
+            BorderSizePixel = 0,
+            Size = UDim2.fromScale(1, 1),
+        }, {
+            uIListLayout = React.createElement("UIListLayout", {
+                FillDirection = Enum.FillDirection.Horizontal,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+            }),
+
+            imageLabel = React.createElement("ImageLabel", {
+                Image = Manifest.images[thumb],
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                BorderColor3 = Color3.fromRGB(0, 0, 0),
+                BorderSizePixel = 0,
+                LayoutOrder = 1,
+                Position = UDim2.fromScale(0, 0.5),
+                Size = UDim2.new(1, 0, 0, 35),
+            }, {
+                uIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint"),
+            }),
+
+            label = React.createElement("TextLabel", {
+                FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+                Text = locName,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 12,
+                TextTruncate = Enum.TextTruncate.AtEnd,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                AnchorPoint = Vector2.new(1, 0),
+                BackgroundTransparency = 1,
+                LayoutOrder = 2,
+                Position = UDim2.new(0.414, 60, 0, 0),
+                Size = UDim2.fromScale(0.523, 1),
+            }),
+        }),
+        textInput = React.createElement("Frame", {
+            AnchorPoint = Vector2.new(1, 0),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BackgroundTransparency = 1,
+            BorderColor3 = Color3.fromRGB(0, 0, 0),
+            BorderSizePixel = 0,
+            Position = UDim2.fromScale(1, 0),
+            Size = UDim2.new(0, 100, 1, 0),
+        }, {
+            input = FishBloxComponents.TextInput({
+                Value = count,
+                Size = UDim2.new(1, 0, 0, 50),
+                HideLabel = true,
+                MultiLine = false,
+                OnChanged = function(value)
+                    callback(value)
+                end,
+            }),
+        }),
+
+        -- textInput = React.createElement("Frame", {
+        --     AnchorPoint = Vector2.new(1, 0),
+        --     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        --     BackgroundTransparency = 1,
+        --     BorderColor3 = Color3.fromRGB(0, 0, 0),
+        --     BorderSizePixel = 0,
+        --     Position = UDim2.fromScale(1, 0),
+        --     Size = UDim2.new(0, 70, 1, 0),
+        -- }, {
+
+        --     uIStroke1 = React.createElement("UIStroke", {
+        --         Color = Color3.fromRGB(79, 159, 243),
+        --         Thickness = 2,
+        --     }),
+
+        --     uICorner2 = React.createElement("UICorner", {
+        --         CornerRadius = UDim.new(0, 6),
+        --     }),
+
+        --     uIPadding1 = React.createElement("UIPadding", {
+        --         PaddingLeft = UDim.new(0, 8),
+        --         PaddingRight = UDim.new(0, 8),
+        --     }),
+        -- }),
+    })
+end
+
 function ItemListItem(props: Props)
     local hovered, setHovered = React.useState(false)
     local requirementCount, setRequirementCount = React.useState(props.RequirementCount)
+
+    local layoutOrder = Incrementer.new()
+
+    local showRequirements = props.Requirements and #props.Requirements > 0
 
     local showHoverButtons = true
     if props.Unavailable then
         showHoverButtons = false
     else
         showHoverButtons = hovered
+    end
+
+    local requirements = {}
+    if showRequirements then
+        for _, requirement in props.Requirements do
+            table.insert(
+                requirements,
+
+                Requirement(requirement, layoutOrder:Increment() + 10, function(value)
+                    props.OnRequirementCountChanged(value, requirement)
+                end)
+            )
+        end
     end
 
     return React.createElement("Frame", {
@@ -97,7 +235,7 @@ function ItemListItem(props: Props)
             MainFrame = React.createElement("Frame", {
                 Size = UDim2.new(1, 0, 0, 50),
                 BackgroundTransparency = 1,
-                LayoutOrder = 1,
+                LayoutOrder = layoutOrder:Increment(),
             }, {
 
                 HoverButtons = showHoverButtons
@@ -230,7 +368,7 @@ function ItemListItem(props: Props)
                 }),
             }),
             Count = requirementCount and InlineNumberInput({
-                LayoutOrder = 2,
+                LayoutOrder = layoutOrder:Increment(),
                 Label = "Count",
                 Value = requirementCount,
                 OnChanged = function(value)
@@ -244,6 +382,14 @@ function ItemListItem(props: Props)
                     setRequirementCount(5)
                 end,
             }),
+            RequirementColumn = FishBloxComponents.Column({
+                AutomaticSize = Enum.AutomaticSize.Y,
+                Size = UDim2.fromScale(1, 0),
+                FillDirection = Enum.FillDirection.Vertical,
+                Gaps = 12,
+                LayoutOrder = layoutOrder:Increment(),
+                VerticalAlignment = Enum.VerticalAlignment.Top,
+            }, requirements),
         }),
     })
 end
