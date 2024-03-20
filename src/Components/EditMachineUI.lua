@@ -111,6 +111,11 @@ local function EditMachineUI(props: Props)
             local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[outputItem]
             local validRequirements = Dataset:getValidRequirementsForItem(item)
 
+            local machineType = Dataset:getMachineTypeFromItemId(item.id)
+            local showCost = (machineType == Constants.None) or (machineType == Constants.MachineTypes.purchaser)
+            local showSalePrice = (machineType == Constants.None) or (machineType == Constants.MachineTypes.makerSeller)
+            local hideRequirements = machineType == Constants.MachineTypes.purchaser
+
             table.insert(
                 outputItems,
                 ItemListItem({
@@ -119,6 +124,8 @@ local function EditMachineUI(props: Props)
                     LayoutOrder = i,
                     Requirements = validRequirements,
                     Thumbnail = item.thumb,
+                    ShowCost = showCost,
+                    ShowSalePrice = showSalePrice,
                     OnClickUp = function()
                         --
                     end,
@@ -136,11 +143,46 @@ local function EditMachineUI(props: Props)
                         Dash.noop()
                     end,
                     OnRequirementCountChanged = function(value, requirement)
+                        value = FormatText.numbersOnly(value)
+                        if not value then
+                            return
+                        end
                         for _, changedRequirement in ipairs(item.requirements) do
                             if changedRequirement.itemId == requirement.itemId then
                                 requirement.count = value
                             end
                         end
+                        props.UpdateDataset()
+                    end,
+                    OnSalePriceChanged = function(value)
+                        value = FormatText.numbersOnly(value)
+                        if not value then
+                            return
+                        end
+                        if value == 0 then
+                            item.value = nil
+                        else
+                            item.value = {
+                                itemId = "currency",
+                                count = value,
+                            }
+                        end
+                        -- setItemSalePrice(value)
+                        props.UpdateDataset()
+                    end,
+                    OnCostChanged = function(value)
+                        value = FormatText.numbersOnly(value)
+                        if not value then
+                            return
+                        end
+                        if item.requirements then
+                            for _, requirement in ipairs(item.requirements) do
+                                if requirement.itemId == "currency" then
+                                    requirement.count = value
+                                end
+                            end
+                        end
+                        -- setItemCost(value)
                     end,
                 })
             )
@@ -294,7 +336,7 @@ local function EditMachineUI(props: Props)
         }),
 
         OutputItems = Column({
-            Gaps = 8,
+            Gaps = 12,
             AutomaticSize = Enum.AutomaticSize.Y,
             Size = UDim2.new(1, 0, 0, 0),
             LayoutOrder = layoutOrder:Increment(),

@@ -14,6 +14,7 @@ local Dataset = require(script.Parent.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Parent.Scene)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local Incrementer = require(script.Parent.Parent.Parent.Incrementer)
+local FormatText = require(script.Parent.Parent.Parent.FormatText)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -34,6 +35,10 @@ type Props = {
     OnClickRemove: () -> nil,
     OnHover: () -> nil,
     OnRequirementCountChanged: () -> nil,
+    OnSalePriceChanged: () -> nil,
+    OnCostChanged: () -> nil,
+    ShowCost: boolean,
+    ShowSalePrice: boolean,
 }
 
 function Requirement(requirement: table, layoutOrder: number, callback: () -> nil)
@@ -51,7 +56,7 @@ function Requirement(requirement: table, layoutOrder: number, callback: () -> ni
         Size = UDim2.new(1, 0, 0, 64),
     }, {
         uICorner = React.createElement("UICorner", {
-            CornerRadius = UDim.new(0, 6),
+            CornerRadius = UDim.new(0, 4),
         }),
 
         uIStroke = React.createElement("UIStroke", {
@@ -175,13 +180,22 @@ function ItemListItem(props: Props)
         for _, requirement in props.Requirements do
             table.insert(
                 requirements,
-
                 Requirement(requirement, layoutOrder:Increment() + 10, function(value)
                     props.OnRequirementCountChanged(value, requirement)
                 end)
             )
         end
     end
+
+    local itemCost = 0
+    if props.Item.requirements then
+        for _, requirement in props.Item.requirements do
+            if requirement.itemId == "currency" then
+                itemCost = requirement.count
+            end
+        end
+    end
+    local itemSalePrice = props.Item.value and props.Item.value.count or 0
 
     return React.createElement("Frame", {
         AutomaticSize = Enum.AutomaticSize.Y,
@@ -219,7 +233,7 @@ function ItemListItem(props: Props)
             Transparency = props.Unavailable and 0.95 or 0.85,
         }),
         uIPadding = React.createElement("UIPadding", {
-            PaddingBottom = UDim.new(0, 4),
+            PaddingBottom = UDim.new(0, 8),
             PaddingLeft = UDim.new(0, 8),
             PaddingRight = UDim.new(0, 8),
             PaddingTop = UDim.new(0, 4),
@@ -367,6 +381,7 @@ function ItemListItem(props: Props)
                     }),
                 }),
             }),
+
             Count = requirementCount and InlineNumberInput({
                 LayoutOrder = layoutOrder:Increment(),
                 Label = "Count",
@@ -374,14 +389,36 @@ function ItemListItem(props: Props)
                 OnChanged = function(value)
                     value = tonumber(value)
 
-                    props.OnRequirementCountChanged(value)
                     setRequirementCount(value)
+                    props.OnRequirementCountChanged(value)
                 end,
                 OnReset = function()
-                    props.OnRequirementCountChanged(5)
                     setRequirementCount(5)
+                    props.OnRequirementCountChanged(5)
                 end,
             }),
+
+            SalePrice = props.ShowSalePrice and InlineNumberInput({
+                LayoutOrder = layoutOrder:Increment(),
+                Label = "Sale Price",
+                Value = itemSalePrice,
+
+                OnReset = function() end,
+                OnChanged = function(value)
+                    props.OnSalePriceChanged(value)
+                end,
+            }),
+
+            Cost = props.ShowCost and InlineNumberInput({
+                LayoutOrder = layoutOrder:Increment(),
+                Label = "Cost",
+                Value = itemCost,
+                -- OnReset = function() end,
+                OnChanged = function(value)
+                    props.OnCostChanged(value)
+                end,
+            }),
+
             RequirementColumn = FishBloxComponents.Column({
                 AutomaticSize = Enum.AutomaticSize.Y,
                 Size = UDim2.fromScale(1, 0),

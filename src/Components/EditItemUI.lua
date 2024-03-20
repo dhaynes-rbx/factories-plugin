@@ -123,6 +123,7 @@ local function EditItemUI(props: Props)
                                 requirement.count = value
                             end
                         end
+                        props.UpdateDataset()
                     end,
                     OnActivated = function() end,
                     OnClickUp = function() end,
@@ -134,6 +135,8 @@ local function EditItemUI(props: Props)
                         props.UpdateDataset()
                     end,
                     OnHover = function() end,
+                    OnCostChanged = function() end,
+                    OnSalePriceChanged = function() end,
                 })
             )
         end
