@@ -35,10 +35,10 @@ local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local MachineListItem = require(script.Parent.SubComponents.MachineListItem)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local Utilities = require(script.Parent.Parent.Packages.Utilities)
+local RadioButtonGroup = require(script.Parent.SubComponents.RadioButtonGroup)
 
 type Props = {
     AddMachineAnchor: any,
-    -- CurrentMap: table,
     CurrentMapIndex: number,
     Dataset: table,
     Machine: Types.Machine,
@@ -63,18 +63,12 @@ local function EditMachineUI(props: Props)
     local id, setMachineId = React.useState("")
     local currentOutputCount, setCurrentOutputCount = React.useState(props.Machine.currentOutputCount)
     local machineTypeIndex, setMachineTypeIndex = React.useState(MachineTypes[props.Machine["type"]])
-    -- local numConveyorsConnected, setNumConveyorsConnected =
-    --     React.useState(#Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name))
+
     local machine = props.Machine
 
     React.useEffect(function()
         setMachineTypeIndex(MachineTypes[props.Machine["type"]])
     end, { props.Machine["type"] })
-
-    -- React.useEffect(function()
-    --     local conveyors = Scene.getConveyorsConnectedToMachine(props.MachineAnchor.Name)
-    --     print("Conveyors:", conveyors)
-    -- end, { numConveyorsConnected })
 
     local showInputs = machineTypeIndex ~= 1
     local machineInputs = {}

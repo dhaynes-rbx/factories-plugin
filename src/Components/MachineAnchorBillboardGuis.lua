@@ -98,11 +98,10 @@ local function MachineAnchorBillboardGuis(props: Props)
                             Text = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")",
                         }),
                     }),
-                    HighlightBox = React.createElement("SelectionBox", {
+                    HighlightBox = React.createElement("Highlight", {
                         Adornee = props.HighlightedAnchor,
-                        LineThickness = 0.25,
-                        SurfaceColor3 = Color3.fromRGB(0, 255, 38),
-                        Color3 = Color3.fromRGB(38, 255, 0),
+                        FillColor = Color3.fromRGB(0, 255, 21),
+                        FillTransparency = 0.25,
                     }),
                 })
             )

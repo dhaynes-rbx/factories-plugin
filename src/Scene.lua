@@ -162,7 +162,7 @@ function Scene.instantiateMachineAnchor(machine: table)
         anchor.Anchored = true
         anchor.Size = Vector3.new(8, 2, 12)
         anchor.Color = Color3.new(0.1, 0.1, 0.1)
-        anchor.Transparency = 0.1
+        -- anchor.Transparency = 0.1
         local cframe = CFrame.new(position)
         anchor:PivotTo(cframe)
         anchor.Name = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
