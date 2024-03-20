@@ -43,7 +43,8 @@ end
 
 function Scene.initScene()
     if not game.Workspace:FindFirstChild("Scene") then
-        local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
+        local scene = script.Parent.Assets.SceneHierarchy:Clone()
+        scene.Name = "Scene"
         scene.Parent = game.Workspace
     end
 
@@ -270,7 +271,8 @@ function Scene.removeConveyors(machine: Types.Machine)
             beltsFolder:FindFirstChild(conveyor.Name):Destroy()
             beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
-        elseif #splitName > 1 and splitName[2] == conveyorName then
+        end
+        if #splitName > 1 and splitName[2] == conveyorName then
             beltsFolder:FindFirstChild(conveyor.Name):Destroy()
             beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()

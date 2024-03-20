@@ -5,14 +5,14 @@
                 {
                     "locDesc": "",
                     "maxUsage": -1,
-                    "value": 2,
+                    "id": "doubleStorage",
                     "cost": {
                         "count": 1,
                         "itemId": "currency"
                     },
-                    "id": "doubleStorage",
-                    "type": "scaleMaxStorage",
+                    "value": 2,
                     "thumb": "powerup-storage-max",
+                    "type": "scaleMaxStorage",
                     "locName": "2x Storage Max"
                 }
             ],
@@ -60,12 +60,12 @@
                     "locName": "Creamy Peanut Butter"
                 },
                 "peanutButterSandwich": {
+                    "id": "peanutButterSandwich",
+                    "thumb": "icon-giftCard",
                     "value": {
                         "count": 5,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-giftCard",
-                    "id": "peanutButterSandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -84,9 +84,9 @@
                 },
                 "currency": {
                     "id": "currency",
-                    "thumb": "",
+                    "locName": "Money",
                     "asset": "",
-                    "locName": "Money"
+                    "thumb": ""
                 },
                 "crustyBread": {
                     "thumb": "icon-doubleBread",
@@ -101,12 +101,12 @@
                     "locName": "Crusty Bread"
                 },
                 "crustySandwich": {
+                    "id": "crustySandwich",
+                    "thumb": "icon-PBJ",
                     "value": {
                         "count": 10,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-PBJ",
-                    "id": "crustySandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -140,12 +140,12 @@
                     "locName": "Bread"
                 },
                 "crustlessSandwich": {
+                    "id": "crustlessSandwich",
+                    "thumb": "icon-PBJNoCrust",
                     "value": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-PBJNoCrust",
-                    "id": "crustlessSandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -181,25 +181,20 @@
                         "singular": "Grape"
                     }
                 },
-                "peanutButter": {
-                    "thumb": "icon-peanutbutter",
-                    "id": "peanutButter",
-                    "requirements": [
-                        {
-                            "count": 0.5,
-                            "itemId": "currency"
-                        }
-                    ],
+                "none": {
+                    "thumb": "",
+                    "id": "none",
+                    "requirements": [],
                     "asset": "",
-                    "locName": "Peanut Butter"
+                    "locName": "None"
                 },
                 "peanutButterAndJellySandwich": {
+                    "id": "peanutButterAndJellySandwich",
+                    "thumb": "icon-giftCard",
                     "value": {
                         "count": 35,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-giftCard",
-                    "id": "peanutButterAndJellySandwich",
                     "requirements": [
                         {
                             "count": 1,
@@ -245,6 +240,18 @@
                     "asset": "",
                     "locName": "Sugar"
                 },
+                "crustlessBread": {
+                    "thumb": "icon-doubleBreadNoCrust",
+                    "id": "crustlessBread",
+                    "requirements": [
+                        {
+                            "count": 2,
+                            "itemId": "dough"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Crustless Bread"
+                },
                 "peanuts": {
                     "thumb": "icon-paper",
                     "id": "peanuts",
@@ -260,18 +267,6 @@
                         "singular": "Peanut"
                     }
                 },
-                "crustlessBread": {
-                    "thumb": "icon-doubleBreadNoCrust",
-                    "id": "crustlessBread",
-                    "requirements": [
-                        {
-                            "count": 2,
-                            "itemId": "dough"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Crustless Bread"
-                },
                 "dough": {
                     "thumb": "icon-dough",
                     "id": "dough",
@@ -284,12 +279,17 @@
                     "asset": "",
                     "locName": "Dough"
                 },
-                "none": {
-                    "thumb": "",
-                    "id": "none",
-                    "requirements": [],
+                "peanutButter": {
+                    "thumb": "icon-peanutbutter",
+                    "id": "peanutButter",
+                    "requirements": [
+                        {
+                            "count": 0.5,
+                            "itemId": "currency"
+                        }
+                    ],
                     "asset": "",
-                    "locName": "None"
+                    "locName": "Peanut Butter"
                 }
             },
             "totalStepsRun": 0,
@@ -319,11 +319,11 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "purchaser",
+                    "defaultMaxStorage": 1000,
                     "outputs": [
                         "peanutButter"
                     ],
-                    "defaultMaxStorage": 1000
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
@@ -350,11 +350,11 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "purchaser",
+                    "defaultMaxStorage": 1000,
                     "outputs": [
                         "dough"
                     ],
-                    "defaultMaxStorage": 1000
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
@@ -381,11 +381,11 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "purchaser",
+                    "defaultMaxStorage": 1000,
                     "outputs": [
                         "sugar"
                     ],
-                    "defaultMaxStorage": 1000
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
@@ -412,11 +412,11 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "purchaser",
+                    "defaultMaxStorage": 1000,
                     "outputs": [
                         "grapes"
                     ],
-                    "defaultMaxStorage": 1000
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
@@ -446,12 +446,12 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "maker",
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "crustyBread",
                         "crustlessBread"
                     ],
-                    "defaultMaxStorage": 100
+                    "type": "maker"
                 },
                 {
                     "worldPosition": {
@@ -482,11 +482,11 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "maker",
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "jelly"
                     ],
-                    "defaultMaxStorage": 100
+                    "type": "maker"
                 },
                 {
                     "worldPosition": {
@@ -518,20 +518,20 @@
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "type": "makerSeller",
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "crustySandwich",
                         "crustlessSandwich"
                     ],
-                    "defaultMaxStorage": 100
+                    "type": "makerSeller"
                 }
             ],
-            "thumb": "",
-            "locDesc": "",
             "stepUnit": {
                 "plural": "hours",
                 "singular": "hour"
             },
+            "locDesc": "",
+            "thumb": "",
             "stepsPerRun": 24
         },
         {
@@ -539,40 +539,40 @@
                 {
                     "locDesc": "",
                     "maxUsage": -1,
-                    "value": 2,
+                    "id": "doubleMaxOutput",
                     "cost": {
                         "count": 3,
                         "itemId": "currency"
                     },
-                    "id": "doubleMaxOutput",
-                    "type": "scaleMaxOutput",
+                    "value": 2,
                     "thumb": "powerup-production-max",
+                    "type": "scaleMaxOutput",
                     "locName": "2x Output Max"
                 },
                 {
                     "locDesc": "",
                     "maxUsage": -1,
-                    "value": 0.5,
+                    "id": "halfInputs",
                     "cost": {
                         "count": 5,
                         "itemId": "currency"
                     },
-                    "id": "halfInputs",
-                    "type": "scaleRequirements",
+                    "value": 0.5,
                     "thumb": "powerup-half-input-costs",
+                    "type": "scaleRequirements",
                     "locName": "1/2 Materials Needed"
                 },
                 {
                     "locDesc": "",
                     "maxUsage": -1,
-                    "value": 0,
+                    "id": "zeroProductionSteps",
                     "cost": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "id": "zeroProductionSteps",
-                    "type": "scaleProductionSteps",
+                    "value": 0,
                     "thumb": "powerup-production-speed",
+                    "type": "scaleProductionSteps",
                     "locName": "1 Hour Production Time"
                 }
             ],
@@ -584,34 +584,6 @@
             "id": "mapA",
             "locName": "Factory",
             "items": {
-                "fluff": {
-                    "thumb": "icon-bread",
-                    "id": "fluff",
-                    "requirements": [
-                        {
-                            "count": 10,
-                            "itemId": "currency"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Fluff"
-                },
-                "demoncat": {
-                    "value": {
-                        "count": 100,
-                        "itemId": "currency"
-                    },
-                    "thumb": "icon-led",
-                    "id": "demoncat",
-                    "requirements": [
-                        {
-                            "count": 5,
-                            "itemId": "kitten"
-                        }
-                    ],
-                    "asset": "",
-                    "locName": "Demon Cat"
-                },
                 "fish": {
                     "thumb": "icon-bikeWheels",
                     "id": "fish",
@@ -631,12 +603,12 @@
                     "locName": "Money"
                 },
                 "cat": {
+                    "id": "cat",
+                    "thumb": "icon-rock",
                     "value": {
                         "count": 20,
                         "itemId": "currency"
                     },
-                    "thumb": "icon-rock",
-                    "id": "cat",
                     "requirements": [
                         {
                             "count": 10,
@@ -645,6 +617,18 @@
                     ],
                     "asset": "",
                     "locName": "Cat"
+                },
+                "fluff": {
+                    "thumb": "icon-bread",
+                    "id": "fluff",
+                    "requirements": [
+                        {
+                            "count": 10,
+                            "itemId": "currency"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Fluff"
                 },
                 "milk": {
                     "thumb": "icon-tree",
@@ -670,6 +654,22 @@
                     "asset": "",
                     "locName": "Kitten"
                 },
+                "demoncat": {
+                    "id": "demoncat",
+                    "thumb": "icon-led",
+                    "value": {
+                        "count": 100,
+                        "itemId": "currency"
+                    },
+                    "requirements": [
+                        {
+                            "count": 5,
+                            "itemId": "kitten"
+                        }
+                    ],
+                    "asset": "",
+                    "locName": "Demon Cat"
+                },
                 "none": {
                     "thumb": "",
                     "id": "none",
@@ -688,43 +688,43 @@
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": 22.280792236328126,
+                        "X": 22.28079223632813,
                         "Z": -29.61737060546875
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_1110310",
-                    "asset": "Assets.Machines.Machine-Default",
+                    "machineAnchor": "0_550073",
+                    "asset": "Assets.Machines.Purchaser",
                     "storage": [],
                     "outputRange": {
-                        "min": 0,
-                        "max": 50
+                        "max": 50,
+                        "min": 0
                     },
-                    "type": "purchaser",
-                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 0,
+                        "X": 0
+                    },
+                    "currentOutputCount": 5,
                     "id": "fluffmaker",
                     "locName": "Fluff Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "currentOutputCount": 5,
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "fluff"
                     ],
-                    "coordinates": {
-                        "Y": 0,
-                        "X": 0
-                    }
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": 12.280792236328125,
+                        "X": 12.280792236328124,
                         "Z": -1.5106658935546876
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_1120514",
+                    "machineAnchor": "0_550074",
                     "asset": "Assets.Machines.Machine-Default",
                     "sources": [
                         "fluffmaker",
@@ -733,24 +733,24 @@
                     ],
                     "storage": [],
                     "outputRange": {
-                        "min": 0,
-                        "max": 50
+                        "max": 50,
+                        "min": 0
                     },
-                    "type": "maker",
-                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 1,
+                        "X": 0
+                    },
+                    "currentOutputCount": 10,
                     "id": "kittenmaker",
                     "locName": "Kitten Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 1,
-                        "X": 0
-                    },
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "kitten"
                     ],
-                    "currentOutputCount": 10
+                    "type": "maker"
                 },
                 {
                     "worldPosition": {
@@ -760,32 +760,32 @@
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_1125038",
-                    "asset": "Assets.Machines.Machine-Default",
+                    "machineAnchor": "0_550072",
+                    "asset": "Assets.Machines.Seller",
                     "sources": [
                         "kittenmaker"
                     ],
                     "storage": [],
                     "outputRange": {
-                        "min": 0,
-                        "max": 50
+                        "max": 50,
+                        "min": 0
                     },
-                    "type": "makerSeller",
-                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 2,
+                        "X": 0
+                    },
+                    "currentOutputCount": 40,
                     "id": "catmaker",
                     "locName": "Cat Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 2,
-                        "X": 0
-                    },
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "cat",
                         "demoncat"
                     ],
-                    "currentOutputCount": 40
+                    "type": "makerSeller"
                 },
                 {
                     "worldPosition": {
@@ -795,67 +795,67 @@
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_1130459",
-                    "asset": "Assets.Machines.Machine-Default",
+                    "machineAnchor": "0_550075",
+                    "asset": "Assets.Machines.Purchaser",
                     "storage": [],
                     "outputRange": {
                         "min": 0,
                         "max": 50
                     },
-                    "type": "purchaser",
-                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 3,
+                        "X": 0
+                    },
+                    "currentOutputCount": 40,
                     "id": "milkmaker",
                     "locName": "Milk Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 3,
-                        "X": 0
-                    },
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "milk"
                     ],
-                    "currentOutputCount": 40
+                    "type": "purchaser"
                 },
                 {
                     "worldPosition": {
                         "Y": 1.0499999523162842,
-                        "X": -29.168128967285158,
-                        "Z": -27.617368698120118
+                        "X": -29.16812896728516,
+                        "Z": -27.61736869812012
                     },
                     "defaultProductionDelay": 0,
                     "supportsPowerup": true,
-                    "machineAnchor": "0_1140378",
-                    "asset": "Assets.Machines.Machine-Default",
+                    "machineAnchor": "0_550076",
+                    "asset": "Assets.Machines.Purchaser",
                     "storage": [],
                     "outputRange": {
-                        "min": 0,
-                        "max": 50
+                        "max": 50,
+                        "min": 0
                     },
-                    "type": "purchaser",
-                    "defaultMaxStorage": 100,
+                    "coordinates": {
+                        "Y": 4,
+                        "X": 0
+                    },
+                    "currentOutputCount": 40,
                     "id": "fishmaker",
                     "locName": "Fish Maker",
                     "state": "ready",
                     "currentOutputIndex": 1,
                     "thumb": "",
-                    "coordinates": {
-                        "Y": 4,
-                        "X": 0
-                    },
+                    "defaultMaxStorage": 100,
                     "outputs": [
                         "fish"
                     ],
-                    "currentOutputCount": 40
+                    "type": "purchaser"
                 }
             ],
-            "thumb": "",
-            "locDesc": "",
             "stepUnit": {
                 "plural": "hours",
                 "singular": "hour"
             },
+            "locDesc": "",
+            "thumb": "",
             "stepsPerRun": 24
         }
     ],
