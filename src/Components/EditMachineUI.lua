@@ -46,6 +46,7 @@ type Props = {
     OnClosePanel: any,
     OnAddInputMachine: (Types.Machine) -> nil,
     OnClickEditItem: (Types.Item) -> nil,
+    OnRequirementItemHovered: () -> nil,
     UpdateDataset: any,
 }
 
@@ -153,6 +154,9 @@ local function EditMachineUI(props: Props)
                             end
                         end
                         props.UpdateDataset()
+                    end,
+                    OnRequirementItemHovered = function(requirementItemId)
+                        props.OnRequirementItemHovered(requirementItemId)
                     end,
                     OnSalePriceChanged = function(value)
                         value = FormatText.numbersOnly(value)

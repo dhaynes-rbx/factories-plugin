@@ -35,13 +35,14 @@ type Props = {
     OnClickRemove: () -> nil,
     OnHover: () -> nil,
     OnRequirementCountChanged: () -> nil,
+    OnRequirementItemHovered: () -> nil,
     OnSalePriceChanged: () -> nil,
     OnCostChanged: () -> nil,
     ShowCost: boolean,
     ShowSalePrice: boolean,
 }
 
-function Requirement(requirement: table, layoutOrder: number, callback: () -> nil)
+function Requirement(requirement: table, layoutOrder: number, requirementCallback: () -> nil, hoverCallback: () -> nil)
     local itemId = requirement.itemId
     local item = Dataset:getItemFromId(itemId)
     local locName = item.locName
@@ -54,6 +55,12 @@ function Requirement(requirement: table, layoutOrder: number, callback: () -> ni
         BorderSizePixel = 0,
         LayoutOrder = layoutOrder,
         Size = UDim2.new(1, 0, 0, 64),
+        [ReactRoblox.Event.MouseEnter] = function()
+            hoverCallback(requirement.itemId)
+        end,
+        [ReactRoblox.Event.MouseLeave] = function()
+            hoverCallback(nil)
+        end,
     }, {
         uICorner = React.createElement("UICorner", {
             CornerRadius = UDim.new(0, 4),
@@ -104,13 +111,14 @@ function Requirement(requirement: table, layoutOrder: number, callback: () -> ni
                 Text = locName,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 12,
-                TextTruncate = Enum.TextTruncate.AtEnd,
+                TextTruncate = Enum.TextTruncate.None,
+                TextWrapped = true,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AnchorPoint = Vector2.new(1, 0),
                 BackgroundTransparency = 1,
                 LayoutOrder = 2,
                 Position = UDim2.new(0.414, 60, 0, 0),
-                Size = UDim2.fromScale(0.523, 1),
+                Size = UDim2.new(0, 80, 1, 0),
             }),
         }),
         textInput = React.createElement("Frame", {
@@ -128,7 +136,7 @@ function Requirement(requirement: table, layoutOrder: number, callback: () -> ni
                 HideLabel = true,
                 MultiLine = false,
                 OnChanged = function(value)
-                    callback(value)
+                    requirementCallback(value)
                 end,
             }),
         }),
@@ -182,6 +190,8 @@ function ItemListItem(props: Props)
                 requirements,
                 Requirement(requirement, layoutOrder:Increment() + 10, function(value)
                     props.OnRequirementCountChanged(value, requirement)
+                end, function(value)
+                    props.OnRequirementItemHovered(value)
                 end)
             )
         end
@@ -196,6 +206,11 @@ function ItemListItem(props: Props)
         end
     end
     local itemSalePrice = props.Item.value and props.Item.value.count or 0
+
+    local mainLabelUDim2 = UDim2.new(0, 200, 1, 0)
+    if showHoverButtons then
+        mainLabelUDim2 = UDim2.new(0, 100, 1, 0)
+    end
 
     return React.createElement("Frame", {
         AutomaticSize = Enum.AutomaticSize.Y,
@@ -370,14 +385,15 @@ function ItemListItem(props: Props)
                         TextColor3 = Color3.fromRGB(255, 255, 255),
                         TextSize = 16,
                         TextTransparency = props.Unavailable and 0.6 or 0,
-                        TextWrapped = true,
+                        TextTruncate = Enum.TextTruncate.AtEnd,
+                        TextWrapped = false,
                         TextXAlignment = Enum.TextXAlignment.Left,
                         AnchorPoint = Vector2.new(1, 0),
-                        AutomaticSize = Enum.AutomaticSize.X,
+                        -- AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
                         LayoutOrder = 2,
                         Position = UDim2.new(0.781, 60, 0, 0),
-                        Size = UDim2.fromScale(0, 1),
+                        Size = mainLabelUDim2,
                     }),
                 }),
             }),

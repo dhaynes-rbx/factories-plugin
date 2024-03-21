@@ -128,6 +128,7 @@ function App:init()
         modalConfirmationCallback = Dash.noop(),
         modalTitle = "",
         panelStack = { currentPanel },
+        requirementItemHovered = nil,
         selectedItem = nil,
         selectedMachine = nil,
         selectedMachineAnchor = nil,
@@ -274,7 +275,7 @@ function App:render()
                             if not newDatasetInstance then
                                 return
                             end
-                            
+
                             --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                             newDatasetInstance.AncestryChanged:Connect(function(_, _)
                                 self:setState({ dataset = "NONE", datasetIsLoaded = false })
@@ -358,6 +359,12 @@ function App:render()
                                 anchor = React.None
                             end
                             self:setState({ highlightedMachineAnchor = anchor })
+                        end,
+                        OnRequirementItemHovered = function(itemId: string)
+                            if not itemId then
+                                itemId = React.None
+                            end
+                            self:setState({ requirementItemHovered = itemId })
                         end,
                         UpdateDataset = function()
                             self:updateDataset(self.state.dataset)
@@ -502,6 +509,7 @@ function App:render()
                     and MachineAnchorBillboardGuis({
                         Items = self.state.dataset["maps"][self.state.currentMapIndex]["items"],
                         HighlightedAnchor = self.state.highlightedMachineAnchor,
+                        HighlightedRequirementItem = self.state.requirementItemHovered,
                     }),
 
                 ConfirmationModal = self.state.showModal
