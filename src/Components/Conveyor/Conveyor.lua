@@ -131,7 +131,6 @@ function Conveyor(props: Props)
         end)
 
         return function()
-            print("Conveyor destroyed")
             if connection then
                 connection:Disconnect()
                 connection = nil

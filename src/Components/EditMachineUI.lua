@@ -183,6 +183,7 @@ local function EditMachineUI(props: Props)
                             end
                         end
                         -- setItemCost(value)
+                        props.UpdateDataset()
                     end,
                 })
             )

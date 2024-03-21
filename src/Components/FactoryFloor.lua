@@ -61,26 +61,30 @@ local FactoryFloor = function(props: Props)
                 return
             end
 
-            local selectedObj = Selection:Get()[1]
-            if selectedObj then
-                if Scene.isMachineAnchor(selectedObj) then
-                    --Register that the machine may have been moved.
-                    local position = selectedObj.CFrame.Position
+            local selectedObjs = Selection:Get()
+            if #selectedObjs > 0 then
+                for _, selectedObj in selectedObjs do
+                    if Scene.isMachineAnchor(selectedObj) then
+                        --Register that the machine may have been moved.
+                        local position = selectedObj.CFrame.Position
+                        position = Vector3.new(position.X, Constants.Defaults.MachineDefaultYPosition, position.Z)
 
-                    local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
-                    local worldPosition = Vector3.new()
-                    if machine and machine["worldPosition"] then
-                        worldPosition = Vector3.new(
-                            machine["worldPosition"]["X"],
-                            machine["worldPosition"]["Y"],
-                            machine["worldPosition"]["Z"]
-                        )
+                        local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
+                        local worldPosition = Vector3.new()
+                        if machine and machine["worldPosition"] then
+                            selectedObj.CFrame = CFrame.new(position)
+                            worldPosition = Vector3.new(
+                                machine["worldPosition"]["X"],
+                                machine["worldPosition"]["Y"],
+                                machine["worldPosition"]["Z"]
+                            )
+                            if position ~= worldPosition then
+                                machine["worldPosition"]["X"] = position.X
+                                machine["worldPosition"]["Y"] = position.Y
+                                machine["worldPosition"]["Z"] = position.Z
 
-                        if position ~= worldPosition then
-                            machine["worldPosition"]["X"] = position.X
-                            machine["worldPosition"]["Y"] = position.Y
-                            machine["worldPosition"]["Z"] = position.Z
-                            props.UpdateDataset()
+                                props.UpdateDataset()
+                            end
                         end
                     end
                 end

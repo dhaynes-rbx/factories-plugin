@@ -35,6 +35,7 @@ return {
             max = 100,
         },
         MachineDefaultMaxStorage = 100,
+        MachineDefaultYPosition = 1.05,
     },
     None = "None",
 }

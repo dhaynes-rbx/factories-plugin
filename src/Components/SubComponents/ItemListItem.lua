@@ -398,28 +398,40 @@ function ItemListItem(props: Props)
                 end,
             }),
 
-            SalePrice = props.ShowSalePrice and InlineNumberInput({
+            SalePrice = props.ShowSalePrice and FishBloxComponents.Block({
+                Size = UDim2.new(1, 0, 0, 50),
+                PaddingLeft = 8,
                 LayoutOrder = layoutOrder:Increment(),
-                Label = "Sale Price",
-                Value = itemSalePrice,
+            }, {
+                InlineNumberInput({
+                    LayoutOrder = layoutOrder:Increment(),
+                    Label = "Sale Price",
+                    Value = itemSalePrice,
 
-                OnReset = function() end,
-                OnChanged = function(value)
-                    props.OnSalePriceChanged(value)
-                end,
+                    OnReset = nil,
+                    OnChanged = function(value)
+                        props.OnSalePriceChanged(value)
+                    end,
+                }),
             }),
 
-            Cost = props.ShowCost and InlineNumberInput({
+            Cost = props.ShowCost and FishBloxComponents.Block({
+                Size = UDim2.new(1, 0, 0, 50),
+                PaddingLeft = 8,
                 LayoutOrder = layoutOrder:Increment(),
-                Label = "Cost",
-                Value = itemCost,
-                -- OnReset = function() end,
-                OnChanged = function(value)
-                    props.OnCostChanged(value)
-                end,
+            }, {
+                InlineNumberInput({
+
+                    Label = "Cost",
+                    Value = itemCost,
+                    OnReset = nil,
+                    OnChanged = function(value)
+                        props.OnCostChanged(value)
+                    end,
+                }),
             }),
 
-            RequirementColumn = FishBloxComponents.Column({
+            RequirementColumn = #requirements > 0 and FishBloxComponents.Column({
                 AutomaticSize = Enum.AutomaticSize.Y,
                 Size = UDim2.fromScale(1, 0),
                 FillDirection = Enum.FillDirection.Vertical,

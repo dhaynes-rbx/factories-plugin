@@ -16,6 +16,7 @@ type Props = {
 
 local function InlineNumberInput(props: Props)
     local hovered, setHovered = React.useState(false)
+    -- local hideReset = props.OnReset and true or false
 
     return React.createElement("Frame", {
         BackgroundTransparency = 1,
@@ -106,17 +107,17 @@ local function InlineNumberInput(props: Props)
                     Size = UDim2.fromScale(0, 0),
                 }),
 
-                imageButton = React.createElement("ImageButton", {
-                    Image = "rbxassetid://15626193282",
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    BackgroundTransparency = 1,
-                    BorderColor3 = Color3.fromRGB(0, 0, 0),
-                    BorderSizePixel = 0,
-                    Size = UDim2.fromOffset(15, 15),
-                    [ReactRoblox.Event.Activated] = function()
-                        props.OnReset()
-                    end,
-                }),
+                -- resetButton = hideReset and React.createElement("ImageButton", {
+                --     Image = "rbxassetid://15626193282",
+                --     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                --     BackgroundTransparency = 1,
+                --     BorderColor3 = Color3.fromRGB(0, 0, 0),
+                --     BorderSizePixel = 0,
+                --     Size = UDim2.fromOffset(15, 15),
+                --     [ReactRoblox.Event.Activated] = function()
+                --         props.OnReset()
+                --     end,
+                -- }),
 
                 uIListLayout = React.createElement("UIListLayout", {
                     Padding = UDim.new(0, 8),

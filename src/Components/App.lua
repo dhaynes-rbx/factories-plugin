@@ -274,6 +274,7 @@ function App:render()
                             if not newDatasetInstance then
                                 return
                             end
+                            
                             --if for some reason the dataset is deleted, then make sure that the app state reflects that.
                             newDatasetInstance.AncestryChanged:Connect(function(_, _)
                                 self:setState({ dataset = "NONE", datasetIsLoaded = false })
