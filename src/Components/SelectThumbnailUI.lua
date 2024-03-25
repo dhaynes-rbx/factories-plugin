@@ -24,6 +24,7 @@ local Dataset = require(script.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 local Manifest = require(script.Parent.Parent.Manifest)
+local Incrementer = require(script.Parent.Parent.Incrementer)
 
 --use this to create a consistent layout order that plays nice with Roact
 local index = 0
@@ -32,7 +33,7 @@ local incrementLayoutOrder = function()
     return index
 end
 type Props = {
-    OnClick:(any)
+    OnClick: any,
 }
 
 local function ImageButton(imageKey, onClick)
@@ -41,81 +42,124 @@ local function ImageButton(imageKey, onClick)
     local prefix = imageKey:split("-")[1]
     local imageLabel = imageKey:gsub(prefix, ""):sub(2)
     return Block({
-        BackgroundTransparency = hover and .85 or 0.9,
-        Corner = UDim.new(0,8),
+        BackgroundTransparency = hover and 0.85 or 0.9,
+        Corner = UDim.new(0, 8),
         HasStroke = true,
         StrokeThickness = 2,
-        StrokeColor = Color3.new(1,1,1),
+        StrokeColor = Color3.new(1, 1, 1),
         StrokeTransparency = hover and 0.7 or 0.8,
         LayoutOrder = incrementLayoutOrder(),
-        Size = UDim2.new(0, 90, 0, 120),
+        Size = UDim2.new(0, 80, 0, 100),
         OnClick = function()
             onClick(imageKey)
         end,
         OnMouseEnter = function()
             setHover(true)
-
         end,
-        OnMouseLeave = function() 
+        OnMouseLeave = function()
             setHover(false)
-
         end,
     }, {
         Column = Column({
-            Padding = UDim.new(0,8),
+            Padding = UDim.new(0, 8),
             Gaps = 8,
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        },{
+        }, {
             Image = React.createElement("ImageLabel", {
                 BackgroundTransparency = 1,
                 Image = Manifest.images[imageKey],
                 LayoutOrder = 1,
-                Size = UDim2.fromScale(0.9,0.9),
+                Size = UDim2.fromScale(0.9, 0.9),
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,
             }),
             Text = Text({
-                Color = Color3.new(1,1,1),
+                Color = Color3.new(1, 1, 1),
                 TextXAlignment = Enum.TextXAlignment.Center,
                 LayoutOrder = 2,
                 Text = imageLabel,
-            })
-        })
+            }),
+        }),
     })
 end
 
-local function ImageButtonRow(imageNames:{string}, onClick)
+local function ImageButtonRow(imageNames: { string }, onClick)
     local rowButtons = {}
-    for _,v in imageNames do
+    for _, v in imageNames do
         table.insert(rowButtons, ImageButton(v, onClick))
     end
-    return Row({Gaps = 12}, rowButtons)
+    return Row({ Gaps = 12 }, rowButtons)
 end
 
-local function ImageSelectorUI(props:Props)
-    local children = {}
-    
+local function SelectThumbnailUI(props: Props)
+    local layoutOrder = Incrementer.new()
+
+    local scrollingFrameChildren = {
+        uIPadding = React.createElement("UIPadding", {
+            PaddingBottom = UDim.new(0, 80),
+            PaddingLeft = UDim.new(0, 4),
+            PaddingRight = UDim.new(0, 4),
+            PaddingTop = UDim.new(0, 8),
+        }),
+
+        uIListLayout = React.createElement("UIListLayout", {
+            Padding = UDim.new(0, 12),
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+        }),
+    }
+
+    local imageButtons = {}
     local thumbnails = {}
-    for imageKey,_ in Manifest.images do
+    for imageKey, _ in Manifest.images do
         if imageKey:split("-")[1] == "icon" then
             table.insert(thumbnails, imageKey)
         end
     end
-    table.sort(thumbnails, function(a,b)  --Do this to make sure buttons show in alphabetical order
+    table.sort(thumbnails, function(a, b) --Do this to make sure buttons show in alphabetical order
         return a:lower() < b:lower()
     end)
 
     local count = 0
     local imagesToShow = {}
-    for _,imageKey in thumbnails do    
+    for _, imageKey in thumbnails do
         count = count + 1
-        if count%3 == 0 then
+        if count % 3 == 0 then
             table.insert(imagesToShow, imageKey)
-            table.insert(children, ImageButtonRow(imagesToShow, props.OnClick))
+            table.insert(imageButtons, ImageButtonRow(imagesToShow, props.OnClick))
             table.clear(imagesToShow)
         else
             table.insert(imagesToShow, imageKey)
         end
     end
+
+    scrollingFrameChildren = Dash.join(scrollingFrameChildren, imageButtons)
+
+    local children = {
+        ScrollingList = React.createElement("ScrollingFrame", {
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            CanvasSize = UDim2.new(),
+            ScrollBarImageTransparency = 1,
+            ScrollBarThickness = 4,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+            Active = true,
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BackgroundTransparency = 1,
+            BorderColor3 = Color3.fromRGB(0, 0, 0),
+            BorderSizePixel = 0,
+            Size = UDim2.fromScale(1, 1),
+            LayoutOrder = layoutOrder:Increment(),
+        }, {
+            frame = React.createElement("Frame", {
+                AutomaticSize = Enum.AutomaticSize.Y,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                BorderColor3 = Color3.fromRGB(0, 0, 0),
+                BorderSizePixel = 0,
+                Size = UDim2.fromScale(1, 0),
+            }, scrollingFrameChildren),
+        }),
+    }
 
     return React.createElement(React.Fragment, nil, {
         SidePanel({
@@ -127,6 +171,6 @@ local function ImageSelectorUI(props:Props)
     })
 end
 
-return function(props:Props)
-    return React.createElement(ImageSelectorUI, props)
+return function(props: Props)
+    return React.createElement(SelectThumbnailUI, props)
 end

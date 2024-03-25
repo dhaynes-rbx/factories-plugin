@@ -24,185 +24,143 @@ local SidePanel = require(script.Parent.SubComponents.SidePanel)
 local Scene = require(script.Parent.Parent.Scene)
 local Constants = require(script.Parent.Parent.Constants)
 
-local add = require(script.Parent.Parent.Helpers.add)
 local SmallButton = require(script.Parent.SubComponents.SmallButton)
 local DatasetInstance = require(script.Parent.Parent.DatasetInstance)
+local TextItem = require(script.Parent.SubComponents.TextItem)
+local Incrementer = require(script.Parent.Parent.Incrementer)
 type Props = {
-    Dataset:table,
-    CurrentMap:table,
-    CurrentMapIndex:number,
-    Error:string,
-    Title:string,
-    UpdateDatasetName:any,
-    UpdateSceneName:any,
-    ShowEditFactoryUI:any,
-    -- ShowEditMachinesListUI:any,
-    ShowEditItemsListUI:any,
-    ExportDataset:any,
-    ImportDataset:any,
+    Dataset: table,
+    CurrentMap: table,
+    CurrentMapIndex: number,
+    Error: string,
+    Title: string,
+    UpdateSceneName: any,
+    ShowEditFactoryUI: any,
+    ShowEditItemsListUI: any,
+    ExportDataset: any,
+    ImportDataset: any,
 }
 
-local function EditDatasetUI(props:Props)
-    local currentMapIndex, setCurrentMapIndex = React.useState(props.CurrentMapIndex)
-
-    local index = 0
-    local incrementLayoutOrder = function()
-        index = index + 1
-        return index
-    end
+local function EditDatasetUI(props: Props)
+    local layoutOrder = Incrementer.new()
 
     local datasetIsLoaded = props.Dataset ~= nil and props.Dataset ~= "NONE"
     local dataset = props.Dataset
     local map = props.CurrentMap
 
-    local buttonSize = UDim2.new(1,0,0,0)
+    local buttonSize = UDim2.new(1, 0, 0, 0)
 
     local children = {}
-    local maps = dataset["maps"]
-    
-    if datasetIsLoaded then
-        local radioButtons = {}
-        for i,choiceKey in maps do
-            table.insert(radioButtons, {
-                -- Choice = props.Choices[choiceKey],
-                Label = maps[i]["id"],
-                Value = i,
-            })
-        end
 
-        add(children, TextInput({
+    if datasetIsLoaded then
+        children["DatasetName"] = TextInput({
             Label = "Dataset ID",
-            LayoutOrder = incrementLayoutOrder(),
+            LayoutOrder = layoutOrder:Increment(),
             Size = UDim2.new(1, 0, 0, 50),
             Value = DatasetInstance.getDatasetInstanceName(),
             OnChanged = function(value)
                 DatasetInstance.updateDatasetInstanceName(value)
             end,
-        }))
-        add(children, TextInput({
+        })
+
+        children["SceneName"] = TextInput({
             Label = "Scene Name",
-            LayoutOrder = incrementLayoutOrder(),
+            LayoutOrder = layoutOrder:Increment(),
             Size = UDim2.new(1, 0, 0, 50),
             Value = map["scene"],
             OnChanged = props.UpdateSceneName,
-        }))
-        add(children, Block({
-            Size = UDim2.new(1,0,0,80),
-            LayoutOrder = incrementLayoutOrder(),
-            Corner = UDim.new(0,8),
-            BackgroundColor = Color3.new(1,1,1),
-            BackgroundTransparency = 0.95,
-            ZIndex = 2,
-        },{
-            RadioButtonGroup({
-                AsRow = true,
-                Choices = radioButtons,
-                CurrentValue = currentMapIndex,
-                OnChanged = function(num, val)
-                    setCurrentMapIndex(val)
-                    props.SetCurrentMap(val)
-                end
-            })
-        }))
-            
-        add(children, Button({
+        })
+
+        children["EditFactoryButton"] = Button({
             Label = "Edit Factory",
-            LayoutOrder = incrementLayoutOrder(),
+            LayoutOrder = layoutOrder:Increment(),
             OnActivated = props.ShowEditFactoryUI,
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        -- add(children, Button({
-        --     Label = "Edit Machine List",
-        --     LayoutOrder = incrementLayoutOrder(),
-        --     OnActivated = props.ShowEditMachinesListUI,
-        --     Size = buttonSize,
-        --     TextXAlignment = Enum.TextXAlignment.Center,
-        -- }))
-        add(children, Button({
-            Label = "Edit Items List",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = props.ShowEditItemsListUI,
-            Size = buttonSize,
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        -- add(children, Button({
-        --     Label = "Edit Powerups List",
-        --     OnActivated = props.ShowEditPowerupsListUI,
-        --     Size = buttonSize,
-        --     TextXAlignment = Enum.TextXAlignment.Center,
-        -- }))
+        })
+
         if props.Error == Constants.Errors.None then
-            add(children, Button({
+            children["ExportDatasetButton"] = Button({
                 -- Active = false,
                 Label = "Export Dataset",
-                LayoutOrder = incrementLayoutOrder(),
+                LayoutOrder = layoutOrder:Increment(),
                 OnActivated = props.ExportDataset,
                 Size = buttonSize,
                 TextXAlignment = Enum.TextXAlignment.Center,
-            }))
-        else
-            add(children, Text({
-                LayoutOrder = incrementLayoutOrder(),
-                Text = props.Error.."!",
-                Color = Color3.new(1,0,0),
-                Size = UDim2.new(1, 0, 0, 10),
-                TextXAlignment = Enum.TextXAlignment.Center,
-            }))
-            add(children, Text({
-                LayoutOrder = incrementLayoutOrder(),
-                Text = "You must fix this before exporting.",
-                Color = Color3.new(1,0,0),
-                Size = UDim2.new(1, 0, 0, 10),
-                TextXAlignment = Enum.TextXAlignment.Center,
-            }))
-        end
-    end
-    
-    add(children, Button({
-        Label = "Import Dataset",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = props.ImportDataset,
-        Size = buttonSize,
-        TextXAlignment = Enum.TextXAlignment.Center,
-    }))
-    
-    if datasetIsLoaded then
+            })
 
-        add(children, SmallButton({
-            Label = "Print Dataset to Console",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                print(Dash.pretty(dataset, {multiline = true, indent = "\t", depth = 10}))
-            end,
-            Size = UDim2.new(.925,0,0,30),
+            children["ExportMapDataButton"] = Button({
+                -- Active = false,
+                Label = "Export MapData",
+                LayoutOrder = layoutOrder:Increment(),
+                OnActivated = props.ExportMapData,
+                Size = buttonSize,
+                TextXAlignment = Enum.TextXAlignment.Center,
+            })
+        else
+            children["Error"] = Text({
+                LayoutOrder = layoutOrder:Increment(),
+                Text = props.Error .. "!",
+                Color = Color3.new(1, 0, 0),
+                Size = UDim2.new(1, 0, 0, 10),
+                TextXAlignment = Enum.TextXAlignment.Center,
+            })
+
+            children["Error2"] = Text({
+                LayoutOrder = layoutOrder:Increment(),
+                Text = "You must fix this before exporting.",
+                Color = Color3.new(1, 0, 0),
+                Size = UDim2.new(1, 0, 0, 10),
+                TextXAlignment = Enum.TextXAlignment.Center,
+            })
+        end
+
+        children["ImportDatasetButton"] = Button({
+            Label = "Import Dataset",
+            LayoutOrder = layoutOrder:Increment(),
+            OnActivated = props.ImportDataset,
+            Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        add(children, SmallButton({
-            Label = "Print Machines to Console",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                print(Dash.pretty(map["machines"], {multiline = true, indent = "\t", depth = 10}))
-            end,
-            Size = UDim2.new(.925,0,0,30),
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
-        add(children, SmallButton({
-            Label = "Print Items to Console",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                print(Dash.pretty(map["items"], {multiline = true, indent = "\t", depth = 10}))
-            end,
-            Size = UDim2.new(.925,0,0,30),
-            TextXAlignment = Enum.TextXAlignment.Center,
-        }))
+        })
+    end
+
+    if datasetIsLoaded then
+        children["Prints"] = Column({
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            LayoutOrder = layoutOrder:Increment(),
+            Size = UDim2.new(1, 0, 0, 100),
+        }, {
+
+            PrintDataset = TextItem({
+                Text = "Print Dataset to Console",
+                LayoutOrder = layoutOrder:Increment(),
+                OnActivate = function()
+                    print(Dash.pretty(dataset, { multiline = true, indent = "\t", depth = 10 }))
+                end,
+            }),
+
+            PrintMachines = TextItem({
+                Text = "Print Machines to Console",
+                LayoutOrder = layoutOrder:Increment(),
+                OnActivate = function()
+                    print(Dash.pretty(map["machines"], { multiline = true, indent = "\t", depth = 10 }))
+                end,
+            }),
+
+            PrintItems = TextItem({
+                Text = "Print Items to Console",
+                LayoutOrder = layoutOrder:Increment(),
+                OnActivate = function()
+                    print(Dash.pretty(map["items"], { multiline = true, indent = "\t", depth = 10 }))
+                end,
+            }),
+        })
     end
 
     return SidePanel({
         ShowClose = false,
-        Title = props.Title
-        }, children
-    )
+        Title = props.Title,
+    }, children)
 end
 
 return function(props)

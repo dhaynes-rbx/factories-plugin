@@ -1,5 +1,7 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local InsertService = game:GetService("InsertService")
 
 -- local Dataset = require(script.Parent.Dataset)
 local Utilities = require(script.Parent.Packages.Utilities)
@@ -7,17 +9,14 @@ local MapData = require(script.Parent.MapData)
 local Constants = require(script.Parent.Constants)
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 local Types = require(script.Parent.Types)
+local Manifest = require(script.Parent.Manifest)
+local CollisionGroupManager = require(script.Parent.CollisionGroupManager)
 
 local function registerDebugId(instance: Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
 end
 
 local Scene = {}
-
-local function instantiateEnvironmentArt()
-    local scene = script.Parent.Assets.SceneHierarchy.Scene:Clone()
-    scene.Parent = game.Workspace
-end
 
 function Scene.isLoaded()
     return game.Workspace:FindFirstChild("Scene") ~= nil
@@ -45,47 +44,11 @@ function Scene.setCamera()
     Camera.CameraType = Enum.CameraType.Custom
 end
 
-function Scene.getMachinesFolder()
-    return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
-end
-
-function Scene.getMachineAnchors()
-    local machinesFolder = Scene.getMachinesFolder()
-    return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
-end
-
--- function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
---     local machines = Scene.getMachineAnchors()
---     for _,v in machines do
---         local nameX, nameY = Dataset:getCoordinatesFromAnchorName(v.Name)
---         if nameX == x and nameY == y then
---             return v
---         end
---     end
---     return nil
--- end
-
-function Scene.getMachineAnchor(machine: table)
-    local result = nil
-    local machineAnchors = Scene.getMachineAnchors()
-    local machineAnchorId = machine["machineAnchor"]
-    for _, machineAnchor in machineAnchors do
-        local debugId = machineAnchor:GetAttribute("debugId")
-        if debugId == machineAnchorId then
-            result = machineAnchor
-        end
-    end
-    return result
-end
-
-function Scene.loadScene()
-    if Scene.isLoaded() then
-        print("Scene is already loaded!")
-        return
-    end
-
+function Scene.initScene()
     if not game.Workspace:FindFirstChild("Scene") then
-        instantiateEnvironmentArt()
+        local scene = script.Parent.Assets.SceneHierarchy:Clone()
+        scene.Name = "Scene"
+        scene.Parent = game.Workspace
     end
 
     if game.Workspace:FindFirstChild("Baseplate") then
@@ -93,6 +56,12 @@ function Scene.loadScene()
     end
     if game.Workspace:FindFirstChild("SpawnLocation") then
         game.Workspace.SpawnLocation:Destroy()
+    end
+
+    local pluginDataFolder = getOrCreateFolder("FactoriesPluginData", ReplicatedStorage)
+    local mapsFolder = getOrCreateFolder("Maps", pluginDataFolder)
+    for i = 1, 2, 1 do
+        local mapFolder = getOrCreateFolder(tostring(i), mapsFolder)
     end
 
     --Update the lighting and camera
@@ -110,9 +79,34 @@ function Scene.loadScene()
 
     Scene.setCamera()
 
-    ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
+    -- ChangeHistoryService:SetWaypoint("Instantiated Scene Hierarchy")
 end
 
+function Scene.getMachinesFolder()
+    return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Machines")
+end
+
+function Scene.getCurrentMapIndexAccordingToScene()
+    local currentMapIndex = 2
+    local datasetInstance = Utilities.getValueAtPath(game.Workspace, "Dataset")
+    if datasetInstance then
+        if datasetInstance:GetAttribute("CurrentMapIndex") then
+            currentMapIndex = datasetInstance:GetAttribute("CurrentMapIndex")
+        end
+    end
+    return currentMapIndex
+end
+
+-- function Scene.getMachineAnchorFromCoordinates(x:number, y:number)
+--     local machines = Scene.getMachineAnchors()
+--     for _,v in machines do
+--         local nameX, nameY = Dataset:getCoordinatesFromAnchorName(v.Name)
+--         if nameX == x and nameY == y then
+--             return v
+--         end
+--     end
+--     return nil
+-- end
 function Scene.isMachineAnchor(obj)
     if not obj then
         return false
@@ -123,7 +117,12 @@ function Scene.isMachineAnchor(obj)
     return false
 end
 
-function Scene.getAnchorFromMachine(machine: table)
+function Scene.getMachineAnchors()
+    local machinesFolder = Scene.getMachinesFolder()
+    return (Scene.isLoaded() and machinesFolder) and machinesFolder:GetChildren() or {}
+end
+
+function Scene.getAnchorFromMachine(machine: Types.Machine)
     local anchor = nil
     if machine["machineAnchor"] then
         for _, anchorInScene in Scene.getMachineAnchors() do
@@ -139,27 +138,43 @@ end
 function Scene.instantiateMachineAnchor(machine: table)
     local folder = Scene.getMachinesFolder()
 
-    -- local assetPath = string.split(machine["asset"], ".")[3]
     local position = Vector3.new()
     if machine["worldPosition"] then
         position =
             Vector3.new(machine["worldPosition"]["X"], machine["worldPosition"]["Y"], machine["worldPosition"]["Z"])
     end
-    -- local asset = script.Parent.Assets.Machines[assetPath]:Clone()
-    --TODO: Figure out why mesh machines are not importing correctly
     local anchor = Scene.getAnchorFromMachine(machine)
+    local anchorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
     if not anchor then
-        -- anchor = script.Parent.Assets.Machines["PlaceholderMachine"]:Clone()
         anchor = Instance.new("Part")
         anchor.Anchored = true
         anchor.Size = Vector3.new(8, 2, 12)
         anchor.Color = Color3.new(0.1, 0.1, 0.1)
-        anchor.Transparency = 0.1
+
         local cframe = CFrame.new(position)
         anchor:PivotTo(cframe)
-        anchor.Name = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+        anchor.Name = anchorName
         anchor.Parent = folder
     end
+    --TODO: Have this be handled by the Machine component.
+    -- local machineMeshAssetId = Manifest.machines[Constants.MachineAssetPaths[machine["type"]]]
+    -- local success, model = pcall(InsertService.LoadAsset, InsertService, machineMeshAssetId)
+    -- if success then
+    --     anchor.Transparency = 1
+
+    --     model = model:GetChildren()[1]
+    --     model:FindFirstChild("HighlightMesh"):Destroy()
+    --     local meter = model:FindFirstChild("RadialMeter")
+    --     if meter then
+    --         meter:Destroy()
+    --     end
+
+    --     model:PivotTo(anchor:GetPivot())
+    --     CollisionGroupManager:MakeUnselectable(model)
+    --     model.Parent = game.Workspace
+    -- else
+    --     warn("Could not load machine mesh for machine: " .. anchorName .. ", " .. machine.asset)
+    -- end
 
     local debugId = anchor:GetDebugId()
     machine["machineAnchor"] = debugId
@@ -168,31 +183,74 @@ function Scene.instantiateMachineAnchor(machine: table)
     return anchor
 end
 
+--TODO: Ideally, this would be handled by the components.
 function Scene.updateAllMapAssets(map: table)
-    local folder = Scene.getMachinesFolder()
-    if not folder then
-        folder = Instance.new("Folder")
-        folder.Name = "Machines"
-        folder.Parent = game.Workspace.Scene.FactoryLayout
-    end
-    folder:ClearAllChildren()
+    Scene.getMachinesFolder():ClearAllChildren()
+    Scene.getBeltsFolder():ClearAllChildren()
+    -- Scene.getBeltDataFolder():ClearAllChildren()
 
-    for _, machine in map["machines"] do
-        Scene.instantiateMachineAnchor(machine)
-    end
-
-    -- Scene.updateAllConveyorBelts(map)
+    -- for _, machine in map["machines"] do
+    --     Scene.instantiateMachineAnchor(machine)
+    -- end
 end
 
-function Scene.removeMachineAnchor(machine: Types.Machine)
-    local anchor = Scene.getMachineAnchor(machine)
-    if anchor then
-        anchor:Destroy()
-    end
+function Scene.getPluginDataFolder()
+    return Utilities.getValueAtPath(ReplicatedStorage, "FactoriesPluginData")
+end
+
+function Scene.getMapFolder(mapIndex)
+    local folder = Utilities.getValueAtPath(Scene.getPluginDataFolder(), "Maps." .. tostring(mapIndex))
+    return folder
+end
+
+function Scene.getConveyorFolderForCurrentMap()
+    local folder = Scene.getMapFolder(Scene.getCurrentMapIndexAccordingToScene())
+    return folder
+end
+
+function Scene.getMidpointAdjustmentsFolder(conveyorName)
+    local folder = Utilities.getValueAtPath(Scene.getConveyorFolder(conveyorName), "MidpointAdjustments")
+    return folder
 end
 
 function Scene.getBeltsFolder()
     return Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
+end
+
+function Scene.getBeltDataFolder()
+    return Utilities.getValueAtPath(game.Workspace, "BeltData")
+end
+
+function Scene.getConveyorFolder(name: string)
+    local folder = Scene.getConveyorFolderForCurrentMap()
+    local beltFolder = folder:FindFirstChild(name)
+    if beltFolder then
+        return beltFolder
+    end
+    return nil
+end
+
+function Scene.getConveyorMeshFromName(conveyorName: string)
+    local beltSegment = Utilities.getValueAtPath(Scene.getBeltsFolder(), conveyorName)
+    if beltSegment then
+        return beltSegment
+    end
+    return nil
+end
+
+function Scene.getMidpointAdjustment(conveyorName: string): NumberValue
+    local midpointAdjustmentsFolder = Scene.getMidpointAdjustmentsFolder(conveyorName)
+    -- local conveyorFolder: Folder = Utilities.getValueAtPath(game.Workspace, "BeltData." .. conveyorName)
+    -- if conveyorFolder then
+    if not midpointAdjustmentsFolder then
+        return nil
+    end
+    local midpointAdjustment: NumberValue = midpointAdjustmentsFolder:FindFirstChild(conveyorName)
+    if midpointAdjustment then
+        return midpointAdjustment
+    end
+    -- end
+    return nil
 end
 
 function Scene.getConveyorBeltName(machine1, machine2)
@@ -208,161 +266,35 @@ function Scene.getConveyorBeltName(machine1, machine2)
 end
 
 function Scene.removeConveyors(machine: Types.Machine)
-    local folder = Utilities.getValueAtPath(game.Workspace, "BeltData")
     local conveyorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
-    for _, conveyor: Folder in folder:GetChildren() do
+    --find a conveyor with this name
+    local folder = Scene.getConveyorFolderForCurrentMap()
+    local beltsFolder = Scene.getBeltsFolder()
+    local beltDataFolder = Scene.getBeltDataFolder()
+    for _, conveyor in folder:GetChildren() do
         local splitName = conveyor.Name:split("-")
         if splitName[1] == conveyorName then
+            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
+            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
         end
         if #splitName > 1 and splitName[2] == conveyorName then
+            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
+            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
             conveyor:Destroy()
         end
     end
-end
+    -- local folder = Scene.getConveyorFolder(conveyorName)
 
--- function Scene.instantiateConveyorBelt(conveyorBelt:table)
--- local part = Instance.new("Part")
--- part.Anchored = true
--- part.CanCollide = false
--- part.Locked = true
--- local distance = (conveyorBelt.endPosition - conveyorBelt.startPosition).Magnitude
--- local size = Vector3.new(1, 1, distance)
--- part.Size = size
--- part.CFrame = CFrame.new(conveyorBelt.startPosition, conveyorBelt.endPosition)
--- part.CFrame = part.CFrame:ToWorldSpace(CFrame.new(0, 0, -distance/2))
--- part.Name = conveyorBelt.name
--- part.Parent = Scene.getBeltsFolder()
-
--- return part
--- end
-
-function Scene.updateAllConveyorBelts(map: table)
-    -- local machines = map["machines"]
-    -- local folder = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.Belts")
-    -- folder:ClearAllChildren()
-
-    -- local conveyorBelts = {}
-
-    -- local beltEntryPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Entry")
-    -- local beltEntryPoints = {}
-    -- for _,child in beltEntryPart:GetChildren() do
-    --     local index = tonumber(child.Name:match("%d"))
-    --     local t = {}
-    --     t["attachment"] = child
-    --     t["inUse"] = false
-    --     beltEntryPoints[index] = t
-    -- end
-    -- local beltExitPart = Utilities.getValueAtPath(game.Workspace, "Scene.FactoryLayout.BeltEntryAndExit.Exit")
-    -- local beltExitPoints = {}
-    -- for _,child in beltExitPart:GetChildren() do
-    --     local index = tonumber(child.Name:match("%d"))
-    --     local t = {}
-    --     t["attachment"] = child
-    --     t["inUse"] = false
-    --     beltExitPoints[index] = t
-    -- end
-
-    -- for _,machine in machines do
-    --     if machine["sources"] then
-    --         for _,sourceId in machine["sources"] do
-    --             local conveyorBelt = {}
-    --             local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-    --             local endPosition = Vector3.new()
-    --             local sourceMachine = nil
-    --             for _,machineToCheck in machines do
-    --                 if sourceId == machineToCheck.id then
-    --                     sourceMachine = machineToCheck
-    --                 end
-    --             end
-    --             if sourceMachine then
-    --                 endPosition = Vector3.new(sourceMachine.worldPosition["X"], sourceMachine.worldPosition["Y"], sourceMachine.worldPosition["Z"])
-    --             end
-    --             -- conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name.."-"..Scene.getAnchorFromMachine(sourceMachine).Name
-    --             conveyorBelt.name = Scene.getAnchorFromMachine(sourceMachine).Name.."-"..Scene.getAnchorFromMachine(machine).Name
-    --             conveyorBelt.startPosition = startPosition
-    --             conveyorBelt.endPosition = endPosition
-
-    --             Scene.instantiateConveyorBelt(conveyorBelt)
-    --             table.insert(conveyorBelts, conveyorBelt)
-    --         end
+    -- for _, conveyor: Folder in folder:GetChildren() do
+    --     local splitName = conveyor.Name:split("-")
+    --     if splitName[1] == conveyorName then
+    --         conveyor:Destroy()
     --     end
-
-    --     local machineType = machine["type"]
-    --     if machineType == Constants.MachineTypes.purchaser then
-    --         for _,beltEntryPoint in beltEntryPoints do
-
-    --             if beltEntryPoint.inUse then
-    --                 continue
-    --             end
-
-    --             local conveyorBelt = {}
-    --             local startPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-    --             local endPosition = beltEntryPoint.attachment.WorldCFrame.Position
-    --             beltEntryPoint.inUse = true
-    --             conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-    --             conveyorBelt.startPosition = startPosition
-    --             conveyorBelt.endPosition = endPosition
-
-    --             Scene.instantiateConveyorBelt(conveyorBelt)
-    --             table.insert(conveyorBelts, conveyorBelt)
-    --             break
-    --         end
-    --     elseif machineType == Constants.MachineTypes.makerSeller then
-    --         for _,beltExitPoint in beltExitPoints do
-    --             if beltExitPoint.inUse then
-    --                 continue
-    --             end
-
-    --             local conveyorBelt = {}
-    --             local startPosition = beltExitPoint.attachment.WorldCFrame.Position
-    --             local endPosition = Vector3.new(machine.worldPosition["X"], machine.worldPosition["Y"], machine.worldPosition["Z"]) :: Vector3
-    --             beltExitPoint.inUse = true
-    --             conveyorBelt.name = Scene.getAnchorFromMachine(machine).Name
-    --             conveyorBelt.startPosition = startPosition
-    --             conveyorBelt.endPosition = endPosition
-
-    --             Scene.instantiateConveyorBelt(conveyorBelt)
-    --             table.insert(conveyorBelts, conveyorBelt)
-    --             break
-    --         end
+    --     if #splitName > 1 and splitName[2] == conveyorName then
+    --         conveyor:Destroy()
     --     end
     -- end
-
-    -- local conveyorBeltData = {}
-    -- -- local folder = getOrCreateFolder("Debug", game.Workspace)
-    -- -- folder:ClearAllChildren()
-    -- for _,belt in conveyorBelts do
-    --     local distance = (belt.endPosition - belt.startPosition).Magnitude
-    --     local numPoints = distance * 3 --3 points per stud
-
-    --     -- local beltFolder = getOrCreateFolder(belt.name, folder)
-    --     -- beltFolder:ClearAllChildren()
-
-    --     local points = {}
-    --     for i = 1, numPoints, 1 do
-    --         local lerpedPosition = belt.endPosition:Lerp(belt.startPosition, i/numPoints)
-    --         local point = {}
-    --         point.position = {}
-    --         --Match the orientation of the original blender plugin
-    --         point.position.x = -lerpedPosition.x
-    --         point.position.y = lerpedPosition.z
-    --         point.position.z = lerpedPosition.y
-    --         point.index = i - 1 --Original MapData json files are 0-indexed
-    --         table.insert(points, point)
-
-    --         -- local part = Instance.new("Part")
-    --         -- part.Size = Vector3.new(0.25, 0.25, 0.25)
-    --         -- part.Color = Color3.new(1,0,0)
-    --         -- part.Anchored = true
-    --         -- part.CFrame = CFrame.new(lerpedPosition + Vector3.new(0,0.5,0))
-    --         -- part.Parent = beltFolder
-    --     end
-    --     local beltKey = ('["%s"]'):format(belt.name) --Format this so when we write to MapData Source the keys show up with quotes around them
-    --     conveyorBeltData[beltKey] = points
-    -- end
-
-    -- MapData.write(conveyorBeltData, map.scene)
 end
 
 return Scene

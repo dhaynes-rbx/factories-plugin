@@ -31,256 +31,301 @@ local Studio = require(script.Parent.Parent.Studio)
 local add = require(script.Parent.Parent.Helpers.add)
 local Separator = require(script.Parent.SubComponents.Separator)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
+local FormatText = require(script.Parent.Parent.FormatText)
+local TextItem = require(script.Parent.SubComponents.TextItem)
+local Incrementer = require(script.Parent.Parent.Incrementer)
+local InlineThumbnailSelect = require(script.Parent.SubComponents.InlineThumbnailSelect)
+local Types = require(script.Parent.Parent.Types)
+local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
+local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
+local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
+local Constants = require(script.Parent.Parent.Constants)
+local getTemplateItem = require(script.Parent.Parent.Helpers.getTemplateItem)
 type Props = {
-    CurrentMapIndex:number,
-    Dataset:table,
-    Item:table,
-    OnClosePanel:any,
-    OnDeleteRequirementClicked:any,
-    ShowEditItemPanel:any,
-    UpdateDataset:any,
-    ShowImageSelector:any,
+    CurrentMapIndex: number,
+    Dataset: table,
+    Item: Types.Item,
+    OnClosePanel: any,
+    OnDeleteRequirementClicked: any,
+    OnClickThumbnail: () -> nil,
+    OnAddRequirement: (Types.Item) -> nil,
+    SetNewItemAsSelectedItem: (Types.Item) -> nil,
+    UpdateDataset: () -> nil,
 }
 
 local function EditItemUI(props: Props)
-    local currentFieldKey, setCurrentFieldKey = React.useState(nil)
-    local currentFieldValue, setCurrentFieldValue = React.useState(nil)
-    local currentFieldCallback, setCurrentFieldCallback = React.useState(nil)
-    local listModalEnabled, setListModalEnabled = React.useState(false)
-    local listChoices, setListChoices = React.useState({})
-    local modalEnabled, setModalEnabled = React.useState(false)
-    local showThumbnails, setShowThumbnails = React.useState(false)
-    local valueType, setValueType = React.useState(nil)
-    
-    local dataset = props.Dataset
-    local map = dataset["maps"][props.CurrentMapIndex]
-    local items = map["items"]
+    local itemId, setItemId = React.useState(props.Item.id)
+    -- local itemCost, setItemCost = React.useState(nil) --Item has a "requirement" of type "currency"
+    -- local itemSalePrice, setItemSalePrice = React.useState(nil) --Item has a "value"
+    local numRequirements, setNumRequirements =
+        React.useState(props.Item.requirements and #props.Item.requirements or 0)
 
-    --use this to create a consistent layout order that plays nice with Roact
-    local index = 0
-    local incrementLayoutOrder = function()
-        index = index + 1
-        return index
+    local layoutOrder = Incrementer.new()
+    local items = Dataset:getValidItems(false)
+    local item: Types.Item = props.Dataset.maps[props.CurrentMapIndex].items[itemId]
+    local itemSalePrice = item.value and item.value.count or 0
+
+    local itemCost = 0
+    if item.requirements then
+        for _, requirement in item.requirements do
+            if requirement.itemId == "currency" then
+                itemCost = requirement.count
+                -- setItemCost(itemCost)
+            end
+        end
     end
 
-    local createTextChangingButton = function(key:string, itemObject:table, isNumber:boolean)
-        return SmallButtonWithLabel({
-            ButtonLabel = tostring(itemObject[key]),
-            Label = key,
-            LayoutOrder = incrementLayoutOrder(),
+    -- if not itemCost then
+    --     if item.requirements then
+    --         for _, requirement: Types.RequirementItem in item.requirements do
+    --             if requirement.itemId == "currency" then
+    --                 itemCost = requirement.count
+    --             end
+    --         end
+    --     else
+    --         item.requirements = {
+    --             {
+    --                 itemId = "currency",
+    --                 count = 0,
+    --             },
+    --         }
+    --     end
+    -- end
+    -- if not itemSalePrice then
+    --     if not item.value then
+    --         item.value = { itemId = "currency", count = 0 }
+    --     end
+    --     itemSalePrice = item.value.count
+    -- end
 
-            OnActivated = function()
-                if isNumber then
-                    setValueType("number")
-                else
-                    setValueType("string")
-                end
-                setModalEnabled(true)
-                setCurrentFieldKey(key)
-                setCurrentFieldValue(itemObject[key])
-                setCurrentFieldCallback(function()
-                    return function(newValue)
-                        local previousValue = itemObject[key]
-                        if newValue ~= previousValue then
-                            if key == "id" then
-                                --The "items" table is a dictionary. So the key needs to be replaced, as well as the contents.
-                                newValue = Dataset:changeItemId(previousValue, newValue)
-                                props.ShowEditItemPanel(newValue)
-                            else
-                                itemObject[key] = newValue
+    local requirementItems = {}
+
+    if item.requirements then
+        for _, requirement in item.requirements do
+            if requirement.itemId == "currency" or requirement.itemId == "none" then
+                continue
+            end
+            local requirementItem = items[requirement.itemId]
+            table.insert(
+                requirementItems,
+                ItemListItem({
+                    HideArrows = true,
+                    HideEditButton = true,
+                    Item = requirementItem,
+                    Label = requirementItem.locName,
+                    LayoutOrder = layoutOrder:Increment() + 100,
+                    Thumbnail = requirementItem.thumb,
+                    RequirementCount = requirement.count,
+                    OnRequirementCountChanged = function(value)
+                        for _, changedRequirement in ipairs(item.requirements) do
+                            if changedRequirement.itemId == requirement.itemId then
+                                print("Changing requirement count", requirement.itemId, value)
+                                requirement.count = value
                             end
                         end
-                    end
-                end)
-            end,
-        })
-    end
-
-    local children = {}
-    local item = props.Item
-
-    add(children, createTextChangingButton("id", item))
-    add(children, createTextChangingButton("locName", item))
-
-    add(children, SmallButtonWithLabel({
-        Appearance = "Filled",
-        ButtonLabel = item["thumb"],
-        Label = "thumb:",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = function()
-            props.ShowImageSelector()
-        end,
-    }))
-    add(children, Row({
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        LayoutOrder = incrementLayoutOrder(),
-        Size = UDim2.new(1, 0, 0, 75)
-    }, {
-        Icon = React.createElement("ImageLabel", {
-            AnchorPoint = Vector2.new(0.5,0.5),
-            BackgroundTransparency = 1,
-            Image = Manifest.images[props.Item["thumb"]],
-            Size = UDim2.fromScale(1,1),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-        })
-    }))
-    
-    --REQUIREMENTS
-    --Create a list of requirements to choose from, but omit items that are already used, or is the current item.
-    local itemRequirementChoices = table.clone(items)
-    if item["requirements"] then
-        for _,outputItem in item["requirements"] do
-            local id = outputItem["itemId"]
-            itemRequirementChoices[id] = nil
+                        props.UpdateDataset()
+                    end,
+                    OnActivated = function() end,
+                    OnClickUp = function() end,
+                    OnClickDown = function() end,
+                    OnClickEdit = function() end,
+                    OnClickRemove = function()
+                        Dataset:removeRequirementFromItem(item, requirement.itemId)
+                        setNumRequirements(#item.requirements)
+                        props.UpdateDataset()
+                    end,
+                    OnHover = function() end,
+                    OnCostChanged = function() end,
+                    OnSalePriceChanged = function() end,
+                })
+            )
         end
-        itemRequirementChoices[item["id"]] = nil
     end
 
-    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
-    add(children, LabelWithAdd({
-        Label = "requirements:",
-        LayoutOrder = incrementLayoutOrder(),
-        OnActivated = function()
-            if not item["requirements"] then
-                item["requirements"] = {}
-            end
-            setListModalEnabled(true)
-            setListChoices(itemRequirementChoices)
-            setCurrentFieldKey(nil)
-            setCurrentFieldValue(nil)
-            setCurrentFieldCallback(function()
-                return function(newValue)
-                    local newRequirementItem = {itemId = newValue, count = 10}
-                    table.insert(item["requirements"], newRequirementItem)
-                    props.UpdateDataset(dataset)
-                end
-            end)
-        end,
-    }))
-    if item["requirements"] then
-        for i,requirement in item["requirements"] do
-            -- add(children, createListModalButton("itemId", requirement, items, false))
-            local currentCount = requirement["count"]
-            add(children, ListItemButton({
-                CanDelete = (#item["requirements"] > 1),
-                Image = items[requirement["itemId"]]["thumb"],
-                Index = i,
-                Label = requirement["itemId"],
-                LayoutOrder = incrementLayoutOrder(),
-                ObjectToEdit = items[requirement["itemId"]],
-                OnDeleteButtonClicked = function(itemKey) 
-                    props.OnDeleteRequirementClicked(
-                        "Do you want to delete "..itemKey.." as a requirement for "..props.Item["id"].."?",
-                        function()
-                            table.remove(item["requirements"], i)
-                        end
-                    )
-                end,
-                OnEditButtonClicked = function(itemKey) 
-                    props.ShowEditItemPanel(itemKey)
-                end,
-                OnSwapButtonClicked = function(itemKey) 
-                    setListModalEnabled(true)
-                    setListChoices(itemRequirementChoices)
-                    setCurrentFieldKey(i)
-                    setCurrentFieldValue(itemKey)
-                    setCurrentFieldCallback(function()
-                        return function(newValue)
-                            item["requirements"][i] = {
-                                itemId = newValue,
-                                count = currentCount
-                            }
-                            props.UpdateDataset(props.Dataset)
-                        end
-                    end)
-                end,
-            }))
-            add(children, createTextChangingButton("count", requirement, true))
-        end
-    else
-        --if there are no requirements, then make a requirement. An item should ALWAYS have a currency requirement if there is no item requirement.
-        item["requirements"] = {}
-        table.insert(item["requirements"], {count = 1, itemId = "currency"})
-        props.UpdateDataset(props.Dataset)
-    end
+    local machineType = Dataset:getMachineTypeFromItemId(item.id)
+    local showCost = (machineType == Constants.None) or (machineType == Constants.MachineTypes.purchaser)
+    local showSalePrice = (machineType == Constants.None) or (machineType == Constants.MachineTypes.makerSeller)
+    local hideRequirements = machineType == Constants.MachineTypes.purchaser
 
-    add(children, Separator({LayoutOrder = incrementLayoutOrder()}))
-    add(children, SmallLabel({Label = "value:", LayoutOrder = incrementLayoutOrder()}))
-    if item["value"] and item["value"]["itemId"] then
-        -- add(children, createTextChangingButton("itemId", item["value"]))
-        add(children, createTextChangingButton("count", item["value"]))
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Remove Value",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                item["value"] = nil
-                props.UpdateDataset(dataset)
-            end
-        }))
-    else
-        add(children, Text({Text = "None", Color = Color3.new(1,1,1), LayoutOrder = incrementLayoutOrder()}))
-        add(children, SmallButton({
-            Appearance = "Filled",
-            Label = "Add Value",
-            LayoutOrder = incrementLayoutOrder(),
-            OnActivated = function()
-                item["value"] = {itemId = "currency", count = 10}
-                props.UpdateDataset(dataset)
-            end
-        }))
-    end
-
-    return React.createElement(React.Fragment, nil, {
-        Panel = SidePanel({
-            Title = "Edit Item: "..props.Item["id"],
-            ShowClose = true,
-            OnClosePanel = props.OnClosePanel,
-        }, children),
-        Modal = modalEnabled and TextInputModal({
-            Key = currentFieldKey,
-            Value = currentFieldValue,
-            ValueType = valueType,
-
-            OnConfirm = function(value)
-                currentFieldCallback(value)
-                setModalEnabled(false)
-                setCurrentFieldKey(nil)
-                setCurrentFieldValue(nil)
-                props.UpdateDataset(dataset)
-                Studio.setSelectionTool()
-            end,
-            OnClosePanel = function()
-                setCurrentFieldCallback(nil)
-                setModalEnabled(false)
-                setCurrentFieldKey(nil)
-                setCurrentFieldValue(nil)
-                Studio.setSelectionTool()
+    local children = {
+        ID = TextItem({
+            Text = "ID: " .. item.id,
+            LayoutOrder = layoutOrder:Increment(),
+            OnActivate = function(input)
+                print(Dash.pretty(item, { multiline = true, indent = "\t", depth = 10 }))
             end,
         }),
-        SelectFromListModal = listModalEnabled and SelectFromListModal({
-            Choices = listChoices,
-            Key = currentFieldKey,
-            Value = currentFieldValue,
-            ShowThumbnails = showThumbnails,
 
-            OnConfirm = function(value)
-                currentFieldCallback(value)
-                setListModalEnabled(false)
-                setCurrentFieldKey(nil)
-                setCurrentFieldValue(nil)
-                Studio.setSelectionTool()
-                props.UpdateDataset(dataset)
+        LocName = FishBloxComponents.TextInput({
+            HideLabel = true,
+            LayoutOrder = layoutOrder:Increment(),
+            Placeholder = "Enter Localized Name",
+            Size = UDim2.new(1, 0, 0, 50),
+            Value = item.locName,
+
+            OnChanged = function(text)
+                local newText = text
+                --prevent the id from being empty
+                if #text < 1 then
+                    return
+                end
+                --Check for invalid characters
+                --Auto update ID based on LocName
+                local updated, newItem = Dataset:updateItemId(item, FormatText.convertToIdText(newText))
+                if updated then
+                    newItem.locName = newText
+                    setItemId(newItem.id)
+                    props.SetNewItemAsSelectedItem(newItem)
+                    props.UpdateDataset()
+                end
             end,
-            OnClosePanel = function()
-                setCurrentFieldCallback(nil)
-                setListModalEnabled(false)
-                setCurrentFieldKey(nil)
-                setCurrentFieldValue(nil)
-                Studio.setSelectionTool()
+        }),
+
+        ThumbnailSelect = InlineThumbnailSelect({
+            Label = "Thumbnail",
+            LayoutOrder = layoutOrder:Increment(),
+            Thumbnail = item.thumb,
+            OnActivated = function()
+                props.OnClickThumbnail()
             end,
-        })
+        }),
+
+        SalePrice = showSalePrice
+                and InlineNumberInput({
+                    LayoutOrder = layoutOrder:Increment(),
+                    Label = "Sale Price",
+                    Value = itemSalePrice,
+
+                    OnReset = function() end,
+                    OnChanged = function(value)
+                        value = tonumber(FormatText.numbersOnly(value))
+                        if value then
+                            if value == 0 then
+                                item.value = nil
+                            else
+                                item.value = {
+                                    itemId = "currency",
+                                    count = value,
+                                }
+                            end
+                            -- setItemSalePrice(value)
+                            props.UpdateDataset()
+                        end
+                    end,
+                })
+            or TextItem({
+                Text = "Sale Price: An item will only have a sale price if it is the output of a makerSeller.",
+                TextSize = 12,
+                LayoutOrder = layoutOrder:Increment(),
+            }),
+
+        Cost = showCost
+                and InlineNumberInput({
+                    LayoutOrder = layoutOrder:Increment(),
+                    Label = "Cost",
+                    Value = itemCost,
+
+                    OnReset = function()
+                        item.requirements = getTemplateItem().requirements
+                        props.UpdateDataset()
+                    end,
+                    OnChanged = function(value)
+                        value = FormatText.numbersOnly(value)
+                        if tonumber(value) then
+                            for _, requirement in ipairs(item.requirements) do
+                                if requirement.itemId == "currency" then
+                                    requirement.count = value
+                                end
+                            end
+                            -- setItemCost(value)
+                            props.UpdateDataset()
+                        end
+                    end,
+                })
+            or TextItem({
+                Text = "Cost: An item only has a cost if it is the output of a purchaser.",
+                TextSize = 12,
+                LayoutOrder = layoutOrder:Increment(),
+            }),
+
+        AddRequirements = not hideRequirements and LabeledAddButton({
+            LayoutOrder = layoutOrder:Increment(),
+            Label = "Requirements",
+
+            OnActivated = function()
+                props.OnAddRequirement(item)
+            end,
+        }) or TextItem({
+            Text = "Requirements: An item outputted by a purchaser should not have any requirements.",
+            TextSize = 12,
+            LayoutOrder = layoutOrder:Increment(),
+        }),
+
+        RequirementItems = Column({
+            Gaps = 8,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(1, 0, 0, 0),
+            LayoutOrder = layoutOrder:Increment(),
+        }, requirementItems),
+    }
+
+    local scrollingFrameChildren = {
+        uIPadding = React.createElement("UIPadding", {
+            PaddingBottom = UDim.new(0, layoutOrder:Increment() * 10),
+            PaddingLeft = UDim.new(0, 4),
+            PaddingRight = UDim.new(0, 6),
+            PaddingTop = UDim.new(0, 8),
+        }),
+
+        uIListLayout = React.createElement("UIListLayout", {
+            Padding = UDim.new(0, 12),
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+        }),
+    }
+
+    children = Dash.join(scrollingFrameChildren, children)
+
+    return React.createElement(React.Fragment, {}, {
+        EditItemUI = SidePanel({
+            OnClosePanel = props.OnClosePanel,
+            ShowClose = true,
+            Title = "Editing Item",
+        }, {
+            ScrollingList = React.createElement("ScrollingFrame", {
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                CanvasSize = UDim2.new(),
+                ScrollBarImageTransparency = 1,
+                ScrollBarThickness = 4,
+                ScrollingDirection = Enum.ScrollingDirection.Y,
+                VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+                Active = true,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                BorderColor3 = Color3.fromRGB(0, 0, 0),
+                BorderSizePixel = 0,
+                Size = UDim2.fromScale(1, 1),
+            }, {
+                frame = React.createElement("Frame", {
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Size = UDim2.fromScale(1, 0),
+                }, children),
+            }),
+        }),
     })
+
+    -- return React.createElement(React.Fragment, {}, {
+    -- EditMachineUI = SidePanel({
+    --     OnClosePanel = props.OnClosePanel,
+    --     ShowClose = true,
+    --     Title = "Editing Item",
+    -- }, children),
+
+    -- })
 end
 
 return function(props)

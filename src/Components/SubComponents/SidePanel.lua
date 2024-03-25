@@ -15,9 +15,9 @@ local Panel = FishBloxComponents.Panel
 local Text = FishBloxComponents.Text
 
 export type Props = {
-    OnClosePanel:any,
-    Title:string,
-    ShowClose:boolean,
+    OnClosePanel: any,
+    Title: string,
+    ShowClose: boolean,
 }
 
 return function(props, children)
@@ -30,19 +30,25 @@ return function(props, children)
     return Block({
         AutomaticSize = Enum.AutomaticSize.None,
         BackgroundColor = Color3.fromRGB(32, 36, 42),
-        Size = UDim2.new(0,300,1,0),
-        Padding = UDim.new(0,12),
-        Corner = UDim.new(0,12),
+        Size = UDim2.new(0, 300, 1, 0),
+        Padding = UDim.new(0, 12),
+        Corner = UDim.new(0, 12),
         ClipsDescendants = true,
     }, {
+        --Click Blocker
+        Block({
+            Size = UDim2.fromScale(1, 1),
+            BlockClicks = true,
+            ZIndex = -1,
+        }),
         Column({
-            AutomaticSize = Enum.AutomaticSize.Y
+            AutomaticSize = Enum.AutomaticSize.Y,
         }, {
             TitleBlock = Block({
-                Size = UDim2.new(1,0,0,25)
+                Size = UDim2.new(1, 0, 0, 25),
             }, {
                 Text = React.createElement("TextLabel", {
-                    AnchorPoint = Vector2.new(0,0),
+                    AnchorPoint = Vector2.new(0, 0),
                     FontFace = Font.new(
                         "rbxasset://fonts/families/GothamSSm.json",
                         Enum.FontWeight.Bold,
@@ -59,20 +65,20 @@ return function(props, children)
                     LayoutOrder = 1,
                 }),
                 CloseButtonBlock = Block({
-                    AnchorPoint = Vector2.new(1,0),
-                    Size = UDim2.fromOffset(20,20),
-                    Position = UDim2.new(1,0,0,0),
+                    AnchorPoint = Vector2.new(1, 0),
+                    Size = UDim2.fromOffset(20, 20),
+                    Position = UDim2.new(1, 0, 0, 0),
                     LayoutOrder = 2,
                 }, {
                     CloseButton = props.ShowClose and Button({
-                        Size = UDim2.fromScale(1,1),
+                        Size = UDim2.fromScale(1, 1),
                         Padding = 4,
                         Appearance = "Borderless",
                         OnActivated = props.OnClosePanel,
                         ZIndex = 1,
                     }, {
                         Image = Roact.createElement("ImageLabel", {
-                            Size = UDim2.fromOffset(10,10),
+                            Size = UDim2.fromOffset(10, 10),
                             AutomaticSize = Enum.AutomaticSize.None,
                             BackgroundTransparency = 1,
                             Image = "rbxassetid://6990919691",
@@ -81,19 +87,17 @@ return function(props, children)
                             Position = UDim2.fromScale(0.5, 0.5),
                             ZIndex = props.ZIndex or 1,
                         }),
-                    })
+                    }),
                 }),
-
-                
             }),
-            Gap = Block({Size = UDim2.new(1,0,0,5)}),
+            Gap = Block({ Size = UDim2.new(1, 0, 0, 5) }),
             ContentColumn = Column({
                 LayoutOrder = 2,
                 Gaps = 8,
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                Size = UDim2.new(1,0,1,0),
-            }, children)
-        })
+                Size = UDim2.new(1, 0, 1, 0),
+            }, children),
+        }),
     })
     -- return Panel({
     --     AutomaticSize = Enum.AutomaticSize.Y,

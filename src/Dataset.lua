@@ -14,44 +14,141 @@ Dataset.currentMap = {}
 Dataset.items = {}
 Dataset.machines = {}
 
-local function cleanMachines(machines: table, items: table)
+function Dataset:cleanMachines()
+    local machines = self.machines
+    local items = self.items
     --Clean the machine sources, make sure that it is nil if there are no source ids. We do this because machines in Factories, "sources" might == nil.
     for _, machine in machines do
         if machine["sources"] and #machine["sources"] == 0 then
             machine["sources"] = nil
         end
-    end
-
-    for _, machine in machines do
-        local machineType = Constants.MachineTypes.maker
-        for _, itemId in machine["outputs"] do
-            if items[itemId]["value"] then
-                --If this machine has an output that has a value, then it's a makerSeller.
-                machineType = Constants.MachineTypes.makerSeller
-                --TODO: Check other machines to see if they use this machine as a source. If so, something is wrong.
-            end
-        end
-        if machine["sources"] == nil then
-            if machineType == Constants.MachineTypes.makerSeller then
-                machineType = Constants.MachineTypes.invalid
-            else
-                machineType = Constants.MachineTypes.purchaser
-            end
-        end
-        if machine["sources"] == nil and #machine["outputs"] == 0 then
-            machineType = Constants.MachineTypes.invalid
-        end
-        machine["type"] = machineType
-
-        if machineType == Constants.MachineTypes.makerSeller then
-            machine["asset"] = Constants.MachineAssetPaths.makerSeller
-        elseif machineType == Constants.MachineTypes.purchaser then
+        local machineType = machine["type"]
+        if machineType == Constants.MachineTypes.purchaser then
+            machine.sources = nil
             machine["asset"] = Constants.MachineAssetPaths.purchaser
         elseif machineType == Constants.MachineTypes.maker then
             machine["asset"] = Constants.MachineAssetPaths.maker
+        elseif machineType == Constants.MachineTypes.makerSeller then
+            machine["asset"] = Constants.MachineAssetPaths.makerSeller
+        end
+    end
+
+    for _, machine in machines do
+        --If this is a purchaser, then it should not have any inputs.
+        local machineType = machine["type"]
+        if machineType == Constants.MachineTypes.maker then
+            --Loop through the machines and see if another machine uses this machine as a source.
+            --If no machines have this machine as a source, then there's an error.
+            local machineIsASourceForAnotherMachine = false
+            for _, otherMachine in machines do
+                if otherMachine.sources then
+                    for _, sourceId in otherMachine.sources do
+                        if sourceId == machine.id then
+                            machineIsASourceForAnotherMachine = true
+                        end
+                    end
+                end
+            end
+            if not machineIsASourceForAnotherMachine then
+                --Make an error, here
+                -- warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
+            end
+        end
+    end
+end
+
+function Dataset:cleanItems()
+    local items = self.items
+    for key, item in pairs(items) do
+        --Check the items based on machine type. There are certain requirements for certain machines.
+        --PUrchasers: Each item should have a cost, and no requirements.
+        --Makers: Each item should have requirements, and no cost (Requirement of Currency) and no value (Sale Price)
+        --MakerSellers: Each item should have requirements, and a value (Sale Price), but no cost (Requirement of Currency)
+        local machineType = self:getMachineTypeFromItemId(item.id)
+        if machineType == Constants.MachineTypes.purchaser then
+            --Prune the requirements array of anything that is not "currency"
+            if #item.requirements == 1 and item.requirements[1].itemId == "currency" then
+                --Do nothing
+            elseif #item.requirements > 0 then
+                local currencyAmount = nil
+                for i, requirement in ipairs(items[key].requirements) do
+                    if requirement.itemId == "currency" then
+                        currencyAmount = requirement.count
+                    end
+                end
+                if currencyAmount then
+                    print("Updating requirement for purchaser item to make sure it's only currency...", item.id)
+                    items[key].requirements = {}
+                    items[key].requirements[1] = { itemId = "currency", count = currencyAmount }
+                else
+                    print("Adding currency requirement (Sale Cost) to purchaser item...", item.id)
+                    items[key].requirements = getTemplateItem().requirements
+                end
+                if item.value ~= nil then
+                    print("Removing value from purchaser item...", item.id)
+                    items[key].value = nil
+                end
+            end
+        elseif machineType == Constants.MachineTypes.maker then
+            if item.value ~= nil then
+                print("Removing value from maker item...", item.id)
+                items[key].value = nil
+            end
+        elseif machineType == Constants.MachineTypes.makerSeller then
+            if item.value == nil then
+                print("Adding value to makerSeller item...", item.id)
+                items[key].value = {
+                    count = 5,
+                    itemId = "currency",
+                }
+            end
+        end
+
+        item = items[key]
+        --If there's more than one requirement, make sure one of them isn't "currency". If so this should be removed. You can't require currency AND another item.
+        if item.requirements then
+            if #item.requirements > 1 then
+                local indexToRemove = nil
+                for i, requirement in ipairs(item.requirements) do
+                    if requirement.itemId == "currency" then
+                        indexToRemove = i
+                    end
+                end
+                if indexToRemove then
+                    -- print("Removing item from requirements...", item.requirements[indexToRemove].itemId, indexToRemove)
+                    if item.requirements[indexToRemove].itemId == "currency" then
+                        table.remove(item.requirements, indexToRemove)
+                    end
+                    -- print("Result:", item.requirements)
+                end
+            elseif #item.requirements == 0 then
+                item.requirements[1] = { itemId = "currency", count = 0 }
+            end
+
+            --Make sure the count is a number, not a string.
+            for i, requirement in ipairs(item.requirements) do
+                if not requirement.count then
+                    print(
+                        "Error! Requirement count is nil! Resetting to default requirement.",
+                        item.id,
+                        item,
+                        requirement
+                    )
+                    local resetRequirement = table.clone(getTemplateItem().requirements)[1]
+                    item.requirements[i] = resetRequirement
+                else
+                    --TODO: Fix this. Does it even work? It should be modifying the item table directly, not the local "requirement" variable
+                    requirement.count = tonumber(requirement.count)
+                end
+            end
         else
-            --Machine is invalid
-            machine["asset"] = Constants.MachineAssetPaths.placeholder
+            --An item should always have a requirement
+            if item.id == "currency" or item.id == "none" then
+                item.requirements = nil
+            else
+                item.requirements = {}
+                item.requirements[1] = { itemId = "currency", count = 0 }
+            end
         end
     end
 end
@@ -77,54 +174,62 @@ function Dataset:getDataset()
 end
 
 function Dataset:updateDataset(dataset, currentMapIndex)
-    DatasetInstance.write(dataset)
+    assert(dataset, "Dataset error! Dataset is nil!")
+
     self.dataset = dataset
     self.currentMap = dataset["maps"][currentMapIndex]
     self.items = self.currentMap["items"]
     self.machines = self.currentMap["machines"]
 
-    cleanMachines(self.machines, self.items)
+    self:cleanMachines()
+    self:cleanItems()
+
+    DatasetInstance.write(dataset)
 end
 
-function Dataset:getMap(mapIndex: number)
-    return self.dataset["maps"][mapIndex]
-end
+--TODO: Remove?
+-- function Dataset:getMap(mapIndex: number)
+--     return self.dataset["maps"][mapIndex]
+-- end
 
-function Dataset:changeItemId(itemKey, newName)
-    --check for naming collisions
-    newName = self:resolveDuplicateId(newName, self.items)
+-- function Dataset:changeItemId(itemKey, newName)
+-- --check for naming collisions
+-- newName = self:resolveDuplicateId(newName, self.items)
 
-    local items = self.items
-    local oldName = itemKey
-    local newItem = table.clone(items[itemKey])
+-- local items = self.items
+-- local oldName = itemKey
+-- local newItem = table.clone(items[itemKey])
 
-    newItem["id"] = newName
-    items[newName] = newItem
-    items[oldName] = nil
+-- newItem["id"] = newName
+-- items[newName] = newItem
+-- items[oldName] = nil
 
-    local machines = self.machines
-    for i, machine in machines do
-        if machine["outputs"] then
-            for j, output in machine["outputs"] do
-                if output == oldName then
-                    machines[i]["outputs"][j] = newName
-                end
-            end
-        end
-    end
+-- local machines = self.machines
+-- for i, machine in machines do
+--     if machine["outputs"] then
+--         for j, output in machine["outputs"] do
+--             if output == oldName then
+--                 machines[i]["outputs"][j] = newName
+--             end
+--         end
+--     end
+-- end
 
-    --Loop through all items. Make sure if this new item is a requirement for another item, to change its id there too.
-    for _, item in self.items do
-        if item["requirements"] then
-            for _, req in item["requirements"] do
-                if req["itemId"] == oldName then
-                    req["itemId"] = newName
-                end
-            end
-        end
-    end
+-- --Loop through all items. Make sure if this new item is a requirement for another item, to change its id there too.
+-- for _, item in self.items do
+--     if item["requirements"] then
+--         for _, req in item["requirements"] do
+--             if req["itemId"] == oldName then
+--                 req["itemId"] = newName
+--             end
+--         end
+--     end
+-- end
 
-    return newName
+-- return newName
+-- end
+function Dataset:getItemFromId(id)
+    return self.items[id]
 end
 
 function Dataset:addItem()
@@ -172,17 +277,163 @@ function Dataset:removeItem(itemKey)
     items[itemKey] = nil
 end
 
+function Dataset:updateItemId(itemToUpdate: Types.Item, newId: string)
+    if not newId or #newId < 1 then
+        return false
+    end
+    if itemToUpdate.id == newId then
+        return true, itemToUpdate
+    end
+    newId = Dataset:resolveDuplicateId(newId, self.items)
+
+    local originalId = itemToUpdate.id
+    local newItem = table.clone(self.items[originalId])
+
+    newItem.id = newId
+    self.items[newId] = newItem
+    self.items[originalId] = nil
+
+    -- if we're changing the ID, we must also change it wherever it appears as another machine's source
+    for i, machine in self.machines do
+        if machine["outputs"] then
+            for j, source in machine["outputs"] do
+                if source == originalId then
+                    self.machines[i]["outputs"][j] = newId
+                end
+            end
+        end
+    end
+
+    for i, item in self.items do
+        if item.requirements then
+            for j, requirement in item.requirements do
+                if requirement.itemId == originalId then
+                    self.items[i]["requirements"][j] = newId
+                end
+            end
+        end
+    end
+
+    -- Dataset:changeItemId(itemToUpdate.id, id)
+    -- itemToUpdate.id = id
+    --if we're changing the ID, we must also change it wherever it appears as another machine's source
+    -- for i, machine in self.machines do
+    --     if machine["outputs"] then
+    --         for j, source in machine["outputs"] do
+    --             if source == originalId then
+    --                 self.machines[i]["outputs"][j] = id
+    --             end
+    --         end
+    --     end
+    -- end
+    -- for i, item in self.items do
+    --     if item.requirements then
+    --         for j, requirement in item.requirements do
+    --             if requirement.itemId == originalId then
+    --                 self.items[i]["requirements"][j] = id
+    --             end
+    --         end
+    --     end
+    -- end
+    return true, newItem
+end
+
+function Dataset:addRequirementToItem(itemToUpdate: Types.Item, requirementItem: Types.Item)
+    if itemToUpdate.id == requirementItem.id then
+        print("You cannot add an item to itself as a requirement. Skipping")
+        return
+    end
+    local skip = false
+    if itemToUpdate.requirements then
+        for _, requirement in itemToUpdate.requirements do
+            if requirement.itemId == requirementItem.id then
+                skip = true
+            end
+        end
+        if skip then
+            print("Item already exists as a requirement. Skipping")
+            return
+        else
+            print("Adding", requirementItem.id, "to", itemToUpdate.id, "as a requirement")
+            table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
+        end
+    else
+        itemToUpdate.requirements = {}
+        table.insert(itemToUpdate.requirements, { itemId = requirementItem.id, count = 0 })
+    end
+end
+
+function Dataset:removeRequirementFromItem(itemToUpdate: Types.Item, requirementId: string)
+    local requirementItem = self.items[requirementId]
+    if not requirementItem then
+        warn("Requirement id ", requirementId, "does not have a corresponding item!")
+        return
+    end
+    if not itemToUpdate.requirements or #itemToUpdate.requirements == 0 then
+        warn("Error! Item has no requirements!")
+        return
+    end
+    local indexToRemove = 0
+    for i, requirement in ipairs(itemToUpdate.requirements) do
+        if requirement.itemId == requirementId then
+            indexToRemove = i
+            print("Index to remove:", indexToRemove)
+        end
+    end
+    table.remove(itemToUpdate.requirements, indexToRemove)
+end
+
 --Returns items, minus the currency and none items
-function Dataset:getValidItems(originalItems: table)
+function Dataset:getValidItems(excludeOutputsInUse: boolean)
     local result = {}
-    for k, v in originalItems do
-        if v["id"] == "currency" or v["id"] == "none" then
+    for itemKey, item in self.items do
+        local skip = false
+        if item.id == "currency" or item.id == "none" then
+            skip = true
+        elseif excludeOutputsInUse then
+            for _, machine in self.machines do
+                if machine.outputs then
+                    for _, outputId in machine.outputs do
+                        if item.id == outputId then
+                            skip = true
+                        end
+                    end
+                end
+            end
+        end
+
+        if skip then
+            continue
+        end
+        result[item.id] = item
+    end
+    return result
+end
+
+function Dataset:getValidRequirementsForItem(item: Types.Item)
+    local result = {}
+    for _, requirement in ipairs(item.requirements) do
+        if requirement.itemId == "currency" or requirement.itemId == "none" then
             continue
         else
-            result[v["id"]] = v
+            table.insert(result, requirement)
         end
     end
     return result
+end
+
+function Dataset:getMachineTypeFromItemId(itemId: string)
+    local machineType = Constants.None
+    for _, machine in self.machines do
+        if machine.outputs then
+            for _, outputId in machine.outputs do
+                if outputId == itemId then
+                    machineType = machine.type
+                end
+            end
+        end
+    end
+    return machineType
 end
 
 function Dataset:resolveDuplicateId(idToCheck: string, tableToCheck: table)
@@ -266,9 +517,9 @@ function Dataset:removeMachine(machineToRemove: Types.Machine)
         table.remove(machines, indexToRemove)
     end
     --Check other machines. If they have this machine as a source, remove it.
-    for _,machine in machines do
+    for _, machine in machines do
         if machine.sources then
-            for i,sourceId in ipairs(machine.sources) do
+            for i, sourceId in ipairs(machine.sources) do
                 if sourceId == machineToRemove.id then
                     table.remove(machine.sources, i)
                 end
@@ -279,6 +530,94 @@ function Dataset:removeMachine(machineToRemove: Types.Machine)
             end
         end
     end
+end
+
+function Dataset:updateMachineId(machineToUpdate: Types.Machine, id: string)
+    local originalId = machineToUpdate.id
+    if not id or #id < 1 then
+        return false
+    end
+    id = Dataset:resolveDuplicateId(id, self.machines)
+    machineToUpdate.id = id
+    --if we're changing the ID, we must also change it wherever it appears as another machine's source
+    for i, machine in self.machines do
+        if machine["sources"] then
+            for j, source in machine["sources"] do
+                if source == originalId then
+                    self.machines[i]["sources"][j] = id
+                end
+            end
+        end
+    end
+    return true
+end
+
+function Dataset:setMachineType(machineToUpdate: Types.Machine, machineType: string)
+    machineToUpdate["type"] = machineType
+end
+
+function Dataset:updateMachineProperty(machineToUpdate: Types.Machine, property: string, value: string | number)
+    machineToUpdate[property] = value
+end
+
+--Add a sourceId to the machine, but also check to make sure it doesn't already exist
+function Dataset:addSourceToMachine(machineToUpdate: Types.Machine, sourceMachineId)
+    if machineToUpdate.sources then
+        for _, sourceId in machineToUpdate.sources do
+            --if the sourceId already exists, then do not add another.
+            if sourceId == sourceMachineId then
+                return
+            end
+        end
+    else
+        machineToUpdate.sources = {}
+    end
+    table.insert(machineToUpdate.sources, sourceMachineId)
+end
+function Dataset:removeSourceFromMachine(machineToUpdate: Types.Machine, sourceMachineId)
+    if machineToUpdate.sources then
+        local index = table.find(machineToUpdate.sources, sourceMachineId)
+        if index then
+            table.remove(machineToUpdate.sources, index)
+        end
+    end
+end
+
+--Add the item id to the outputs of the machine, but check for duplicates.
+function Dataset:addOutputToMachine(machineToUpdate: Types.Machine, item: Types.Item)
+    if machineToUpdate.outputs then
+        for _, itemId in machineToUpdate.outputs do
+            if item.id == itemId then
+                return
+            end
+        end
+    else
+        machineToUpdate.outputs = {}
+    end
+    table.insert(machineToUpdate.outputs, item.id)
+end
+
+function Dataset:removeOutputFromMachine(machineToUpdate: Types.Machine, item: Types.Item)
+    if machineToUpdate.outputs then
+        local index = table.find(machineToUpdate.outputs, item.id)
+        if index then
+            table.remove(machineToUpdate.outputs, index)
+        end
+    end
+end
+
+function Dataset:getMachineFromOutputItem(item: Types.Item)
+    local machineWithOutput: Types.Machine = nil
+    for _, machine in self.machines do
+        if machine.outputs then
+            for _, outputId in machine.outputs do
+                if outputId == item.id then
+                    machineWithOutput = machine
+                end
+            end
+        end
+    end
+    return machineWithOutput
 end
 
 function Dataset:getMachineFromMachineAnchor(machineAnchor: Instance)
@@ -318,14 +657,14 @@ function Dataset:getCoordinatesFromAnchorName(name)
 end
 
 --returns the machine data in the dataset, based on the coordinates provided
--- function Dataset:getMachineFromCoordinates(x, y)
---     local machine = nil
---     for _,v in self.machines do
---         if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
---             machine = v
---         end
---     end
---     return machine
--- end
+function Dataset:getMachineFromCoordinates(x: number, y: number)
+    local machine = nil
+    for _, v in self.machines do
+        if v["coordinates"]["X"] == x and v["coordinates"]["Y"] == y then
+            machine = v
+        end
+    end
+    return machine
+end
 
 return Dataset

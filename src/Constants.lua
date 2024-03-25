@@ -3,11 +3,12 @@ return {
         EditDatasetUI = "Edit Dataset",
         EditFactoryUI = "Edit Factory",
         EditMachineUI = "Edit Machine",
-        EditItemsListUI = "Edit Items List",
         EditItemUI = "Edit Item",
-        EditPowerupsListUI = "Edit Powerups List",
         EditPowerupUI = "Edit Powerup",
-        ImageSelectorUI = "Image Selector",
+        SelectThumbnailUI = "Select Thumbnail",
+        SelectMachineUI = "Select Machine",
+        SelectOutputItemUI = "Select Item",
+        SelectRequirementItemUI = "Select Requirement Item",
     },
     MachineTypes = {
         maker = "maker",
@@ -28,5 +29,13 @@ return {
     },
     Defaults = {
         BoldFont = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+        MachineDefaultOutput = 40,
+        MachineDefaultOutputRange = {
+            min = 0,
+            max = 100,
+        },
+        MachineDefaultMaxStorage = 100,
+        MachineDefaultYPosition = 1.05,
     },
+    None = "None",
 }
