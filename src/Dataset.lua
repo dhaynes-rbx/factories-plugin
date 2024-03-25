@@ -53,6 +53,9 @@ function Dataset:cleanMachines()
                 --Make an error, here
                 -- warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
             end
+        elseif machineType == Constants.MachineTypes.purchaser or machineType == Constants.MachineTypes.makerSeller then
+            --Make sure there is no delay for non-maker machines.
+            machine.defaultProductionDelay = Constants.Defaults.MachineDefaultProductionDelay
         end
     end
 end

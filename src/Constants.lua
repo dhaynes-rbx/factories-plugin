@@ -36,6 +36,7 @@ return {
         },
         MachineDefaultMaxStorage = 100,
         MachineDefaultYPosition = 1.05,
+        MachineDefaultProductionDelay = 0,
     },
     None = "None",
 }
