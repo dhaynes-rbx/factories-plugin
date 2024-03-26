@@ -4,7 +4,7 @@ return {
         EditFactoryUI = "Edit Factory",
         EditMachineUI = "Edit Machine",
         EditItemUI = "Edit Item",
-        EditPowerupUI = "Edit Powerup",
+        EditPowerupsUI = "Edit Powerups",
         SelectThumbnailUI = "Select Thumbnail",
         SelectMachineUI = "Select Machine",
         SelectOutputItemUI = "Select Item",

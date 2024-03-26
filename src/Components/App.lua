@@ -49,6 +49,7 @@ local GetMapData = require(script.Parent.Parent.GetMapData)
 
 local pluginVersion = require(script.Parent.Parent.Version)
 local TextItem = require(script.Parent.SubComponents.TextItem)
+local EditPowerupsUI = require(script.Parent.EditPowerupsUI)
 
 function App:setPanel()
     Studio.setSelectionTool()
@@ -242,7 +243,6 @@ function App:render()
                         CurrentMapIndex = self.state.currentMapIndex,
                         Dataset = self.state.dataset,
                         Error = self.state.datasetError,
-
                         Title = self.state.currentPanel,
 
                         SetCurrentMap = function(mapIndex)
@@ -251,6 +251,10 @@ function App:render()
 
                         ShowEditFactoryUI = function()
                             self:changePanel(Panels.EditFactoryUI)
+                        end,
+
+                        ShowEditPowerupsUI = function()
+                            self:changePanel(Panels.EditPowerupsUI)
                         end,
 
                         ExportDataset = function()
@@ -327,6 +331,17 @@ function App:render()
                             self:updateDataset(dataset)
                         end,
                     }, {}),
+
+                EditPowerupsUI = self.state.currentPanel == Panels.EditPowerupsUI
+                    and EditPowerupsUI({
+                        Powerups = self.state.dataset.maps[self.state.currentMapIndex].powerups,
+                        OnClosePanel = function()
+                            self:showPreviousPanel()
+                        end,
+                        UpdateDataset = function()
+                            self:updateDataset(self.state.dataset)
+                        end,
+                    }),
 
                 EditMachineUI = self.state.currentPanel == Panels.EditMachineUI
                     and React.createElement(EditMachineUI, {
