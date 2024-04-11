@@ -189,6 +189,7 @@ function ItemListItem(props: Props)
             table.insert(
                 requirements,
                 Requirement(requirement, layoutOrder:Increment() + 10, function(value)
+                    value = FormatText.numbersOnly(value)
                     props.OnRequirementCountChanged(value, requirement)
                 end, function(value)
                     props.OnRequirementItemHovered(value)
@@ -403,7 +404,7 @@ function ItemListItem(props: Props)
                 Label = "Count",
                 Value = requirementCount,
                 OnChanged = function(value)
-                    value = tonumber(value)
+                    value = FormatText.numbersOnly(value)
 
                     setRequirementCount(value)
                     props.OnRequirementCountChanged(value)
@@ -426,6 +427,7 @@ function ItemListItem(props: Props)
 
                     OnReset = nil,
                     OnChanged = function(value)
+                        value = FormatText.numbersOnly(value)
                         props.OnSalePriceChanged(value)
                     end,
                 }),
@@ -442,6 +444,7 @@ function ItemListItem(props: Props)
                     Value = itemCost,
                     OnReset = nil,
                     OnChanged = function(value)
+                        value = FormatText.numbersOnly(value)
                         props.OnCostChanged(value)
                     end,
                 }),

@@ -67,6 +67,13 @@ function Dataset:cleanItems()
         --PUrchasers: Each item should have a cost, and no requirements.
         --Makers: Each item should have requirements, and no cost (Requirement of Currency) and no value (Sale Price)
         --MakerSellers: Each item should have requirements, and a value (Sale Price), but no cost (Requirement of Currency)
+        if item.value then
+            if typeof(item.value.count) == "string" then
+                item.value.count = tonumber(item.value.count)
+                print("Converted string to number for", item.id, "item value.count")
+            end
+        end
+
         local machineType = self:getMachineTypeFromItemId(item.id)
         if machineType == Constants.MachineTypes.purchaser then
             --Prune the requirements array of anything that is not "currency"
