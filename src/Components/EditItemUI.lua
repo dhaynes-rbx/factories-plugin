@@ -119,7 +119,6 @@ local function EditItemUI(props: Props)
                     OnRequirementCountChanged = function(value)
                         for _, changedRequirement in ipairs(item.requirements) do
                             if changedRequirement.itemId == requirement.itemId then
-                                print("Changing requirement count", requirement.itemId, value)
                                 requirement.count = value
                             end
                         end
