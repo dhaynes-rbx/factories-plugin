@@ -15,6 +15,7 @@ local Scene = require(script.Parent.Parent.Parent.Scene)
 local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local Incrementer = require(script.Parent.Parent.Parent.Incrementer)
 local FormatText = require(script.Parent.Parent.Parent.FormatText)
+local SmallLabel = require(script.Parent.SmallLabel)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -185,6 +186,15 @@ function ItemListItem(props: Props)
 
     local requirements = {}
     if showRequirements then
+        table.insert(
+            requirements,
+            SmallLabel({
+                Bold = false,
+                Label = "Needs:",
+                LayoutOrder = layoutOrder:Increment() + 10,
+                FontSize = 18,
+            })
+        )
         for _, requirement in props.Requirements do
             table.insert(
                 requirements,
