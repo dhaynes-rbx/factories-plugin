@@ -273,14 +273,15 @@ function Scene.removeConveyors(machine: Types.Machine)
     local beltDataFolder = Scene.getBeltDataFolder()
     for _, conveyor in folder:GetChildren() do
         local splitName = conveyor.Name:split("-")
-        if splitName[1] == conveyorName then
-            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
-            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
-            conveyor:Destroy()
-        end
-        if #splitName > 1 and splitName[2] == conveyorName then
-            beltsFolder:FindFirstChild(conveyor.Name):Destroy()
-            beltDataFolder:FindFirstChild(conveyor.Name):Destroy()
+        if splitName[1] == conveyorName or (#splitName > 1 and splitName[2] == conveyorName) then
+            local conveyorMesh = beltsFolder:FindFirstChild(conveyor.Name)
+            if conveyorMesh then
+                conveyorMesh:Destroy()
+            end
+            local beltDataForConveyor = beltDataFolder:FindFirstChild(conveyor.Name)
+            if beltDataForConveyor then
+                beltDataForConveyor:Destroy()
+            end
             conveyor:Destroy()
         end
     end

@@ -135,9 +135,9 @@ function Conveyor(props: Props)
                 connection:Disconnect()
                 connection = nil
             end
-            if conveyorFolder then
-                conveyorFolder:Destroy()
-            end
+            -- if conveyorFolder then
+            --     conveyorFolder:Destroy()
+            -- end
         end
     end, {})
 
