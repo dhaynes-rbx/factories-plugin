@@ -39,4 +39,5 @@ return {
         MachineDefaultProductionDelay = 0,
     },
     None = "None",
+    NoImage = "rbxassetid://7553285523",
 }

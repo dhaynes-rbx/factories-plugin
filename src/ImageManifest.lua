@@ -1,6 +1,7 @@
+local Constants = require(script.Parent.Constants)
 local ServerStorage = game:GetService("ServerStorage")
 local ImageManifest = {}
-local noImage: string = "rbxassetid://7553285523" --Question mark
+local noImage: string = Constants.NoImage --Question mark
 
 function ImageManifest.getManifest()
     local manifest = ServerStorage:FindFirstChild("Factories Plugin Manifest")
