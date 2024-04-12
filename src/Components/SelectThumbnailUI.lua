@@ -52,7 +52,7 @@ local function ImageButton(imageKey, onClick)
         }, {
             Image = React.createElement("ImageLabel", {
                 BackgroundTransparency = 1,
-                -- Image = Manifest.images[imageKey],
+                Image = ImageManifest.getImage(imageKey),
                 LayoutOrder = 1,
                 Size = UDim2.fromScale(0.9, 0.9),
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,

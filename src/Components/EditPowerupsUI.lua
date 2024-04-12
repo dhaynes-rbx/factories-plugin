@@ -31,6 +31,7 @@ local InlineNumberInput = require(script.Parent.SubComponents.InlineNumberInput)
 local LabeledAddButton = require(script.Parent.SubComponents.LabeledAddButton)
 local ItemListItem = require(script.Parent.SubComponents.ItemListItem)
 local Constants = require(script.Parent.Parent.Constants)
+local ImageManifest = require(script.Parent.Parent.ImageManifest)
 
 type Props = {
     Powerups: { Types.Powerup },
@@ -69,7 +70,7 @@ local function EditPowerupsUI(props: Props)
                 Thumb = React.createElement("ImageLabel", {
                     LayoutOrder = layoutOrder:Increment(),
                     Size = UDim2.new(0, 40, 0, 40),
-                    -- Image = Manifest.images[powerup.thumb],
+                    Image = ImageManifest.getImage(powerup.thumb),
                     BackgroundTransparency = 1,
                 }, {}),
 

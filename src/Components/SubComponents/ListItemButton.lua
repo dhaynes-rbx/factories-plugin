@@ -19,6 +19,7 @@ local Icon = FishBloxComponents.Icon
 local Scene = require(script.Parent.Parent.Parent.Scene)
 local SmallLabel = require(script.Parent.SmallLabel)
 local SmallButton = require(script.Parent.SmallButton)
+local ImageManifest = require(script.Parent.Parent.Parent.ImageManifest)
 
 type Props = {
     HideIcon: boolean,
@@ -79,14 +80,13 @@ function ListItemButton(props)
                 AutomaticSize = Enum.AutomaticSize.X,
                 Color = Color3.new(1, 1, 1),
                 LayoutOrder = 0,
-
                 TextXAlignment = Enum.TextXAlignment.Left,
                 TextYAlignment = Enum.TextYAlignment.Center,
                 Text = props.Index,
             }),
             Image = showImage and React.createElement("ImageLabel", {
                 BackgroundTransparency = 1,
-                -- Image = Manifest.images[props.Image] or "rbxassetid://7553285523", --Question mark icon
+                Image = ImageManifest.getImage(props.Image), --Question mark icon
                 LayoutOrder = 2,
                 Size = UDim2.fromOffset(40, 40),
             }),

@@ -15,6 +15,7 @@ local InlineNumberInput = require(script.Parent.InlineNumberInput)
 local Incrementer = require(script.Parent.Parent.Parent.Incrementer)
 local FormatText = require(script.Parent.Parent.Parent.FormatText)
 local SmallLabel = require(script.Parent.SmallLabel)
+local ImageManifest = require(script.Parent.Parent.Parent.ImageManifest)
 local FishBloxComponents = FishBlox.Components
 
 type Props = {
@@ -93,7 +94,7 @@ function Requirement(requirement: table, layoutOrder: number, requirementCallbac
             }),
 
             imageLabel = React.createElement("ImageLabel", {
-                -- Image = Manifest.images[thumb],
+                Image = ImageManifest.getImage(thumb),
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
@@ -370,7 +371,7 @@ function ItemListItem(props: Props)
                 }, {
 
                     imageLabel = React.createElement("ImageLabel", {
-                        -- Image = Manifest.images[props.Thumbnail],
+                        Image = ImageManifest.getImage(props.Thumbnail),
                         ImageTransparency = props.Unavailable and 0.6 or 0,
                         AnchorPoint = Vector2.new(0, 0.5),
                         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
