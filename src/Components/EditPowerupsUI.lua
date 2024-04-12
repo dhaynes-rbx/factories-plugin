@@ -16,7 +16,6 @@ local SmallButton = require(script.Parent.SubComponents.SmallButton)
 local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
-local Manifest = require(script.Parent.Parent.Manifest)
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 
@@ -70,7 +69,7 @@ local function EditPowerupsUI(props: Props)
                 Thumb = React.createElement("ImageLabel", {
                     LayoutOrder = layoutOrder:Increment(),
                     Size = UDim2.new(0, 40, 0, 40),
-                    Image = Manifest.images[powerup.thumb],
+                    -- Image = Manifest.images[powerup.thumb],
                     BackgroundTransparency = 1,
                 }, {}),
 

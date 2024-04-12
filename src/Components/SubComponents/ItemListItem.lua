@@ -8,7 +8,6 @@ local FishBlox = require(Packages.FishBlox)
 local FishBloxComponents = FishBlox.Components
 local Types = require(script.Parent.Parent.Parent.Types)
 local ReactRoblox = require(script.Parent.Parent.Parent.Packages.ReactRoblox)
-local Manifest = require(script.Parent.Parent.Parent.Manifest)
 local TextItem = require(script.Parent.TextItem)
 local Dataset = require(script.Parent.Parent.Parent.Dataset)
 local Scene = require(script.Parent.Parent.Parent.Scene)
@@ -94,7 +93,7 @@ function Requirement(requirement: table, layoutOrder: number, requirementCallbac
             }),
 
             imageLabel = React.createElement("ImageLabel", {
-                Image = Manifest.images[thumb],
+                -- Image = Manifest.images[thumb],
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 1,
@@ -371,7 +370,7 @@ function ItemListItem(props: Props)
                 }, {
 
                     imageLabel = React.createElement("ImageLabel", {
-                        Image = Manifest.images[props.Thumbnail],
+                        -- Image = Manifest.images[props.Thumbnail],
                         ImageTransparency = props.Unavailable and 0.6 or 0,
                         AnchorPoint = Vector2.new(0, 0.5),
                         BackgroundColor3 = Color3.fromRGB(255, 255, 255),

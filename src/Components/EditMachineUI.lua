@@ -20,7 +20,7 @@ local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 
 local add = require(script.Parent.Parent.Helpers.add)
-local Manifest = require(script.Parent.Parent.Manifest)
+-- local Manifest = require(script.Parent.Parent.Manifest)
 local Dataset = require(script.Parent.Parent.Dataset)
 local LabelWithAdd = require(script.Parent.SubComponents.LabelWithAdd)
 local Separator = require(script.Parent.SubComponents.Separator)

@@ -130,6 +130,14 @@ local function EditDatasetUI(props: Props)
             Size = buttonSize,
             TextXAlignment = Enum.TextXAlignment.Center,
         })
+
+        children["ImportManifestButton"] = Button({
+            Label = "Import Image Manifest",
+            LayoutOrder = layoutOrder:Increment(),
+            OnActivated = props.ImportManifest,
+            Size = buttonSize,
+            TextXAlignment = Enum.TextXAlignment.Center,
+        })
     end
 
     if datasetIsLoaded then
