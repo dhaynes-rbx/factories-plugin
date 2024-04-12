@@ -31,7 +31,7 @@ local FactoryFloor = function(props: Props)
 
     --Instantiation Hook
     React.useEffect(function()
-        local folder = Scene.getBeltsFolder()
+        local folder = Scene.getBeltPartsFolder()
     end, {})
 
     --Connections Hook.

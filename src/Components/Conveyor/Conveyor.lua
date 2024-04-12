@@ -96,7 +96,7 @@ function Conveyor(props: Props)
     React.useEffect(function()
         --Create a model to hold the control points
 
-        local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getConveyorFolderForCurrentMap())
+        local conveyorFolder: Folder = getOrCreateFolder(props.Name, Scene.getBeltInfoFolderForCurrentMap())
         local controlPointsFolder: Folder = Utilities.getValueAtPath(conveyorFolder, "ControlPoints")
         if controlPointsFolder and #controlPointsFolder:GetChildren() > 1 then
             controlPoints = refreshControlPoints(conveyorFolder)

@@ -20,7 +20,7 @@ type Props = {
 function BeltSegment(props: Props)
     local beltPart, setBeltPart = React.useState(nil)
     local children = {}
-    local beltsFolder = Scene.getBeltsFolder()
+    local beltsFolder = Scene.getBeltPartsFolder()
     local conveyorFolder: Folder = Scene.getConveyorFolder(props.Name)
 
     React.useEffect(function()
