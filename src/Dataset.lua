@@ -26,10 +26,13 @@ function Dataset:cleanMachines()
         if machineType == Constants.MachineTypes.purchaser then
             machine.sources = nil
             machine["asset"] = Constants.MachineAssetPaths.purchaser
+            machine.supportsPowerup = false
         elseif machineType == Constants.MachineTypes.maker then
             machine["asset"] = Constants.MachineAssetPaths.maker
+            machine.supportsPowerup = true
         elseif machineType == Constants.MachineTypes.makerSeller then
             machine["asset"] = Constants.MachineAssetPaths.makerSeller
+            machine.supportsPowerup = false
         end
     end
 

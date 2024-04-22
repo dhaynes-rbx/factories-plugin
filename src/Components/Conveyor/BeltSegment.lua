@@ -6,7 +6,7 @@ local PathGenerator = require(script.Parent.Parent.Parent.PathGenerator)
 local getOrCreateFolder = require(script.Parent.Parent.Parent.Helpers.getOrCreateFolder)
 local Scene = require(script.Parent.Parent.Parent.Scene)
 local thickness = 0.5
-local width = 1.2
+local width = 1.1
 local desiredRadius = 4
 
 type Props = {
