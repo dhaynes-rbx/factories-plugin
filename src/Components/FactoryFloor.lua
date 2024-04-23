@@ -19,7 +19,7 @@ local FishBloxComponents = FishBlox.Components
 
 local conveyorEndpointOffsetAmount = 2 --How deep inside the machine the conveyor belt should be.
 local conveyorSpacing = 1.8 --How far apart the conveyors should be from each other.
-local conveyorXOffset = 1.5 --Adjustment so that belts don't end beneath the machine (in screen space)
+local conveyorXOffset = 1.6 --Adjustment so that belts don't end beneath the machine (in screen space)
 local conveyorYOffset = -1 --Where to position relative to the ground
 
 type Props = {
@@ -313,7 +313,8 @@ local FactoryFloor = function(props: Props)
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
-            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition),
+            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition)
+                + Vector3.new(0, conveyorYOffset, 0),
             -- MidpointAdjustment = 0.25,
         })
     end
