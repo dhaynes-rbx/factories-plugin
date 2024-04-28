@@ -17,7 +17,10 @@ local Scene = require(script.Parent.Parent.Scene)
 local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder)
 local FishBloxComponents = FishBlox.Components
 
-local conveyorEndpointOffsetAmount = 2
+local conveyorEndpointOffsetAmount = 2 --How deep inside the machine the conveyor belt should be.
+local conveyorSpacing = 1.8 --How far apart the conveyors should be from each other.
+local conveyorXOffset = 1.6 --Adjustment so that belts don't end beneath the machine (in screen space)
+local conveyorYOffset = -1 --Where to position relative to the ground
 
 type Props = {
     Machines: { Types.Machine },
@@ -26,12 +29,20 @@ type Props = {
     UpdateDataset: () -> nil,
 }
 
+local function getConveyorPosition(index, numBelts, offsetX, offsetZScalar)
+    return Vector3.new(
+        (index - 1) * conveyorSpacing - ((numBelts - 1) * 3 / 2) + offsetX,
+        conveyorYOffset,
+        offsetZScalar
+    )
+end
+
 local FactoryFloor = function(props: Props)
     local children = {}
 
     --Instantiation Hook
     React.useEffect(function()
-        local folder = Scene.getBeltsFolder()
+        local folder = Scene.getBeltPartsFolder()
     end, {})
 
     --Connections Hook.
@@ -135,7 +146,6 @@ local FactoryFloor = function(props: Props)
         local beltsOut = machineConveyorMap.beltsOut
         --Find the "in" belts, which are the belts that come in from the left side of the machine.
         --"Sources" should never be empty and always nil if there are no sources. But checking just in case.
-        --TODO: Throw an error if #sources is 0 rather than nil.
         if machine.sources and #machine.sources > 0 then
             for _, sourceId in machine.sources do
                 for _, sourceMachine in props.Machines do
@@ -175,7 +185,12 @@ local FactoryFloor = function(props: Props)
         end)
         for i, belt in ipairs(beltsIn) do
             belt.inPosition = machinePosition
-                + Vector3.new((i - 1) * 3 - ((#beltsIn - 1) * 3 / 2), 0, -conveyorEndpointOffsetAmount)
+                + getConveyorPosition(i, #beltsIn, conveyorXOffset, -conveyorEndpointOffsetAmount)
+            -- Vector3.new(
+            --     (i - 1) * conveyorSpacing - ((#beltsIn - 1) * 3 / 2) + conveyorXOffset,
+            --     -1,
+            --     -conveyorEndpointOffsetAmount
+            -- )
         end
 
         --Find the "out" belts, which are on the right side of the machine.
@@ -202,7 +217,12 @@ local FactoryFloor = function(props: Props)
         end)
         for i, belt in ipairs(beltsOut) do
             belt.outPosition = machinePosition
-                + Vector3.new((i - 1) * 3 - ((#beltsOut - 1) * 3 / 2), 0, conveyorEndpointOffsetAmount)
+                + getConveyorPosition(i, #beltsOut, conveyorXOffset, conveyorEndpointOffsetAmount)
+            -- Vector3.new(
+            --     (i - 1) * conveyorSpacing - ((#beltsOut - 1) * 3 / 2) + conveyorXOffset,
+            --     -1,
+            --     conveyorEndpointOffsetAmount
+            -- )
         end
 
         --If this machine is a makerSeller, then that means it outputs a product that has a value, and it also is not the source of any other machines.
@@ -293,7 +313,8 @@ local FactoryFloor = function(props: Props)
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
-            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition),
+            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition)
+                + Vector3.new(0, conveyorYOffset, 0),
             -- MidpointAdjustment = 0.25,
         })
     end

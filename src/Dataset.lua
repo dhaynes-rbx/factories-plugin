@@ -26,10 +26,13 @@ function Dataset:cleanMachines()
         if machineType == Constants.MachineTypes.purchaser then
             machine.sources = nil
             machine["asset"] = Constants.MachineAssetPaths.purchaser
+            machine.supportsPowerup = false
         elseif machineType == Constants.MachineTypes.maker then
             machine["asset"] = Constants.MachineAssetPaths.maker
+            machine.supportsPowerup = true
         elseif machineType == Constants.MachineTypes.makerSeller then
             machine["asset"] = Constants.MachineAssetPaths.makerSeller
+            machine.supportsPowerup = false
         end
     end
 
@@ -53,6 +56,9 @@ function Dataset:cleanMachines()
                 --Make an error, here
                 -- warn("ERROR!", machine.id, "is a maker, but no other machine uses it as a source.")
             end
+        elseif machineType == Constants.MachineTypes.purchaser or machineType == Constants.MachineTypes.makerSeller then
+            --Make sure there is no delay for non-maker machines.
+            machine.defaultProductionDelay = Constants.Defaults.MachineDefaultProductionDelay
         end
     end
 end
@@ -64,6 +70,13 @@ function Dataset:cleanItems()
         --PUrchasers: Each item should have a cost, and no requirements.
         --Makers: Each item should have requirements, and no cost (Requirement of Currency) and no value (Sale Price)
         --MakerSellers: Each item should have requirements, and a value (Sale Price), but no cost (Requirement of Currency)
+        if item.value then
+            if typeof(item.value.count) == "string" then
+                item.value.count = tonumber(item.value.count)
+                print("Converted string to number for", item.id, "item value.count")
+            end
+        end
+
         local machineType = self:getMachineTypeFromItemId(item.id)
         if machineType == Constants.MachineTypes.purchaser then
             --Prune the requirements array of anything that is not "currency"

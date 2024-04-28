@@ -24,7 +24,7 @@ local SmallButton = require(script.Parent.SubComponents.SmallButton)
 local ListItemButton = require(script.Parent.SubComponents.ListItemButton)
 
 local Dataset = require(script.Parent.Parent.Dataset)
-local Manifest = require(script.Parent.Parent.Manifest)
+-- local Manifest = require(script.Parent.Parent.Manifest)
 local Scene = require(script.Parent.Parent.Scene)
 local Studio = require(script.Parent.Parent.Studio)
 
@@ -119,7 +119,6 @@ local function EditItemUI(props: Props)
                     OnRequirementCountChanged = function(value)
                         for _, changedRequirement in ipairs(item.requirements) do
                             if changedRequirement.itemId == requirement.itemId then
-                                print("Changing requirement count", requirement.itemId, value)
                                 requirement.count = value
                             end
                         end
