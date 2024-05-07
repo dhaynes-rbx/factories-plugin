@@ -186,11 +186,6 @@ local FactoryFloor = function(props: Props)
         for i, belt in ipairs(beltsIn) do
             belt.inPosition = machinePosition
                 + getConveyorPosition(i, #beltsIn, conveyorXOffset, -conveyorEndpointOffsetAmount)
-            -- Vector3.new(
-            --     (i - 1) * conveyorSpacing - ((#beltsIn - 1) * 3 / 2) + conveyorXOffset,
-            --     -1,
-            --     -conveyorEndpointOffsetAmount
-            -- )
         end
 
         --Find the "out" belts, which are on the right side of the machine.

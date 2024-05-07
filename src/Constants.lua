@@ -16,6 +16,12 @@ return {
         purchaser = "purchaser",
         invalid = "invalid",
     },
+    MachineAnchorSizes = {
+        maker = Vector3.new(5.33, 2.033, 10.463),
+        makerSeller = Vector3.new(5.33, 2.033, 6.061),
+        purchaser = Vector3.new(8.836, 8.713, 8.836),
+        invalid = Vector3.new(1, 1, 1),
+    },
     MachineAssetPaths = {
         maker = "Assets.Machines.Machine-Default",
         makerSeller = "Assets.Machines.Seller",

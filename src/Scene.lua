@@ -3,6 +3,7 @@ local Utilities = require(script.Parent.Packages.Utilities)
 
 local getOrCreateFolder = require(script.Parent.Helpers.getOrCreateFolder)
 local Types = require(script.Parent.Types)
+local Constants = require(script.Parent.Constants)
 
 local function registerDebugId(instance: Instance)
     instance:SetAttribute("debugId", instance:GetDebugId())
@@ -125,10 +126,11 @@ function Scene.instantiateMachineAnchor(machine: table)
     end
     local anchor = Scene.getAnchorFromMachine(machine)
     local anchorName = "(" .. machine["coordinates"]["X"] .. "," .. machine["coordinates"]["Y"] .. ")"
+    local anchorSize = Constants.MachineAnchorSizes[machine["type"]]
     if not anchor then
         anchor = Instance.new("Part")
         anchor.Anchored = true
-        anchor.Size = Vector3.new(8, 2, 12)
+        anchor.Size = anchorSize
         anchor.Color = Color3.new(0.1, 0.1, 0.1)
 
         local cframe = CFrame.new(position)
