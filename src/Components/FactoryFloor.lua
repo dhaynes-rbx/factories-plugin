@@ -17,7 +17,6 @@ local Scene = require(script.Parent.Parent.Scene)
 local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder)
 local FishBloxComponents = FishBlox.Components
 
-local conveyorEndpointOffsetAmount = 2 --How deep inside the machine the conveyor belt should be.
 local conveyorSpacing = 1.8 --How far apart the conveyors should be from each other.
 local conveyorXOffset = 1.6 --Adjustment so that belts don't end beneath the machine (in screen space)
 local conveyorYOffset = -1 --Where to position relative to the ground
@@ -109,7 +108,12 @@ local FactoryFloor = function(props: Props)
         end)
         for i, belt in ipairs(beltsIn) do
             belt.inPosition = machinePosition
-                + getConveyorPosition(i, #beltsIn, conveyorXOffset, -conveyorEndpointOffsetAmount)
+                + getConveyorPosition(
+                    i,
+                    #beltsIn,
+                    conveyorXOffset,
+                    -Constants.MachineAnchorSizes[machine["type"]].Z / 2
+                )
         end
 
         --Find the "out" belts, which are on the right side of the machine.
@@ -136,12 +140,12 @@ local FactoryFloor = function(props: Props)
         end)
         for i, belt in ipairs(beltsOut) do
             belt.outPosition = machinePosition
-                + getConveyorPosition(i, #beltsOut, conveyorXOffset, conveyorEndpointOffsetAmount)
-            -- Vector3.new(
-            --     (i - 1) * conveyorSpacing - ((#beltsOut - 1) * 3 / 2) + conveyorXOffset,
-            --     -1,
-            --     conveyorEndpointOffsetAmount
-            -- )
+                + getConveyorPosition(
+                    i,
+                    #beltsOut,
+                    conveyorXOffset,
+                    Constants.MachineAnchorSizes[machine["type"]].Z / 2
+                )
         end
 
         --If this machine is a makerSeller, then that means it outputs a product that has a value, and it also is not the source of any other machines.
@@ -232,8 +236,8 @@ local FactoryFloor = function(props: Props)
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
-            EndPosition = worldPositionToVector3(Dataset:getMachineFromId(exitPoint.sourceId).worldPosition)
-                + Vector3.new(0, conveyorYOffset, 0),
+            EndPosition = worldPositionToVector3(machinePosition)
+                + getConveyorPosition(1, 1, 0, Constants.MachineAnchorSizes[machine["type"]].Z / 2),
             -- MidpointAdjustment = 0.25,
         })
     end
