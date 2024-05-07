@@ -17,6 +17,7 @@ local Scene = require(script.Parent.Parent.Scene)
 local getOrCreateFolder = require(script.Parent.Parent.Helpers.getOrCreateFolder)
 local FishBloxComponents = FishBlox.Components
 
+local conveyorDepthOffset = 0.95 --Scalar for how far inside the machine the conveyor should start or end
 local conveyorSpacing = 1.8 --How far apart the conveyors should be from each other.
 local conveyorXOffset = 1.6 --Adjustment so that belts don't end beneath the machine (in screen space)
 local conveyorYOffset = -1 --Where to position relative to the ground
@@ -112,7 +113,7 @@ local FactoryFloor = function(props: Props)
                     i,
                     #beltsIn,
                     conveyorXOffset,
-                    -Constants.MachineAnchorSizes[machine["type"]].Z / 2
+                    (-Constants.MachineAnchorSizes[machine["type"]].Z / 2) * conveyorDepthOffset
                 )
         end
 
@@ -144,7 +145,7 @@ local FactoryFloor = function(props: Props)
                     i,
                     #beltsOut,
                     conveyorXOffset,
-                    Constants.MachineAnchorSizes[machine["type"]].Z / 2
+                    (Constants.MachineAnchorSizes[machine["type"]].Z / 2) * conveyorDepthOffset
                 )
         end
 
@@ -236,9 +237,12 @@ local FactoryFloor = function(props: Props)
         conveyorComponents[exitPoint.name] = Conveyor({
             Name = exitPoint.name,
             StartPosition = exitPoint.position,
-            EndPosition = worldPositionToVector3(machinePosition)
-                + getConveyorPosition(1, 1, 0, Constants.MachineAnchorSizes[machine["type"]].Z / 2),
-            -- MidpointAdjustment = 0.25,
+            EndPosition = worldPositionToVector3(machinePosition) + getConveyorPosition(
+                1,
+                1,
+                0,
+                (Constants.MachineAnchorSizes[machine["type"]].Z / 2) * conveyorDepthOffset
+            ),
         })
     end
 
