@@ -38,8 +38,83 @@ local function getConveyorPosition(index, numBelts, offsetX, offsetZScalar)
 end
 
 local FactoryFloor = function(props: Props)
-    local children = {}
+    --Instantiation Hook
+    React.useEffect(function()
+        local folder = Scene.getBeltPartsFolder()
+    end, {})
 
+    --Connections Hook.
+    --Listen for machine selection and machine drag.
+    React.useEffect(function()
+        local connections: { RBXScriptConnection } = {}
+
+        connections["ClearSelection"] = Selection.SelectionChanged:Connect(function()
+            if #Selection:Get() == 0 then
+                props.OnClearSelection()
+            end
+        end)
+
+        connections["Selection"] = Selection.SelectionChanged:Connect(function()
+            local selection = Selection:Get()
+            if #selection >= 1 then
+                local selectedObj = selection[1]
+                if Scene.isMachineAnchor(selectedObj) then
+                    local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
+                    props.OnMachineSelect(machine, selectedObj)
+                end
+            end
+        end)
+
+        connections["DragMachine"] = InputService.InputEnded:Connect(function(input: InputObject)
+            if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                return
+            end
+
+            local selectedObjs = Selection:Get()
+            if #selectedObjs > 0 then
+                for _, selectedObj in selectedObjs do
+                    if Scene.isMachineAnchor(selectedObj) then
+                        --Register that the machine may have been moved.
+                        local position = selectedObj.CFrame.Position
+                        position = Vector3.new(position.X, Constants.Defaults.MachineDefaultYPosition, position.Z)
+
+                        local machine = Dataset:getMachineFromMachineAnchor(selectedObj)
+                        local worldPosition = Vector3.new()
+                        if machine and machine["worldPosition"] then
+                            selectedObj.CFrame = CFrame.new(position)
+                            worldPosition = Vector3.new(
+                                machine["worldPosition"]["X"],
+                                machine["worldPosition"]["Y"],
+                                machine["worldPosition"]["Z"]
+                            )
+                            if position ~= worldPosition then
+                                machine["worldPosition"]["X"] = position.X
+                                machine["worldPosition"]["Y"] = position.Y
+                                machine["worldPosition"]["Z"] = position.Z
+
+                                props.UpdateDataset()
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+
+        connections["DeleteMachine"] = Scene.getMachinesFolder().ChildRemoved:Connect(function(child)
+            local machine = Dataset:getMachineFromMachineAnchor(child)
+            if machine then
+                props.DeleteMachine(machine, child)
+            end
+        end)
+
+        return function()
+            for _, connection in connections do
+                connection:Disconnect()
+            end
+        end
+    end, {})
+
+    local children = {}
     --Create machine and conveyor components
     local machineComponents = {}
     -- local conveyorData = {}
@@ -247,7 +322,6 @@ local FactoryFloor = function(props: Props)
     end
 
     children = Dash.join(children, machineComponents, conveyorComponents)
-    -- getOrCreateFolder("Nodes", game.Workspace):ClearAllChildren()
 
     return React.createElement(React.Fragment, {}, children)
 end
