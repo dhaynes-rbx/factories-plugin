@@ -46,7 +46,7 @@ type Props = {
 function Requirement(requirement: table, layoutOrder: number, requirementCallback: () -> nil, hoverCallback: () -> nil)
     local itemId = requirement.itemId
     local item = Dataset:getItemFromId(itemId)
-    local locName = item.locName
+    local itemLocName = item.locName.singular
     local thumb = item.thumb
     local count = requirement.count
     return React.createElement("Frame", {
@@ -109,7 +109,7 @@ function Requirement(requirement: table, layoutOrder: number, requirementCallbac
 
             label = React.createElement("TextLabel", {
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
-                Text = locName,
+                Text = itemLocName,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 12,
                 TextTruncate = Enum.TextTruncate.None,

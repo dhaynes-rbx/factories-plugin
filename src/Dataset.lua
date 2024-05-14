@@ -67,7 +67,7 @@ function Dataset:cleanItems()
     local items = self.items
     for key, item in pairs(items) do
         --Check the items based on machine type. There are certain requirements for certain machines.
-        --PUrchasers: Each item should have a cost, and no requirements.
+        --Purchasers: Each item should have a cost, and no requirements.
         --Makers: Each item should have requirements, and no cost (Requirement of Currency) and no value (Sale Price)
         --MakerSellers: Each item should have requirements, and a value (Sale Price), but no cost (Requirement of Currency)
         if item.value then
@@ -162,6 +162,16 @@ function Dataset:cleanItems()
                 item.requirements = {}
                 item.requirements[1] = { itemId = "currency", count = 0 }
             end
+        end
+
+        --Check the loc name. Each locName should have a singular and a plural.
+        if typeof(item.locName) == "string" then
+            print("Renaming locName to singular and plural...", item.locName)
+            local unitLocName = {
+                singular = item.locName,
+                plural = item.locName .. "s",
+            }
+            item.locName = unitLocName
         end
     end
 end

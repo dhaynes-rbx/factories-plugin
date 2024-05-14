@@ -124,7 +124,7 @@ local function EditMachineUI(props: Props)
                 outputItems,
                 ItemListItem({
                     Item = item,
-                    Label = item.locName,
+                    Label = item.locName.singular,
                     LayoutOrder = i,
                     Requirements = validRequirements,
                     Thumbnail = item.thumb,
